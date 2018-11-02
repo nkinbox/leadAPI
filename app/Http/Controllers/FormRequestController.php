@@ -29,7 +29,7 @@ class FormRequestController extends Controller
         $this->response['operation'] = $operation?ucwords($operation):"Add";
         $this->response['row'] = FormRequest::find($id);
         $this->response['rows'] = FormRequest::all();
-        return view('formRequest', $this->response);
+        return view('formrequest', $this->response);
     }
     public function create(Request $request) {
         $this->validate($request, [
