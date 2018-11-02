@@ -10,4 +10,7 @@ class WebsiteMap extends Model
     public function FormRequest() {
         return $this->belongsTo('App\FormRequest');
     }
+    public function FormMap() {
+        return $this->belongsTo('App\FormMap');
+    }
 }
