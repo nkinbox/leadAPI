@@ -8,6 +8,7 @@ use App\FormFields;
 use App\FormMap;
 use App\Website;
 use App\WebsiteMap;
+use App\AddProjectClientSeo;
 use DB;
 use Validator;
 
@@ -18,6 +19,7 @@ class APIController extends Controller
     private $crm_table;
     private $request_map;
     private $website;
+    private $addprojectclientseo;
     private $fields;
     private $validator;
 
@@ -80,9 +82,10 @@ class APIController extends Controller
             }
         }
         if($request->domain_name) {
-            $this->website = Website::select('id')->where('domain', $request->domain_name)->first();
+            $this->website = Website::select('id', 'domain')->where('domain', $request->domain_name)->first();
             if(!$this->website)
             return false;
+            $this->addprojectclientseo = AddProjectClientSeo::Where('website_url', 'like', '%' .$this->website->domain. '%')->first();
         } else {
             $this->website = null;
             return false;
