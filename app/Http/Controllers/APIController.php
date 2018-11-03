@@ -85,7 +85,7 @@ class APIController extends Controller
             $this->website = Website::select('id', 'domain')->where('domain', $request->domain_name)->first();
             if(!$this->website)
             return false;
-            $this->addprojectclientseo = AddProjectClientSeo::Where('website_url', 'like', '%' .$this->website->domain. '%')->first();
+            $this->addprojectclientseo = AddProjectClientSeo::where('website_url', 'like', '%' .$this->website->domain. '%')->first();
         } else {
             $this->website = null;
             return false;
