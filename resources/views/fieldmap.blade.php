@@ -21,6 +21,7 @@
                 <td>
                     <input type="hidden" name="form_field_id[{{$loop->index}}]" value="{{$field->id}}">
                     <select name="crm_column_id[{{$loop->index}}]">
+                        <option value="">IGNORE</option>
                         @foreach ($map->CrmTable->Columns as $column)
                         <option value="{{$column->id}}"{{(isset($fieldmap[$field->id]))?(($fieldmap[$field->id] == $column->id)?' selected':''):''}}>{{$column->name}}</option>
                         @endforeach
