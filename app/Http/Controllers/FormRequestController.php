@@ -61,6 +61,7 @@ class FormRequestController extends Controller
         ]);
         $FormRequest = FormRequest::find($request->id);
         $FormRequest->Fields()->forceDelete();
+        $FormRequest->WebsiteMap()->forceDelete();
         $FormRequest->forceDelete();
         return redirect()->route('formRequest')->with("message", "Request Deleted Successfully.");
     }

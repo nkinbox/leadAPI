@@ -13,4 +13,7 @@ class FormRequest extends Model
     public function Maps() {
         return $this->hasMany('App\FormMap');
     }
+    public function WebsiteMap() {
+        return $this->hasMany('App\WebsiteMap');
+    }
 }
