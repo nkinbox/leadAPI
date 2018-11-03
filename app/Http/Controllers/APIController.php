@@ -69,7 +69,7 @@ class APIController extends Controller
             $keys[] = $key;
         }
         sort($keys);
-        $sha1 = implode("", $keys);
+        $sha1 = sha1(implode("", $keys));
         if($request->access_token) {
             $formMap = FormMap::where('access_token', $request->access_token)->first();
             if($formMap) {
