@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\FormMap;
 use App\CrmTable;
-use App\Formrequest;
+use App\FormRequest;
 
 class FormMapController extends Controller
 {
