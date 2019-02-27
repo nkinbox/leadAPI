@@ -41,7 +41,7 @@ class APIController extends Controller
                         $temp[] = $field. ' => ' .$request->{$field};
                     }
                     $this->fields[$key] = implode(", ", $temp);
-                } else {
+                } elseif($request->{$value}) {
                     $this->fields[$key] = $request->{$value};
                 }
             }
