@@ -169,8 +169,12 @@ class APIController extends Controller
         }
         foreach($this->request_map as $i) {
             if(isset($map[$table[$i->crm_column_id]])) {
-                $map[$table[$i->crm_column_id]] = [$map[$table[$i->crm_column_id]]];
-                $map[$table[$i->crm_column_id]][] = $form[$i->form_field_id];
+                if(is_array($map[$table[$i->crm_column_id]])) {
+                    $map[$table[$i->crm_column_id]][] = $form[$i->form_field_id];
+                } else {
+                    $map[$table[$i->crm_column_id]] = [$map[$table[$i->crm_column_id]]];
+                    $map[$table[$i->crm_column_id]][] = $form[$i->form_field_id];
+                }
             } else {
                 $map[$table[$i->crm_column_id]] = $form[$i->form_field_id];
             }
