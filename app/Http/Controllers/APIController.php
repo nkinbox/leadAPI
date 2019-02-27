@@ -38,7 +38,7 @@ class APIController extends Controller
                 if(is_array($value)) {
                     $temp = [];
                     foreach($value as $field) {
-                        $temp[] = $request->{$field};
+                        $temp[] = $field. ' => ' .$request->{$field};
                     }
                     $this->fields[$key] = implode(", ", $temp);
                 } else {
