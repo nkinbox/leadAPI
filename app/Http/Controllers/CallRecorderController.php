@@ -101,9 +101,9 @@ class CallRecorderController extends Controller {
     public function displayLog(Request $request) {
         $this->validate($request, [
             'date' => 'sometimes|required|date_format:Y-m-d',
-            'api_token' => 'sometimes|required|exists:agents'
+            'agent_id' => 'required|exists:agents,id'
         ]);
-        $agent = Agents::where('api_token', $request->api_token)->first();
+        $agent = Agents::find($request->agent_id);
         $logs = CallRegister::where('agent_id', $agent->id)->whereDate('device_time', $request->input('date', date('Y-m-d')))->orderBy('device_time', 'desc')->get();
         $this->response['message'] = 'success';
         $this->response['logs'] = [];
