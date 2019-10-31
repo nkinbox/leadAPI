@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class SimAllocation extends Model
 {
     public $incrementing = false;
+    public $timestamps = false;
 }
