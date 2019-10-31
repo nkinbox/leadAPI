@@ -53,17 +53,17 @@ class CallRecorderController extends Controller {
         ]);
         $agent = Agents::where('api_token', $request->api_token)->first();
         foreach($request->sim_allocation as $sim_allocation) {
-            $sim = SimAllocation::find($sim_allocation->sim_id);
+            $sim = SimAllocation::find($sim_allocation['sim_id']);
             if($sim) {
-                $sim->operator = $sim_allocation->operator;
+                $sim->operator = $sim_allocation['operator'];
                 $sim->agent_id = $agent->id;
                 $sim->save();
             } else {
                 $sim = new SimAllocation;
-                $sim->id = $sim_allocation->sim_id;
-                $sim->operator = $sim_allocation->operator;
-                $sim->dial_code = isset($sim_allocation->dial_code)?$sim_allocation->dial_code:null;
-                $sim->phone_number = isset($sim_allocation->phone_number)?$sim_allocation->phone_number:null;
+                $sim->id = $sim_allocation['sim_id'];
+                $sim->operator = $sim_allocation['operator'];
+                $sim->dial_code = isset($sim_allocation['dial_code'])?$sim_allocation['dial_code']:null;
+                $sim->phone_number = isset($sim_allocation['phone_number'])?$sim_allocation['phone_number']:null;
                 $sim->agent_id = $agent->id;
                 $sim->save();
             }
