@@ -20,6 +20,7 @@ class CallRecorderController extends Controller {
         $agent = Agents::where('user_name', $request->user_name)->first();
         if (Hash::check($request->password, $agent->password)) {
             $agent->api_token = sha1($request->password.$request->user_name.time());
+            $agent->save();
             $this->response['api_token'] = $agent->api_token;
             return response()->json($this->response, 200);
         } else {
