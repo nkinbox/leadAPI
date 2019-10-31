@@ -74,7 +74,7 @@ class CallRecorderController extends Controller {
     public function createLog(Request $request) {
         $this->validate($request, [
             'api_token' => 'required|string|size:40|exists:agents',
-            'sim_id' => 'required|digits_between:10,50',
+            'sim_id' => 'required|digits_between:10,50|exists:sim_allocations,id',
             'dial_code' => 'required|string|max:5',
             'phone_number' => 'required|string|max:15',
             'saved_name' => 'nullable|string|max:100',
