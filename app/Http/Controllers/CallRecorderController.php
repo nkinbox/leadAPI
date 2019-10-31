@@ -25,8 +25,7 @@ class CallRecorderController extends Controller {
             return response()->json($this->response, 200);
         } else {
             $this->response['message'] = 'username or password does not match';
-            $this->response['errors'] = [];
-            return response()->json($this->response, 419);
+            return response()->json($this->response, 422);
         }
     }
     public function registerAgent(Request $request) {
