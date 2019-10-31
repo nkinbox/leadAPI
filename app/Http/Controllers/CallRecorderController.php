@@ -62,8 +62,8 @@ class CallRecorderController extends Controller {
                 $sim = new SimAllocation;
                 $sim->id = $sim_allocation->sim_id;
                 $sim->operator = $sim_allocation->operator;
-                $sim->dial_code = $sim_allocation->dial_code??null;
-                $sim->phone_number = $sim_allocation->phone_number??null;
+                $sim->dial_code = isset($sim_allocation->dial_code)?$sim_allocation->dial_code:null;
+                $sim->phone_number = isset($sim_allocation->phone_number)?$sim_allocation->phone_number:null;
                 $sim->agent_id = $agent->id;
                 $sim->save();
             }
