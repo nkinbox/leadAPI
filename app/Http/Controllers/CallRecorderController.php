@@ -14,7 +14,7 @@ class CallRecorderController extends Controller {
     }
     public function login(Request $request) {
         $this->validate($request, [
-            'user_name' => 'required|exists:agents|max:50',
+            'user_name' => 'required|max:50|exists:agents',
             'password' => 'required|min:6',
         ]);
         $agent = Agents::where('user_name', $request->user_name)->first();
@@ -27,6 +27,20 @@ class CallRecorderController extends Controller {
             $this->response['errors'] = [];
             return response()->json($this->response, 419);
         }
+    }
+    public function registerAgent(Request $request) {
+        $this->validate($request, [
+            'name' => 'required|string|max:50',
+            'user_name' => 'required|max:50|unique:agents',
+            'password' => 'required|min:6',
+        ]);
+        $agent = new Agents;
+        $agent->name = $request->name;
+        $agent->user_name = $request->user_name;
+        $agent->password = Hash::make($request->password);
+        $agent->save();
+        $this->response['message'] = 'success';
+        return response()->json($this->response);
     }
     public function sim_allocation(Request $request) {
         $this->validate($request, [
