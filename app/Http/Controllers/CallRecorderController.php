@@ -146,7 +146,7 @@ class CallRecorderController extends Controller {
         $this->response['logs'] = [];
         foreach($logs as $log) {
             $this->response['logs'][] = [
-                'sim_id' => $log->sim_id,
+                'sim_id' => $log->sim_allocation_id,
                 'dial_code' => $log->dial_code,
                 'phone_number' => $log->phone_number,
                 'saved_name' => $log->saved_name,
