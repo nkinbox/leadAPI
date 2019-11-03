@@ -151,7 +151,7 @@ class CallRecorderController extends Controller {
                 'phone_number' => $log->phone_number,
                 'saved_name' => $log->saved_name,
                 'duration' => $log->duration,
-                'timestamp' => date($log->device_time, 'Y-m-d H:i:s'),
+                'timestamp' => date('Y-m-d H:i:s', strtotime($log->device_time)),
                 'call_type' => ($log->call_type=='incoming'&&$log->status==0)?'missed':$log->call_type
             ];
         }
