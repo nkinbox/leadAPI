@@ -9,3 +9,4 @@ Route::post('logger/login', 'CallRecorderController@login');
 Route::post('logger/sim', 'CallRecorderController@sim_allocation');
 Route::post('logger/create', 'CallRecorderController@createLog');
 Route::get('logger/display', 'CallRecorderController@displayLog');
+Route::get('logger/agents', 'CallRecorderController@agents');

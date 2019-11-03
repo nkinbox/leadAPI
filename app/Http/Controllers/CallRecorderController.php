@@ -157,4 +157,15 @@ class CallRecorderController extends Controller {
         }
         return response()->json($this->response);
     }
+    public function agents() {
+        $agents = Agents::all();
+        $this->response['agents'] = [];
+        foreach($agents as $agent) {
+            $this->response['agents'][] = [
+                'user_name' => $agent->user_name,
+                'name' => $agent->name
+            ];
+        }
+        return response()->json($this->response);
+    }
 }
