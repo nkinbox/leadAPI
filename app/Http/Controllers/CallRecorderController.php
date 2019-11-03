@@ -15,7 +15,7 @@ class CallRecorderController extends Controller {
     public function login(Request $request) {
         $this->validate($request, [
             'name' => 'required|string|max:50',
-            'user_name' => 'required|max:50|exists:agents',
+            'user_name' => 'required|max:50',
             'password' => 'required|min:6',
             'sim_allocation' => 'required|array',
             'sim_allocation.*.sim_id' => 'required|digits_between:10,50',
