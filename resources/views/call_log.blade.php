@@ -57,8 +57,8 @@
                         </tr>
                         <tr>
                             <th scope="col" @click="setFilter()" class="pointer"><span :class="{'border p-1 bg-secondary text-white':('allall0'==selectedFilter)}">#ALL</span></th>
-                            <th scope="col" colspan="2" class="bg-warning">Incoming</th>
-                            <th scope="col" colspan="2" class="bg-info text-white">Outgoing</th>
+                            <th scope="col" colspan="2" class="bg-warning">Incoming ({{seconds(totalDurations.incoming)}})</th>
+                            <th scope="col" colspan="2" class="bg-info text-white">Outgoing ({{seconds(totalDurations.outgoing)}})</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,6 +135,10 @@
             el: '#app',
             data() {
                 return {
+                    totalDurations: {
+                        incoming: 0,
+                        outgoing: 0
+                    },
                     selected_agent: {
                         user_name: '',
                         name: '',
@@ -185,18 +189,25 @@
                     })
                 },
                 stats() {
+                    this.totalDurations = {
+                        incoming: 0,
+                        outgoing: 0
+                    }
                     return this.call_logs.reduce((stats, log) => {
                         if(log.call_type == 'missed') {
+                            this.totalDurations.incoming += log.duration
                             stats.incoming.missed.total++
                             stats.incoming.total.total++
                             stats.incoming.missed.unique[log.phone_number] = 0
                             stats.incoming.total.unique[log.phone_number] = 0
                         } else if(log.call_type == 'incoming') {
+                            this.totalDurations.incoming += log.duration
                             stats.incoming.received.total++
                             stats.incoming.total.total++
                             stats.incoming.received.unique[log.phone_number] = 0
                             stats.incoming.total.unique[log.phone_number] = 0
                         } else if(log.call_type == 'outgoing') {
+                            this.totalDurations.outgoing += log.duration
                             stats.outgoing.total.total++
                             stats.outgoing.total.unique[log.phone_number] = 0
                             if(log.status) {
@@ -245,12 +256,14 @@
                     this.fetchLogs()
                 },
                 department: function(newVal, oldVal) {
-                    this.selected_agent = {
-                        user_name: '',
-                        name: '',
-                        department_id: 0
+                    if(this.selected_agent.department_id != newVal) {
+                        this.selected_agent = {
+                            user_name: '',
+                            name: '',
+                            department_id: 0
+                        }
+                        this.fetchLogs()
                     }
-                    this.fetchLogs()
                 }
             },
             mounted() {
