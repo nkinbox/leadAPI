@@ -17,11 +17,16 @@
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-light bg-primary py-0 mb-3">
+        <a class="navbar-brand" href="https://www.tripclues.in/leadAPI/public/callLogs">
+            <img src="https://www.tripclues.in/images/tripclues-logo.jpg" height="50" alt="">
+        </a>
+    </nav>
     <div id="app" class="row no-gutters" v-cloak>
         <div class="col-3">
             <div class="m-2">
                 <select v-model="department" class="form-control">
-                    <option v-for="dept in departments" :value="dept.id" v-text="dept.name+'     ('+dept.total_agents+')'"></option>
+                    <option v-for="dept in departments" :value="dept.id" v-text="dept.name+' ('+dept.total_agents+')'"></option>
                 </select>
             </div>
             <div v-if="agents.length == 0" class="text-center p-3">
@@ -51,7 +56,7 @@
                             </th>
                         </tr>
                         <tr>
-                            <th scope="col" @click="setFilter()" class="pointer">#ALL</th>
+                            <th scope="col" @click="setFilter()" class="pointer"><span :class="{'border p-1 bg-secondary text-white':('allall0'==selectedFilter)}">#ALL</span></th>
                             <th scope="col" colspan="2" class="bg-warning">Incoming</th>
                             <th scope="col" colspan="2" class="bg-info text-white">Outgoing</th>
                         </tr>
@@ -59,23 +64,23 @@
                     <tbody>
                         <tr>
                             <th scope="row">Total</th>
-                            <td class="pointer bg-warning" v-text="stats.incoming.total.total" @click="setFilter('incoming', 'all')">0</td>
+                            <td class="pointer bg-warning" @click="setFilter('incoming', 'all')"><span v-text="stats.incoming.total.total" :class="{'border p-1 bg-secondary text-white':('incomingall0'==selectedFilter)}">0</span></td>
                             <td class="bg-warning" v-text="Object.keys(stats.incoming.total.unique).length">0</td>
-                            <td class="pointer bg-info text-white" v-text="stats.outgoing.total.total" @click="setFilter('outgoing', 'all')">0</td>
+                            <td class="pointer bg-info text-white" @click="setFilter('outgoing', 'all')"><span v-text="stats.outgoing.total.total" :class="{'border p-1 bg-secondary text-white':('outgoingall0'==selectedFilter)}">0</span></td>
                             <td class="bg-info text-white" v-text="Object.keys(stats.outgoing.total.unique).length">0</td>
                         </tr>
                         <tr>
                             <th scope="row">Received</th>
-                            <td class="pointer bg-warning" v-text="stats.incoming.received.total" @click="setFilter('incoming', 1)">0</td>
+                            <td class="pointer bg-warning" @click="setFilter('incoming', 1)"><span v-text="stats.incoming.received.total" :class="{'border p-1 bg-secondary text-white':('incoming10'==selectedFilter)}">0</span></td>
                             <td class="bg-warning" v-text="Object.keys(stats.incoming.received.unique).length">0</td>
-                            <td class="pointer bg-info text-white" v-text="stats.outgoing.received.total" @click="setFilter('outgoing', 1)">0</td>
+                            <td class="pointer bg-info text-white" @click="setFilter('outgoing', 1)"><span v-text="stats.outgoing.received.total" :class="{'border p-1 bg-secondary text-white':('outgoing10'==selectedFilter)}">0</span></td>
                             <td class="bg-info text-white" v-text="Object.keys(stats.outgoing.received.unique).length">0</td>
                         </tr>
                         <tr>
                             <th scope="row">Missed</th>
-                            <td  class="pointer bg-warning" v-text="stats.incoming.missed.total" @click="setFilter('incoming', 0)">0</td>
+                            <td  class="pointer bg-warning" @click="setFilter('incoming', 0)"><span v-text="stats.incoming.missed.total"  :class="{'border p-1 bg-secondary text-white':('incoming00'==selectedFilter)}">0</span></td>
                             <td  class="bg-warning" v-text="Object.keys(stats.incoming.missed.unique).length">0</td>
-                            <td  class="pointer bg-info text-white" v-text="stats.outgoing.missed.total" @click="setFilter('outgoing', 0)">0</td>
+                            <td  class="pointer bg-info text-white" @click="setFilter('outgoing', 0)"><span  v-text="stats.outgoing.missed.total" :class="{'border p-1 bg-secondary text-white':('outgoing00'==selectedFilter)}">0</span></td>
                             <td  class="bg-info text-white" v-text="Object.keys(stats.outgoing.missed.unique).length">0</td>
                         </tr>
                     </tbody>
@@ -91,8 +96,8 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Phone Number</th>
-                                    <th scope="col">Saved name</th>
+                                    <th scope="col">Employee</th>
+                                    <th scope="col">Conversed</th>
                                     <th scope="col">Call Type</th>
                                     <th scope="col">Duration</th>
                                     <th scope="col">Time</th>
@@ -101,8 +106,8 @@
                             <tbody class="text-white">
                                 <tr v-for="(log, index) in filtered_call_logs" :key="index" :class="{'bg-danger':(log.status?false:true), 'bg-success':(log.status?true:false)}">
                                     <th scope="row" v-text="index+1"></th>
-                                    <td v-text="log.dial_code+' '+log.phone_number"></td>
-                                    <td v-text="log.saved_name?log.saved_name:'NA'"></td>
+                                    <td class="small" v-html="log.agent_name+'<br>'+log.agent_phone_number"></td>
+                                    <td class="small" v-html="(log.saved_name?log.saved_name:'NA')+'<br>'+log.dial_code+' '+log.phone_number"></td>
                                     <td>
                                         <div v-text="log.call_type" class="badge font-weight-normal" :class="{'badge-info':(log.call_type == 'outgoing'), 'badge-warning':(log.call_type == 'incoming' || log.call_type == 'missed')}"></div>
                                     </td>
@@ -132,7 +137,8 @@
                 return {
                     selected_agent: {
                         user_name: '',
-                        name: ''
+                        name: '',
+                        department_id: 0
                     },
                     agents: [],
                     date: '',
@@ -148,6 +154,9 @@
                 }
             },
             computed: {
+                selectedFilter() {
+                    return this.filter.type+this.filter.status+((this.filter.unique)?'1':'0')
+                },
                 filtered_call_logs() {
                     return this.call_logs.filter((log) => {
                         if(this.filter.type == 'incoming' && (log.call_type == 'incoming' || log.call_type == 'missed')) {
@@ -234,13 +243,20 @@
             watch: {
                 date: function(newVal, oldVal) {
                     this.fetchLogs()
+                },
+                department: function(newVal, oldVal) {
+                    this.selected_agent = {
+                        user_name: '',
+                        name: '',
+                        department_id: 0
+                    }
+                    this.fetchLogs()
                 }
             },
             mounted() {
                 this.date = moment().format('YYYY-MM-DD')
                 axios.get('https://tripclues.in/leadAPI/public/api/logger/agents').then(response => {
                     this.agents = response.data.agents
-                    this.selected_agent = this.agents.find((agent) => agent.user_name)
                 }).catch(error => {
                     console.log(error)
                 })
@@ -262,11 +278,15 @@
                     return new Date(duration * 1000).toISOString().substr(11, 8)
                 },
                 fetchLogs() {
-                    if(!this.selected_agent.user_name) {
-                        return
+                    let query = 'date='+(moment(this.date).format('YYYY-MM-DD'));
+                    if(this.selected_agent.user_name) {
+                        query += '&user_name='+this.selected_agent.user_name
+                    }
+                    if(this.department) {
+                        query += '&department_id='+this.department
                     }
                     this.loading_call_logs = true
-                    axios.get('https://tripclues.in/leadAPI/public/api/logger/display?user_name='+this.selected_agent.user_name+'&date='+(moment(this.date).format('YYYY-MM-DD'))).then(response => {
+                    axios.get('https://tripclues.in/leadAPI/public/api/logger/display?'+query).then(response => {
                         this.call_logs = response.data.logs
                         this.loading_call_logs = false
                     }).catch(error => {
@@ -281,6 +301,7 @@
                         status: 'all',
                         unique: false
                     }
+                    this.department = agent.department_id
                     this.fetchLogs()
                 }
             }
