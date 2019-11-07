@@ -91,7 +91,7 @@
                                 </tr>
                             </thead>
                             <tbody class="text-white">
-                                <tr v-for="(log, index) in filtered_call_logs" :key="index" :class="{'bg-danger':(log.duration?false:true), 'bg-success':(log.duration?true:false)}">
+                                <tr v-for="(log, index) in filtered_call_logs" :key="index" :class="{'bg-danger':(log.status?false:true), 'bg-success':(log.status?true:false)}">
                                     <th scope="row" v-text="index+1"></th>
                                     <td v-text="log.dial_code+' '+log.phone_number"></td>
                                     <td v-text="log.saved_name?log.saved_name:'NA'"></td>
@@ -144,17 +144,17 @@
                             if(this.filter.status == 'all') {
                                 return true
                             } else if(this.filter.status) {
-                                return (log.duration)?true:false
+                                return (log.status)?true:false
                             } else {
-                                return log.duration?false:true
+                                return log.status?false:true
                             }
                         } else if(this.filter.type == 'outgoing' && this.filter.type == log.call_type) {
                             if(this.filter.status == 'all') {
                                 return true
                             } else if(this.filter.status) {
-                                return (log.duration)?true:false
+                                return (log.status)?true:false
                             } else {
-                                return log.duration?false:true
+                                return log.status?false:true
                             }
                         }
                         return (this.filter.type == 'all' && this.filter.status == 'all')
@@ -175,7 +175,7 @@
                         } else if(log.call_type == 'outgoing') {
                             stats.outgoing.total.total++
                             stats.outgoing.total.unique[log.phone_number] = 0
-                            if(log.duration) {
+                            if(log.status) {
                                 stats.outgoing.received.total++
                                 stats.outgoing.received.unique[log.phone_number] = 0
                             } else {
@@ -256,6 +256,11 @@
                 },
                 selectAgent(agent) {
                     this.selected_agent = agent
+                    this.filter = {
+                        type: 'all',
+                        status: 'all',
+                        unique: false
+                    }
                     this.fetchLogs()
                 }
             }

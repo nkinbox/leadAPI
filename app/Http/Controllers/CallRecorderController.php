@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Agents;
 use App\SimAllocation;
 use App\CallRegister;
+use App\Department;
 
 class CallRecorderController extends Controller {
     private $response;
@@ -17,6 +18,7 @@ class CallRecorderController extends Controller {
             'name' => 'required|string|max:50',
             'user_name' => 'required|max:50',
             'password' => 'required|min:6',
+            'department_id' => 'required|integer|exists:departments,id',
             'sim_allocation' => 'required|array',
             'sim_allocation.*.sim_id' => 'required|digits_between:10,50',
             'sim_allocation.*.operator' => 'required|string|max:30',
@@ -29,11 +31,16 @@ class CallRecorderController extends Controller {
                 $this->response['success'] = 0;
                 return response()->json($this->response, 422);
             }
+            if($agent->department_id != $request->department_id) {
+                $agent->department_id = $request->department_id;
+                $agent->save();
+            }
         } else {
             $agent = new Agents;
             $agent->name = $request->name;
             $agent->user_name = $request->user_name;
             $agent->password = Hash::make($request->password);
+            $agent->department_id = $request->department_id;
             $agent->save();
         }
         foreach($request->sim_allocation as $sim_allocation) {
@@ -139,31 +146,62 @@ class CallRecorderController extends Controller {
     public function displayLog(Request $request) {
         $this->validate($request, [
             'date' => 'sometimes|required|date_format:Y-m-d',
-            'user_name' => 'required|exists:agents'
+            'user_name' => 'sometimes|required|exists:agents',
+            'department_id' => 'sometimes|required|exists:departments,id'
         ]);
-        $agent = Agents::where('user_name', $request->user_name)->first();
-        $logs = CallRegister::where('agent_id', $agent->id)->whereDate('device_time', $request->input('date', date('Y-m-d')))->orderBy('device_time', 'desc')->get();
+        $logs = CallRegister::selectRaw('call_registers.*, agents.name as agent_name, departments.name as department_name, sim_allocations.phone_number as agent_phone_number')
+        ->join('agents', 'agents.id', '=', 'call_registers.agent_id')
+        ->join('departments', 'departments.id', '=', 'agents.department_id')
+        ->join('sim_allocations', 'sim_allocations.id', '=', 'call_registers.sim_allocation_id')
+        ->when($request->user_name, function($query) use (&$request) {
+            return $query->where('agents.user_name', $request->user_name);
+        })
+        ->when($request->department_id, function($query) use (&$request) {
+            return $query->where('agents.department_id', $request->department_id);
+        })
+        ->whereDate('device_time', $request->input('date', date('Y-m-d')))->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
+        $listedLogs = [];
         foreach($logs as $log) {
+            if(isset($this->listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
+                continue;
+            }
             $this->response['logs'][] = [
-                'sim_id' => $log->sim_allocation_id,
+                'agent_name' => $log->agent_name,
+                'department_name' => $log->department_name,
+                'agent_phone_number' => $log->agent_phone_number,
                 'dial_code' => $log->dial_code,
                 'phone_number' => $log->phone_number,
                 'saved_name' => $log->saved_name,
                 'duration' => $log->duration,
                 'timestamp' => date('Y-m-d H:i:s', strtotime($log->device_time)),
-                'call_type' => ($log->call_type=='incoming'&&$log->status==0)?'missed':$log->call_type
+                'call_type' => ($log->call_type=='incoming'&&$log->status==0)?'missed':$log->call_type,
+                'status' => $log->status
             ];
+            $this->listedLogs[$log->agent_id.$log->phone_number.$log->duration] = null;
         }
         return response()->json($this->response);
     }
     public function agents() {
-        $agents = Agents::all();
+        $agents = Agents::selectRaw('agents.*, deparments.name as department_name, deparments.id as department_id')->leftJoin('departments', 'departments.id', '=', 'agents.department_id')->get();
         $this->response['agents'] = [];
         foreach($agents as $agent) {
             $this->response['agents'][] = [
                 'user_name' => $agent->user_name,
-                'name' => $agent->name
+                'name' => $agent->name,
+                'department_id' => $agent->department_id,
+                'department_name' => $agent->department_name
+            ];
+        }
+        return response()->json($this->response);
+    }
+    public function departments() {
+        $departments = Department::all();
+        $this->response['departments'] = [];
+        foreach($departments as $department) {
+            $this->response['departments'][] = [
+                'id' => $department->id,
+                'name' => $department->name
             ];
         }
         return response()->json($this->response);
