@@ -2,7 +2,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/callLogs', function () {
+    return view('call_log');
+});
 Auth::routes();
 
 Route::middleware('auth')->group(function() {
