@@ -183,7 +183,7 @@ class CallRecorderController extends Controller {
         return response()->json($this->response);
     }
     public function agents() {
-        $agents = Agents::selectRaw('agents.*, deparments.name as department_name, deparments.id as department_id')->leftJoin('departments', 'departments.id', '=', 'agents.department_id')->get();
+        $agents = Agents::selectRaw('agents.*, departments.name as department_name, departments.id as department_id')->leftJoin('departments', 'departments.id', '=', 'agents.department_id')->get();
         $this->response['agents'] = [];
         foreach($agents as $agent) {
             $this->response['agents'][] = [
