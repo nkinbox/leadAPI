@@ -15,23 +15,25 @@
         }
         .search-result {
             width: 650px;
+            height: calc(100vh - 100px);
             right: 0;
-            top: 120%;
+            top: 96%;
             z-index: 1;
             box-shadow: 0px 1px 4px 2px #aaa;
             background: #fff;
+            overflow-y: scroll;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-primary py-0 mb-3">
+    <nav class="navbar navbar-light bg-primary py-0 mb-3 fixed-top">
         <a class="navbar-brand" href="https://www.tripclues.in/leadAPI/public/callLogs">
             <img src="https://www.tripclues.in/images/tripclues-logo.jpg" height="50" alt="">
         </a>
         <div class="h3 text-white">
             Tripclues Call Tracker
         </div>
-        <div class="form-inline my-2 my-lg-0 position-relative" id="search">
+        <div class="form-inline my-2 my-lg-0" id="search">
             <input class="form-control mr-sm-2" type="search" placeholder="Search By Phone" aria-label="Search" v-model="phone_number">
             <button class="btn btn-success my-2 my-sm-0" type="button" @click="fetchLogs">Search</button>
             <div v-if="phone_number" class="position-absolute search-result p-3">
@@ -108,7 +110,7 @@
             </div>
         </div>
     </nav>
-    <div id="app" class="row no-gutters" v-cloak>
+    <div id="app" class="row no-gutters mt-4" v-cloak>
         <div class="col-3">
             <div class="m-2">
                 <select v-model="department" class="form-control">

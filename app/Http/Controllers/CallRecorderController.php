@@ -162,7 +162,7 @@ class CallRecorderController extends Controller {
         })
         ->whereDate('device_time', $request->input('date', date('Y-m-d')))
         ->when($request->phone_number, function($query) use (&$request) {
-            return $query->where('call_registers.phone_number', $request->phone_number);
+            return $query->where('call_registers.phone_number', 'like', '%'.$request->phone_number.'%');
         })
         ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
