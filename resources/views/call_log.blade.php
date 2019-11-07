@@ -34,9 +34,8 @@
             Tripclues Call Tracker
         </div>
         <div class="form-inline my-2 my-lg-0" id="search">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search By Phone" aria-label="Search" v-model="phone_number">
-            <button class="btn btn-success my-2 my-sm-0" type="button" @click="fetchLogs">Search</button>
-            <div v-if="phone_number" class="position-absolute search-result p-3">
+            <input ref="searchBox" class="form-control mr-sm-2" type="search" placeholder="Search By Phone, Name" aria-label="Search" v-model="phone_number" @keyup.enter="fetchLogs" @blur="phone_number=''">
+            <div v-if="phone_number" class="position-absolute search-result p-3" @mousedown="$event.preventDefault()">
                 <div class="p-2">
                         <table class="table table-sm text-center">
                             <thead>
@@ -338,12 +337,13 @@
                     return new Date(duration * 1000).toISOString().substr(11, 8)
                 },
                 fetchLogs() {
+                    this.$nextTick(() => this.$refs.searchBox.focus())
                     this.filter = {
                         type: 'all',
                         status: 'all',
                         unique: false
                     }
-                    let query = 'phone_number='+this.phone_number
+                    let query = ((isNaN(this.phone_number))?'saved_name=':'phone_number=')+this.phone_number
                     this.loading_call_logs = true
                     axios.get('https://tripclues.in/leadAPI/public/api/logger/display?'+query).then(response => {
                         this.call_logs = response.data.logs
