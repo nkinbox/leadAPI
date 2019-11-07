@@ -57,8 +57,8 @@
                         </tr>
                         <tr>
                             <th scope="col" @click="setFilter()" class="pointer"><span :class="{'border p-1 bg-secondary text-white':('allall0'==selectedFilter)}">#ALL</span></th>
-                            <th scope="col" colspan="2" class="bg-warning">Incoming ({{seconds(totalDurations.incoming)}})</th>
-                            <th scope="col" colspan="2" class="bg-info text-white">Outgoing ({{seconds(totalDurations.outgoing)}})</th>
+                            <th scope="col" colspan="2" class="bg-warning">Incoming (@{{seconds(totalDurations.incoming)}})</th>
+                            <th scope="col" colspan="2" class="bg-info text-white">Outgoing (@{{seconds(totalDurations.outgoing)}})</th>
                         </tr>
                     </thead>
                     <tbody>
