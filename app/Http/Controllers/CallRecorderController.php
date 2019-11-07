@@ -146,8 +146,9 @@ class CallRecorderController extends Controller {
     public function displayLog(Request $request) {
         $this->validate($request, [
             'date' => 'sometimes|required|date_format:Y-m-d',
-            'user_name' => 'sometimes|required|exists:agents',
-            'department_id' => 'sometimes|required|exists:departments,id'
+            'user_name' => 'sometimes|required|string',
+            'department_id' => 'sometimes|required|numeric',
+            'phone_number' => 'sometimes|required|numeric'
         ]);
         $logs = CallRegister::selectRaw('call_registers.*, agents.name as agent_name, departments.name as department_name, sim_allocations.phone_number as agent_phone_number')
         ->join('agents', 'agents.id', '=', 'call_registers.agent_id')
@@ -159,7 +160,11 @@ class CallRecorderController extends Controller {
         ->when($request->department_id, function($query) use (&$request) {
             return $query->where('agents.department_id', $request->department_id);
         })
-        ->whereDate('device_time', $request->input('date', date('Y-m-d')))->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
+        ->whereDate('device_time', $request->input('date', date('Y-m-d')))
+        ->when($request->phone_number, function($query) use (&$request) {
+            return $query->where('call_registers.phone_number', $request->phone_number);
+        })
+        ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
         $listedLogs = [];
         foreach($logs as $log) {
