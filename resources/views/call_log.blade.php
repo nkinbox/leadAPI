@@ -19,6 +19,11 @@
 <body>
     <div id="app" class="row no-gutters" v-cloak>
         <div class="col-3">
+            <div class="m-2">
+                <select v-model="department" class="form-control">
+                    <option v-for="dept in departments" :value="dept.id" v-text="dept.name+'     ('+dept.total_agents+')'"></option>
+                </select>
+            </div>
             <div v-if="agents.length == 0" class="text-center p-3">
                 <div class="spinner-border text-secondary" role="status">
                     <span class="sr-only">Loading...</span>
@@ -26,9 +31,12 @@
             </div>
             <div v-else>
                 <ul class="list-group">
-                    <li class="list-group-item pointer d-flex" v-for="agent in agents" :key="agent.user_name" :class="{'bg-success text-white':(agent.user_name == selected_agent.user_name)}" @click="selectAgent(agent)">
+                    <li class="list-group-item pointer d-flex" v-for="agent in filtered_agents" :key="agent.user_name" :class="{'bg-success text-white':(agent.user_name == selected_agent.user_name)}" @click="selectAgent(agent)">
                         <div v-text="agent.user_name" class="pr-2"></div>
                         <div v-text="agent.name"></div>
+                        <div class="flex-grow-1 text-right">
+                            <label v-text="agent.department_name" class="badge badge-secondary"></label>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -134,7 +142,9 @@
                         unique: false
                     },
                     call_logs: [],
-                    loading_call_logs: false
+                    loading_call_logs: false,
+                    departments: [],
+                    department: 0
                 }
             },
             computed: {
@@ -158,6 +168,11 @@
                             }
                         }
                         return (this.filter.type == 'all' && this.filter.status == 'all')
+                    })
+                },
+                filtered_agents() {
+                    return this.agents.filter((agent) => {
+                        return (this.department == 0 || agent.department_id == this.department)
                     })
                 },
                 stats() {
@@ -226,6 +241,11 @@
                 axios.get('https://tripclues.in/leadAPI/public/api/logger/agents').then(response => {
                     this.agents = response.data.agents
                     this.selected_agent = this.agents.find((agent) => agent.user_name)
+                }).catch(error => {
+                    console.log(error)
+                })
+                axios.get('https://tripclues.in/leadAPI/public/api/logger/departments').then(response => {
+                    this.departments = response.data.departments
                 }).catch(error => {
                     console.log(error)
                 })

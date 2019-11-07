@@ -196,12 +196,19 @@ class CallRecorderController extends Controller {
         return response()->json($this->response);
     }
     public function departments() {
-        $departments = Department::all();
+        $departments = Department::selectRaw('departments.id, departments.name, count(agents.id) as total_agents')->join('agents', 'departments.id', '=', 'agents.department_id')->groupBy('departments.id')->groupBy('departments.name')->get();
         $this->response['departments'] = [];
+        $this->response['departments'][] = [
+            'id' => 0,
+            'name' => 'All Departments',
+            'total_agents' => 0
+        ];
         foreach($departments as $department) {
+            $this->response['departments'][0]['total_agents'] += $department->total_agents;
             $this->response['departments'][] = [
                 'id' => $department->id,
-                'name' => $department->name
+                'name' => $department->name,
+                'total_agents' => $department->total_agents
             ];
         }
         return response()->json($this->response);
