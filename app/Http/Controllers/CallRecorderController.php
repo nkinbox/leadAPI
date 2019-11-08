@@ -212,6 +212,11 @@ class CallRecorderController extends Controller {
         ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
         $this->response['summary'] = [
+            'overview' => [
+                'total' => 0,
+                'duration' => 0,
+                'unique' => []
+            ],
             'incoming' => [
                 'total' => 0,
                 'duration' => 0,
@@ -243,6 +248,9 @@ class CallRecorderController extends Controller {
             if(isset($this->listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
                 // continue;
             }
+            $this->response['summary']['overview']['total']++;
+            $this->response['summary']['overview']['duration']+=$log->duration;
+            $this->response['summary']['overview']['unique'][$log->dial_code.$log->phone_number] = null;
             $this->response['summary'][$log->call_type]['total']++;
             $this->response['summary'][$log->call_type]['duration']+=$log->duration;
             $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number] = null;
@@ -259,6 +267,7 @@ class CallRecorderController extends Controller {
             ];
             $this->listedLogs[$log->agent_id.$log->phone_number.$log->duration] = null;
         }
+        $this->response['summary']['overview']['unique'] = count($this->response['summary']['overview']['unique']);
         $this->response['summary']['incoming']['unique'] = count($this->response['summary']['incoming']['unique']);
         $this->response['summary']['outgoing']['unique'] = count($this->response['summary']['outgoing']['unique']);
         $this->response['summary']['missed']['unique'] = count($this->response['summary']['missed']['unique']);
