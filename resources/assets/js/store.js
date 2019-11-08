@@ -35,9 +35,11 @@ export const store = new Vuex.Store({
             start: 0,
             end: 0
         },
+        filter_logs: 'overview',
         call_register: {
             current_page: 0,
             has_next: 0,
+            summary: {},
             logs: []
         }
     },
@@ -72,9 +74,15 @@ export const store = new Vuex.Store({
                 // filter.page = state.call_register.current_page + 1
             }
             return filter
+        },
+        filteredLogs(state) {
+            return (state.filter_logs == 'overview')?state.call_register.logs:state.call_register.logs.filter((log) => log.call_type == state.filter_logs)
         }
     },
     mutations: {
+        setFilterLog(state, filterBy) {
+            state.filter_logs = filterBy
+        },
         setDepartments(state, departments) {
             state.departments = departments
         },
@@ -139,12 +147,20 @@ export const store = new Vuex.Store({
         },
         fetchCallRegister(context) {
             context.commit('loadingState', {name: 'call_register', isLoading: true})
+            context.commit('setFilterLog', 'overview')
+            context.commit('setCallRegister', {
+                current_page: 0,
+                has_next: 0,
+                summary: {},
+                logs: []
+            })
             axios.get('https://www.tripclues.in/leadAPI/public/api/logger/display', {
                 params: context.getters.filters
             }).then(response => {
                 context.commit('setCallRegister', {
                     current_page: 0,
                     has_next: 0,
+                    summary: response.data.summary,
                     logs: response.data.logs
                 })
                 context.commit('loadingState', {name: 'call_register', isLoading: false})
