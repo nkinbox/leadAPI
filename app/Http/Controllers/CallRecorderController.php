@@ -113,7 +113,7 @@ class CallRecorderController extends Controller {
             'saved_name' => 'nullable|string|max:100',
             'duration' => 'required|integer|min:0',
             'device_time' => 'required|date_format:Y-m-d H:i:s',
-            'call_type' => 'required|in:incoming,outgoing,missed',
+            'call_type' => 'required|in:incoming,outgoing,missed,rejected,busy'
         ]);
         $sim = SimAllocation::find($request->sim_id);
         if($sim) {
@@ -125,16 +125,7 @@ class CallRecorderController extends Controller {
             $callRegister->saved_name = $request->saved_name;
             $callRegister->duration = $request->duration;
             $callRegister->device_time = $request->device_time;
-            if($request->call_type == 'incoming') {
-                $callRegister->call_type = $request->call_type;
-                $callRegister->status = (intval($callRegister->duration))?1:0;
-            } elseif($request->call_type == 'outgoing') {
-                $callRegister->call_type = $request->call_type;
-                $callRegister->status = (intval($callRegister->duration))?1:0;
-            } elseif($request->call_type == 'missed') {
-                $callRegister->call_type = 'incoming';
-                $callRegister->status = 0;
-            }
+            $callRegister->call_type = $request->call_type;
             $callRegister->save();
             $this->response['success'] = 1;
             return response()->json($this->response);
@@ -142,6 +133,44 @@ class CallRecorderController extends Controller {
             $this->response['success'] = 0;
             return response()->json($this->response, 422);
         }
+    }
+    public function createLogs(Request $request) {
+        $this->validate($request, [
+            'logs.*.id' => 'required',
+            'logs.*.sim_id' => 'required|digits_between:10,50',
+            'logs.*.dial_code' => 'required|string|max:5',
+            'logs.*.phone_number' => 'required|string|max:15',
+            'logs.*.saved_name' => 'nullable|string|max:100',
+            'logs.*.duration' => 'required|integer|min:0',
+            'logs.*.device_time' => 'required|date_format:Y-m-d H:i:s',
+            'logs.*.call_type' => 'required|in:incoming,outgoing,missed,rejected,busy'
+        ]);
+        $sim_ids = array_column($request->logs, 'sim_id');
+        $sims = SimAllocation::whereIn('id', $sim_ids)->get();
+        $sims = $sims->mapWithKeys(function ($item) {
+            return [$item->sim_id => $item->agent_id];
+        });
+        $this->response['inserted'] = [];
+        $inserted = [];
+        foreach($request->logs as $log) {
+            if(isset($sims[$log['sim_id']])) {
+                $this->response['inserted'][] = $log['id'];
+                $inserted[] = [
+                    'sim_allocation_id' => $log['sim_id'],
+                    'agent_id' => $sims[$log['sim_id']],
+                    'dial_code' => $log['dial_code'],
+                    'phone_number' => $log['phone_number'],
+                    'saved_name' => $log['saved_name'],
+                    'duration' => $log['duration'],
+                    'device_time' => $log['device_time'],
+                    'call_type' => $log['call_type'],
+                ];
+            }
+        }
+        if($inserted) {
+            CallRegister::insert($inserted);
+        }
+        return response()->json($this->response);
     }
     public function displayLog(Request $request) {
         $this->validate($request, [
@@ -182,11 +211,41 @@ class CallRecorderController extends Controller {
         })
         ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
+        $this->response['summary'] = [
+            'incoming' => [
+                'total' => 0,
+                'duration' => 0,
+                'unique' => []
+            ],
+            'outgoing' => [
+                'total' => 0,
+                'duration' => 0,
+                'unique' => []
+            ],
+            'missed' => [
+                'total' => 0,
+                'duration' => 0,
+                'unique' => []
+            ],
+            'rejected' => [
+                'total' => 0,
+                'duration' => 0,
+                'unique' => []
+            ],
+            'busy' => [
+                'total' => 0,
+                'duration' => 0,
+                'unique' => []
+            ]
+        ];
         $listedLogs = [];
         foreach($logs as $log) {
             if(isset($this->listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
                 // continue;
             }
+            $this->response['summary'][$log->call_type]['total']++;
+            $this->response['summary'][$log->call_type]['duration']+=$log->duration;
+            $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number] = null;
             $this->response['logs'][] = [
                 'agent_name' => $log->agent_name,
                 'department_name' => $log->department_name,
@@ -196,11 +255,15 @@ class CallRecorderController extends Controller {
                 'saved_name' => $log->saved_name,
                 'duration' => $log->duration,
                 'timestamp' => date('Y-m-d H:i:s', strtotime($log->device_time)),
-                'call_type' => ($log->call_type=='incoming'&&$log->status==0)?'missed':$log->call_type,
-                'status' => $log->status
+                'call_type' => $log->call_type
             ];
             $this->listedLogs[$log->agent_id.$log->phone_number.$log->duration] = null;
         }
+        $this->response['summary']['incoming']['unique'] = count($this->response['summary']['incoming']['unique']);
+        $this->response['summary']['outgoing']['unique'] = count($this->response['summary']['outgoing']['unique']);
+        $this->response['summary']['missed']['unique'] = count($this->response['summary']['missed']['unique']);
+        $this->response['summary']['rejected']['unique'] = count($this->response['summary']['rejected']['unique']);
+        $this->response['summary']['busy']['unique'] = count($this->response['summary']['busy']['unique']);
         return response()->json($this->response);
     }
     public function agents() {
