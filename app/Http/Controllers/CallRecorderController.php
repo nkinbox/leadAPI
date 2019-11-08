@@ -165,13 +165,13 @@ class CallRecorderController extends Controller {
         ->when($request->department_id, function($query) use (&$request) {
             return $query->where('agents.department_id', $request->department_id);
         })
-        ->when(($request->start_datetime && $request->end_datetime), function() use (&$request){
+        ->when(($request->start_datetime && $request->end_datetime), function($query) use (&$request){
             return $query->whereBetween('device_time', [$request->start_datetime, $request->end_datetime]);
         })
-        ->when(($request->duration_start || $request->duration_end), function() use (&$request){
+        ->when(($request->duration_start || $request->duration_end), function($query) use (&$request){
             return $query->whereBetween('duration', [$request->duration_start, $request->duration_end]);
         })
-        ->when(($request->date || !($request->start_datetime && $request->end_datetime)), function() use (&$request){
+        ->when(($request->date || !($request->start_datetime && $request->end_datetime)), function($query) use (&$request){
             return $query->whereDate('device_time', $request->input('date', date('Y-m-d')));
         })
         ->when($request->phone_number, function($query) use (&$request) {
