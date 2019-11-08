@@ -146,6 +146,10 @@ class CallRecorderController extends Controller {
     public function displayLog(Request $request) {
         $this->validate($request, [
             'date' => 'sometimes|required|date_format:Y-m-d',
+            'start_datetime' => 'sometimes|required|date_format:Y-m-d H:i:s',
+            'end_datetime' => 'sometimes|required|date_format:Y-m-d H:i:s',
+            'duration_start' => 'sometimes|numeric',
+            'duration_end' => 'sometimes|numeric',
             'user_name' => 'sometimes|required|string',
             'department_id' => 'sometimes|required|numeric',
             'phone_number' => 'sometimes|required|numeric',
@@ -161,7 +165,15 @@ class CallRecorderController extends Controller {
         ->when($request->department_id, function($query) use (&$request) {
             return $query->where('agents.department_id', $request->department_id);
         })
-        ->whereDate('device_time', $request->input('date', date('Y-m-d')))
+        ->when(($request->start_datetime && $request->end_datetime), function() use (&$request){
+            return $query->whereBetween('device_time', [$request->start_datetime, $request->end_datetime]);
+        })
+        ->when(($request->duration_start || $request->duration_end), function() use (&$request){
+            return $query->whereBetween('duration', [$request->duration_start, $request->duration_end]);
+        })
+        ->when(($request->date || !($request->start_datetime && $request->end_datetime)), function() use (&$request){
+            return $query->whereDate('device_time', $request->input('date', date('Y-m-d')));
+        })
         ->when($request->phone_number, function($query) use (&$request) {
             return $query->where('call_registers.phone_number', 'like', '%'.$request->phone_number.'%');
         })
@@ -173,7 +185,7 @@ class CallRecorderController extends Controller {
         $listedLogs = [];
         foreach($logs as $log) {
             if(isset($this->listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
-                continue;
+                // continue;
             }
             $this->response['logs'][] = [
                 'agent_name' => $log->agent_name,
@@ -205,7 +217,7 @@ class CallRecorderController extends Controller {
         return response()->json($this->response);
     }
     public function departments() {
-        $departments = Department::selectRaw('departments.id, departments.name, count(agents.id) as total_agents')->join('agents', 'departments.id', '=', 'agents.department_id')->groupBy('departments.id')->groupBy('departments.name')->get();
+        $departments = Department::selectRaw('departments.id, departments.name, count(agents.id) as total_agents')->leftJoin('agents', 'departments.id', '=', 'agents.department_id')->groupBy('departments.id')->groupBy('departments.name')->get();
         $this->response['departments'] = [];
         $this->response['departments'][] = [
             'id' => 0,
