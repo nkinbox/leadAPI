@@ -50,6 +50,10 @@ export const store = new Vuex.Store({
             has_next: 0,
             summary: {},
             logs: []
+        },
+        chartData: {
+            series: [],
+            categories: []
         }
     },
     getters: {
@@ -103,6 +107,9 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
+        setChartData(state, chartData) {
+            state.chartData = chartData
+        },
         setShowSearchResult(state, show_search_result) {
             state.show_search_result = show_search_result
         },
@@ -248,6 +255,15 @@ export const store = new Vuex.Store({
                 context.commit('setSearchQuery', search_query)
                 context.dispatch('fetchSearchCallRegister')
             }
+        },
+        fetchAnalytics(context) {
+            // context.commit('loadingState', {name: 'agent', isLoading: true})
+            axios.get('https://www.tripclues.in/leadAPI/public/api/logger/analytics?type=time&date=2019-11-09').then(response => {
+                context.commit('setChartData', response.data)
+            }).catch(error => {
+                console.log(error)
+                // context.commit('loadingState', {name: 'agent', isLoading: false})
+            })
         }
     }
 })

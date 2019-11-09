@@ -1963,21 +1963,68 @@ __webpack_require__.r(__webpack_exports__);
     apexchart: vue_apexcharts__WEBPACK_IMPORTED_MODULE_0___default.a
   },
   data: function data() {
-    return {
-      series: [{
-        name: 'PRODUCT A',
-        data: [44, 55, 41, 67, 22, 430]
-      }, {
-        name: 'PRODUCT B',
-        data: [13, 23, 20, 8, 13, 27]
-      }, {
-        name: 'PRODUCT C',
-        data: [11, 17, 15, 15, 21, 14]
-      }, {
-        name: 'PRODUCT D',
-        data: [21, 7, 25, 13, 22, 8]
-      }],
-      chartOptions: {
+    return {// series: [{
+      //   name: 'PRODUCT A',
+      //   data: [44, 55, 41, 67, 22, 430]
+      // }, {
+      //   name: 'PRODUCT B',
+      //   data: [13, 23, 20, 8, 13, 27]
+      // }, {
+      //   name: 'PRODUCT C',
+      //   data: [11, 17, 15, 15, 21, 14]
+      // }, {
+      //   name: 'PRODUCT D',
+      //   data: [21, 7, 25, 13, 22, 8]
+      // }],
+      // chartOptions: {
+      //   chart: {
+      //     stacked: true,
+      //     toolbar: {
+      //       show: false
+      //     },
+      //     zoom: {
+      //       enabled: false
+      //     }
+      //   },
+      //   responsive: [{
+      //     breakpoint: 480,
+      //     options: {
+      //       legend: {
+      //         position: 'bottom',
+      //         offsetX: -10,
+      //         offsetY: 0
+      //       }
+      //     }
+      //   }],
+      //   plotOptions: {
+      //     bar: {
+      //       horizontal: false,
+      //     },
+      //   },
+      //   xaxis: {
+      //     type: 'category',
+      //     categories: [
+      //       '12AM - 2AM',
+      //       '2AM - 4AM',
+      //       '4AM - 6AM',
+      //       '6AM - 8AM',
+      //       '8AM - 10AM',
+      //       '10AM - 12PM'
+      //     ],
+      //   },
+      //   legend: {
+      //     position: 'left',
+      //     offsetY: 40
+      //   },
+      //   fill: {
+      //     opacity: 1
+      //   }
+      // }
+    };
+  },
+  computed: {
+    chartOptions: function chartOptions() {
+      return {
         chart: {
           stacked: true,
           toolbar: {
@@ -2004,7 +2051,7 @@ __webpack_require__.r(__webpack_exports__);
         },
         xaxis: {
           type: 'category',
-          categories: ['12AM - 2AM', '2AM - 4AM', '4AM - 6AM', '6AM - 8AM', '8AM - 10AM', '10AM - 12PM']
+          categories: this.$store.state.chartData.categories
         },
         legend: {
           position: 'left',
@@ -2013,8 +2060,14 @@ __webpack_require__.r(__webpack_exports__);
         fill: {
           opacity: 1
         }
-      }
-    };
+      };
+    },
+    series: function series() {
+      return this.$store.state.chartData.series;
+    }
+  },
+  mounted: function mounted() {
+    this.$store.dispatch('fetchAnalytics');
   }
 });
 
@@ -26383,6 +26436,10 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       has_next: 0,
       summary: {},
       logs: []
+    },
+    chartData: {
+      series: [],
+      categories: []
     }
   },
   getters: {
@@ -26445,6 +26502,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     }
   },
   mutations: {
+    setChartData: function setChartData(state, chartData) {
+      state.chartData = chartData;
+    },
     setShowSearchResult: function setShowSearchResult(state, show_search_result) {
       state.show_search_result = show_search_result;
     },
@@ -26629,6 +26689,14 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
         context.commit('setSearchQuery', search_query);
         context.dispatch('fetchSearchCallRegister');
       }
+    },
+    fetchAnalytics: function fetchAnalytics(context) {
+      // context.commit('loadingState', {name: 'agent', isLoading: true})
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get('https://www.tripclues.in/leadAPI/public/api/logger/analytics?type=time&date=2019-11-09').then(function (response) {
+        context.commit('setChartData', response.data);
+      })["catch"](function (error) {
+        console.log(error); // context.commit('loadingState', {name: 'agent', isLoading: false})
+      });
     }
   }
 });
