@@ -136,6 +136,7 @@ class CallRecorderController extends Controller {
     }
     public function createLogs(Request $request) {
         $this->validate($request, [
+            'logs' => 'required|array',
             'logs.*.id' => 'required',
             'logs.*.sim_id' => 'required|digits_between:10,50',
             'logs.*.dial_code' => 'required|string|max:5',
