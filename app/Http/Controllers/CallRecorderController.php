@@ -378,9 +378,10 @@ class CallRecorderController extends Controller {
             }
             foreach($logs as $log) {
                 $log = $log->toArray();
-                $index = $categories[$log['call_type']];
+                $index = $call_type[$log['call_type']];
                 unset($log['call_type']);
-                $this->response['series'][$index]['data'] = array_values($log);
+                foreach($log as $cat => $count)
+                $this->response['series'][$index]['data'][$categories[$cat]] = $count;
             }
             $this->response['categories'] = [];
             foreach($categories as $category => $index) {

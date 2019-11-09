@@ -1725,6 +1725,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'call-flow-chart',
@@ -1732,6 +1733,14 @@ __webpack_require__.r(__webpack_exports__);
     apexchart: vue_apexcharts__WEBPACK_IMPORTED_MODULE_0___default.a
   },
   computed: {
+    date: {
+      get: function get() {
+        return this.$store.getters.callFlowChartFilter.date;
+      },
+      set: function set(value) {
+        this.$store.commit('setCallFlowFilterDate', value);
+      }
+    },
     chartOptions: function chartOptions() {
       return {
         chart: {
@@ -8432,6 +8441,27 @@ var render = function() {
   return _c(
     "div",
     [
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.date,
+            expression: "date"
+          }
+        ],
+        attrs: { type: "date" },
+        domProps: { value: _vm.date },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.date = $event.target.value
+          }
+        }
+      }),
+      _vm._v(" "),
       _c("button", { on: { click: _vm.refreshChart } }, [_vm._v("Refresh")]),
       _vm._v(" "),
       _c("apexchart", {
@@ -26449,6 +26479,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
           state.date[date.type] = moment__WEBPACK_IMPORTED_MODULE_3___default()(state.date[date.type]).minute(date.value);
           break;
       }
+    },
+    setCallFlowFilterDate: function setCallFlowFilterDate(state, rawDate) {
+      state.call_flow_date = moment__WEBPACK_IMPORTED_MODULE_3___default()(rawDate);
     }
   },
   actions: {

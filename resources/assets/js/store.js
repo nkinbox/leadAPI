@@ -178,6 +178,9 @@ export const store = new Vuex.Store({
                     state.date[date.type] = moment(state.date[date.type]).minute(date.value)
                     break;
             }
+        },
+        setCallFlowFilterDate(state, rawDate) {
+            state.call_flow_date = moment(rawDate)
         }
     },
     actions: {

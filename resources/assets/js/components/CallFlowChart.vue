@@ -1,5 +1,6 @@
 <template>
   <div>
+      <input type="date" v-model="date">
     <button @click="refreshChart">Refresh</button>
     <apexchart type=bar height=350 :options="chartOptions" :series="series" />
   </div>
@@ -13,6 +14,14 @@ export default {
       apexchart: VueApexCharts
     },
     computed: {
+        date: {
+            get: function() {
+                return this.$store.getters.callFlowChartFilter.date
+            },
+            set: function(value) {
+                this.$store.commit('setCallFlowFilterDate', value)
+            }
+        },
         chartOptions() {
             return {
                 chart: {
