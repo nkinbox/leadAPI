@@ -149,7 +149,7 @@ class CallRecorderController extends Controller {
         $sim_ids = array_column($request->logs, 'sim_id');
         $sims = SimAllocation::whereIn('id', $sim_ids)->get();
         $sims = $sims->mapWithKeys(function ($item) {
-            return [$item->sim_id => $item->agent_id];
+            return [$item->id => $item->agent_id];
         });
         dd($sims);
         $this->response['inserted'] = [];
