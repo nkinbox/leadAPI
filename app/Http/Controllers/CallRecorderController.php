@@ -332,7 +332,11 @@ class CallRecorderController extends Controller {
         })
         ->when(($request->type == 'days'), function($query) use (&$request) {
             return $query->whereMonth('device_time', date('n', strtotime($request->date)))->whereYear('device_time', date('Y', strtotime($request->date)))
-            ->selectRaw('count(1) as count, day(device_time) as day, call_type')->groupBy('day')->orderBy('day');
+            ->selectRaw('count(1) as count, day(device_time) as day, call_type')->groupBy('day');
+        })
+        ->when(($request->type == 'months'), function($query) use (&$request) {
+            return $query->whereYear('device_time', date('Y', strtotime($request->date)))
+            ->selectRaw('count(1) as count, month(device_time) as month, call_type')->groupBy('month');
         })
         ->when($request->department_id, function($query) use (&$request) {
             return $query->join('agents', 'agents.id', '=', 'call_registers.agent_id')->where('agents.department_id', $request->department_id);
@@ -350,7 +354,7 @@ class CallRecorderController extends Controller {
                 $this->response['series'][$index]['data'] = array_values($log);
             }
             $this->response['categories'] = array_keys($log);
-        } elseif($request->type == 'days') {           
+        } elseif($request->type == 'days') {
             $emptyData = [];
             $lastDay = date('t', strtotime($request->date));
             $this->response['categories'] = [];
@@ -373,6 +377,39 @@ class CallRecorderController extends Controller {
             }
             foreach($logs as $log) {
                 $index = $log->day - 1;
+                $this->response['series'][$call_type[$log->call_type]]['data'][$index]= $log->count;
+            }
+        } elseif($request->type == 'months') {
+            $emptyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $this->response['categories'] = [
+                'Jan',
+                'Feb',
+                'Mar',
+                'Apr',
+                'May',
+                'Jun',
+                'Jul',
+                'Aug',
+                'Sep',
+                'Oct',
+                'Nov',
+                'Dec'
+            ];
+            $call_type = [
+                'incoming' => 0,
+                'outgoing' => 1,
+                'missed' => 2,
+                'rejected' => 3,
+                'busy' => 4
+            ];
+            foreach($call_type as $ct => $index) {
+                $this->response['series'][$index] = [
+                    'name' => $ct,
+                    'data' => $emptyData
+                ];
+            }
+            foreach($logs as $log) {
+                $index = $log->month - 1;
                 $this->response['series'][$call_type[$log->call_type]]['data'][$index]= $log->count;
             }
         }
