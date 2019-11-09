@@ -356,7 +356,7 @@ class CallRecorderController extends Controller {
             $this->response['categories'] = [];
             for($i = 0; $i < $lastDay; $i++) {
                 $emptyData[$i] = 0;
-                $this->response['categories'] = 'Day '.$i;
+                $this->response['categories'][] = 'Day '.($i+1);
             }
             $call_type = [
                 'incoming' => 0,
