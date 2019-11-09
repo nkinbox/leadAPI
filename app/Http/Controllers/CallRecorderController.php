@@ -247,7 +247,7 @@ class CallRecorderController extends Controller {
         $listedLogs = [];
         foreach($logs as $log) {
             if(isset($this->listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
-                // continue;
+                continue;
             }
             $this->response['summary']['overview']['total']++;
             $this->response['summary']['overview']['duration']+=$log->duration;
