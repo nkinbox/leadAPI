@@ -330,6 +330,10 @@ class CallRecorderController extends Controller {
             sum(case when hour(device_time) >= 20 && hour(device_time) < 22 then 1 else 0 end) as `8PM_10PM`,
             sum(case when hour(device_time) >= 22 then 1 else 0 end) as `10PM_12PM`');
         })
+        ->when(($request->type == 'days'), function($query) use (&$request) {
+            return $query->whereDate('device_time', $request->date)
+            ->selectRaw('day(device_date) as day, call_type')->groupBy('day');
+        })
         ->when($request->department_id, function($query) use (&$request) {
             return $query->join('agents', 'agents.id', '=', 'call_registers.agent_id')->where('agents.department_id', $request->department_id);
         })
@@ -337,14 +341,18 @@ class CallRecorderController extends Controller {
             return $query->where('agent_id', $request->agent_id);
         })
         ->groupBy('call_type')->get();
-        $this->response['series'] = [];
-        foreach($logs as $index => $log) {
-            $log = $log->toArray();
-            $this->response['series'][$index]['name'] = $log['call_type'];
-            unset($log['call_type']);
-            $this->response['series'][$index]['data'] = array_values($log);
+        if($request->type == 'time') {
+            $this->response['series'] = [];
+            foreach($logs as $index => $log) {
+                $log = $log->toArray();
+                $this->response['series'][$index]['name'] = $log['call_type'];
+                unset($log['call_type']);
+                $this->response['series'][$index]['data'] = array_values($log);
+            }
+            $this->response['categories'] = array_keys($log);
+        } elseif($request->type == 'days') {
+            $this->response = $logs;
         }
-        $this->response['categories'] = array_keys($log);
         return response()->json($this->response);
     }
 }
