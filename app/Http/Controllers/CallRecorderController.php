@@ -332,7 +332,7 @@ class CallRecorderController extends Controller {
         })
         ->when(($request->type == 'days'), function($query) use (&$request) {
             return $query->whereMonth('device_time', $request->date)
-            ->selectRaw('day(device_time) as day, call_type')->groupBy('day');
+            ->selectRaw('count(1) as count, day(device_time) as day, call_type')->groupBy('day');
         })
         ->when($request->department_id, function($query) use (&$request) {
             return $query->join('agents', 'agents.id', '=', 'call_registers.agent_id')->where('agents.department_id', $request->department_id);
