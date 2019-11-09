@@ -26,10 +26,10 @@
         </select>
       </div>
       <div class="d-flex justify-content-center p-1">
-        <select class="rounded-left border-right-0 border-top-0 text-secondary" v-model="hour">
+        <select class="rounded-left border-right-0 text-secondary" v-model="hour">
             <option v-for="(i, index) in 24" :key="index">{{index}}</option>
         </select>
-        <select class="rounded-right border-top-0 text-secondary" v-model="minute">
+        <select class="rounded-right text-secondary" v-model="minute">
             <option v-for="(i, index) in 60" :key="index" :value="index">{{('0'+index).slice(-2)}}</option>
         </select>
       </div>

@@ -37,7 +37,7 @@ export default {
         CallLogTable,
         CallSummary
     },
-    mounted() {
+    created() {
         this.fetchCallRegister()
     },
     methods: {

@@ -21,9 +21,9 @@
                 <tr v-for="(log, index) in records" :key="index" :class="{'bg-danger':(log.duration?false:true), 'bg-success':(log.duration?true:false)}">
                     <th scope="row" v-text="index+1"></th>
                     <td class="small" v-html="log.agent_name+'<br>'+log.agent_phone_number"></td>
-                    <td class="small" v-html="(log.saved_name?log.saved_name:'NA')+'<br>'+log.dial_code+' '+log.phone_number"></td>
+                    <td class="small pointer" @click="search(log.phone_number)" v-html="(log.saved_name?log.saved_name:'NA')+'<br>'+log.dial_code+' '+log.phone_number"></td>
                     <td>
-                        <div v-text="log.call_type" class="badge font-weight-normal" :class="{'badge-info':(log.call_type == 'outgoing' || log.call_type == 'busy'), 'badge-warning':(log.call_type == 'incoming' || log.call_type == 'missed' || log.call_type == 'rejected')}"></div>
+                        <div v-text="log.call_type" class="badge text-uppercase" :class="{'badge-info':(log.call_type == 'outgoing' || log.call_type == 'busy'), 'badge-warning':(log.call_type == 'incoming' || log.call_type == 'missed' || log.call_type == 'rejected')}"></div>
                     </td>
                     <td>{{log.duration | readableSeconds}}</td>
                     <td>{{log.timestamp | formatDate}}</td>
@@ -41,12 +41,23 @@
 import moment from 'moment'
 export default {
     name: 'call-log-table',
+    props: {
+        prefix: {
+            type: String,
+            default: ''
+        }
+    },
     computed: {
         loading() {
-            return this.$store.state.loading.call_register
+            return this.$store.state.loading[this.prefix+'call_register']
         },
         records() {
-            return this.$store.getters.filteredLogs
+            return (this.prefix)?this.$store.getters.searchFilteredLogs:this.$store.getters.filteredLogs
+        }
+    },
+    methods: {
+        search(number) {
+            this.$store.dispatch('setSearchQuery', number)
         }
     },
     filters: {

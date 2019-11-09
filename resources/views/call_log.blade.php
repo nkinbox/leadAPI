@@ -17,7 +17,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
             <a class="navbar-brand" href="https://www.tripclues.in/leadAPI/public/callLogs"><img src="https://www.tripclues.in/images/tripclues-logo.jpg" height="40" alt=""></a>
             <div class="navbar-collapse">
                 <ul class="navbar-nav mr-auto">
@@ -28,12 +28,12 @@
                         <router-link to="/logs" class="nav-link">Call Logs</router-link>
                     </li>
                 </ul>
-                <div>
-                    <input class="form-control" type="search" placeholder="Search" aria-label="Search">
-                </div>
+                <search></search>
             </div>
         </nav>
-        <router-view></router-view>
+        <keep-alive>
+            <router-view style="margin-top: 66px"></router-view>
+        </keep-alive>
     </div>
 
     <script src="vuejs/app.js"></script>

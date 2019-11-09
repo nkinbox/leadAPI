@@ -14,7 +14,8 @@ export const store = new Vuex.Store({
         loading: {
             department: false,
             agent: false,
-            call_register: false
+            call_register: false,
+            search_call_register: false,
         },
         departments: [],
         agents: [],
@@ -26,6 +27,7 @@ export const store = new Vuex.Store({
             user_name: ''
         },
         search_query: '',
+        show_search_result: false,
         date: {
             start: moment().startOf('day'),
             end: moment().endOf('day')
@@ -36,7 +38,14 @@ export const store = new Vuex.Store({
             end: 0
         },
         filter_logs: 'overview',
+        search_filter_logs: 'overview',
         call_register: {
+            current_page: 0,
+            has_next: 0,
+            summary: {},
+            logs: []
+        },
+        search_call_register: {
             current_page: 0,
             has_next: 0,
             summary: {},
@@ -75,13 +84,36 @@ export const store = new Vuex.Store({
             }
             return filter
         },
+        searchFilters(state) {
+            let filter = {}
+            if(state.search_query) {
+                if(isNaN(state.search_query)) {
+                    filter.saved_name = state.search_query
+                } else {
+                    filter.phone_number = state.search_query
+                }
+            }
+            return filter
+        },
         filteredLogs(state) {
             return (state.filter_logs == 'overview')?state.call_register.logs:state.call_register.logs.filter((log) => log.call_type == state.filter_logs)
+        },
+        searchFilteredLogs(state) {
+            return (state.search_filter_logs == 'overview')?state.search_call_register.logs:state.search_call_register.logs.filter((log) => log.call_type == state.search_filter_logs)
         }
     },
     mutations: {
+        setShowSearchResult(state, show_search_result) {
+            state.show_search_result = show_search_result
+        },
+        setSearchQuery(state, search_query) {
+            state.search_query = search_query
+        },
         setFilterLog(state, filterBy) {
             state.filter_logs = filterBy
+        },
+        setSearchFilterLog(state, filterBy) {
+            state.search_filter_logs = filterBy
         },
         setDepartments(state, departments) {
             state.departments = departments
@@ -100,6 +132,9 @@ export const store = new Vuex.Store({
         },
         setCallRegister(state, call_register) {
             state.call_register = call_register
+        },
+        setSearchCallRegister(state, search_call_register) {
+            state.search_call_register = search_call_register
         },
         setDuration(state, duration) {
             state.duration = duration
@@ -169,6 +204,30 @@ export const store = new Vuex.Store({
                 context.commit('loadingState', {name: 'call_register', isLoading: false})
             })
         },
+        fetchSearchCallRegister(context) {
+            context.commit('loadingState', {name: 'search_call_register', isLoading: true})
+            context.commit('setSearchFilterLog', 'overview')
+            context.commit('setSearchCallRegister', {
+                current_page: 0,
+                has_next: 0,
+                summary: {},
+                logs: []
+            })
+            axios.get('https://www.tripclues.in/leadAPI/public/api/logger/display', {
+                params: context.getters.searchFilters
+            }).then(response => {
+                context.commit('setSearchCallRegister', {
+                    current_page: 0,
+                    has_next: 0,
+                    summary: response.data.summary,
+                    logs: response.data.logs
+                })
+                context.commit('loadingState', {name: 'search_call_register', isLoading: false})
+            }).catch(error => {
+                console.log(error)
+                context.commit('loadingState', {name: 'search_call_register', isLoading: false})
+            })
+        },
         setDepartment(context, department_id) {
             context.commit('selectDepartment', department_id)
             if(context.state.selected_agent.department_id != department_id)
@@ -182,6 +241,13 @@ export const store = new Vuex.Store({
         setAgent(context, agent) {
             context.commit('selectAgent', agent)
             context.commit('selectDepartment', agent.department_id)
+        },
+        setSearchQuery(context, search_query) {
+            if(context.state.search_query != search_query) {
+                context.commit('setShowSearchResult', 1)
+                context.commit('setSearchQuery', search_query)
+                context.dispatch('fetchSearchCallRegister')
+            }
         }
     }
 })
