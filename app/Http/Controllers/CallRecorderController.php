@@ -331,8 +331,8 @@ class CallRecorderController extends Controller {
             sum(case when hour(device_time) >= 22 then 1 else 0 end) as `10PM_12PM`');
         })
         ->when(($request->type == 'days'), function($query) use (&$request) {
-            return $query->whereDate('device_time', $request->date)
-            ->selectRaw('day(device_date) as day, call_type')->groupBy('day');
+            return $query->whereMonth('device_time', $request->date)
+            ->selectRaw('day(device_time) as day, call_type')->groupBy('day');
         })
         ->when($request->department_id, function($query) use (&$request) {
             return $query->join('agents', 'agents.id', '=', 'call_registers.agent_id')->where('agents.department_id', $request->department_id);
