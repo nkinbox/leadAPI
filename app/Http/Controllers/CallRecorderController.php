@@ -151,6 +151,7 @@ class CallRecorderController extends Controller {
         $sims = $sims->mapWithKeys(function ($item) {
             return [$item->sim_id => $item->agent_id];
         });
+        dd($sims);
         $this->response['inserted'] = [];
         $inserted = [];
         foreach($request->logs as $log) {
