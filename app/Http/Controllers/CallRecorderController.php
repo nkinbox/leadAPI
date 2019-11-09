@@ -331,8 +331,8 @@ class CallRecorderController extends Controller {
             sum(case when hour(device_time) >= 22 then 1 else 0 end) as `10PM_12PM`');
         })
         ->when(($request->type == 'days'), function($query) use (&$request) {
-            return $query->whereMonth('device_time', $request->date)
-            ->selectRaw('count(1) as count, day(device_time) as day, call_type')->groupBy('day');
+            return $query->whereMonth('device_time', date('n', strtotime($request->date)))->whereYear('device_time', date('Y', strtotime($request->date)))
+            ->selectRaw('count(1) as count, day(device_time) as day, call_type')->groupBy('day')->orderBy('day');
         })
         ->when($request->department_id, function($query) use (&$request) {
             return $query->join('agents', 'agents.id', '=', 'call_registers.agent_id')->where('agents.department_id', $request->department_id);
@@ -340,7 +340,7 @@ class CallRecorderController extends Controller {
         ->when($request->agent_id, function($query) use (&$request) {
             return $query->where('agent_id', $request->agent_id);
         })
-        ->groupBy('call_type');
+        ->groupBy('call_type')->get();
         if($request->type == 'time') {
             $this->response['series'] = [];
             foreach($logs as $index => $log) {
@@ -350,10 +350,31 @@ class CallRecorderController extends Controller {
                 $this->response['series'][$index]['data'] = array_values($log);
             }
             $this->response['categories'] = array_keys($log);
-        } elseif($request->type == 'days') {
-            dump($logs->toSql());
-            dd($logs->get());
-            $this->response = $logs;
+        } elseif($request->type == 'days') {           
+            $emptyData = [];
+            $lastDay = date('t', strtotime($request->date));
+            $this->response['categories'] = [];
+            for($i = 0; $i < $lastDay; $i++) {
+                $emptyData[$i] = 0;
+                $this->response['categories'] = 'Day '.$i;
+            }
+            $call_type = [
+                'incoming' => 0,
+                'outgoing' => 1,
+                'missed' => 2,
+                'rejected' => 3,
+                'busy' => 4
+            ];
+            foreach($call_type as $ct => $index) {
+                $this->response['series'][$index] = [
+                    'name' => $ct,
+                    'data' => $emptyData
+                ];
+            }
+            foreach($logs as $log) {
+                $index = $log->day - 1;
+                $this->response['series'][$call_type[$log->call_type]]['data'][$index]= $log->count;
+            }
         }
         return response()->json($this->response);
     }
