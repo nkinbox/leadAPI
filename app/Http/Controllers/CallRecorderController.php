@@ -281,6 +281,7 @@ class CallRecorderController extends Controller {
         $this->response['agents'] = [];
         foreach($agents as $agent) {
             $this->response['agents'][] = [
+                'agent_id' => $agent->id,
                 'user_name' => $agent->user_name,
                 'name' => $agent->name,
                 'department_id' => $agent->department_id,
@@ -305,6 +306,45 @@ class CallRecorderController extends Controller {
                 'total_agents' => $department->total_agents
             ];
         }
+        return response()->json($this->response);
+    }
+    public function analytics(Request $request) {
+        $this->validate($request, [
+            'type' => 'required|in:time,days,months',
+            'date' => 'required|date_format:Y-m-d',
+            'agent_id' => 'sometimes|required|string',
+            'department_id' => 'sometimes|required|numeric'
+        ]);
+        $logs = CallRegister::when(($request->type == 'time'), function($query) use (&$request) {
+            return $query->whereDate('device_time', $request->date)
+            ->selectRaw('call_type, sum(case when hour(device_time) >= 0 && hour(device_time) < 2 then 1 else 0 end) as `12AM_2AM`,
+            sum(case when hour(device_time) >= 2 && hour(device_time) < 4 then 1 else 0 end) as `2AM_4AM`,
+            sum(case when hour(device_time) >= 4 && hour(device_time) < 6 then 1 else 0 end) as `4AM_6AM`,
+            sum(case when hour(device_time) >= 6 && hour(device_time) < 8 then 1 else 0 end) as `6AM_8AM`,
+            sum(case when hour(device_time) >= 8 && hour(device_time) < 10 then 1 else 0 end) as `8AM_10AM`,
+            sum(case when hour(device_time) >= 10 && hour(device_time) < 12 then 1 else 0 end) as `10AM_12PM`,
+            sum(case when hour(device_time) >= 12 && hour(device_time) < 14 then 1 else 0 end) as `12PM_2PM`,
+            sum(case when hour(device_time) >= 14 && hour(device_time) < 16 then 1 else 0 end) as `2PM_4PM`,
+            sum(case when hour(device_time) >= 16 && hour(device_time) < 18 then 1 else 0 end) as `4PM_6PM`,
+            sum(case when hour(device_time) >= 18 && hour(device_time) < 20 then 1 else 0 end) as `6PM_8PM`,
+            sum(case when hour(device_time) >= 20 && hour(device_time) < 22 then 1 else 0 end) as `8PM_10PM`,
+            sum(case when hour(device_time) >= 22 then 1 else 0 end) as `10PM_12PM`');
+        })
+        ->when($request->department_id, function($query) use (&$request) {
+            return $query->join('agents', 'agents.id', '=', 'call_registers.agent_id')->where('agents.department_id', $request->department_id);
+        })
+        ->when($request->agent_id, function($query) use (&$request) {
+            return $query->where('agent_id', $request->agent_id);
+        })
+        ->groupBy('call_type')->get();
+        $this->response['series'] = [];
+        foreach($logs as $index => $log) {
+            $log = (array) $log;
+            $this->response['series'][$index]['name'] = $log['call_type'];
+            unset($log['call_type']);
+            $this->response['series'][$index]['data'] = array_values($log);
+        }
+        $this->response['categories'] = array_keys($log);
         return response()->json($this->response);
     }
 }
