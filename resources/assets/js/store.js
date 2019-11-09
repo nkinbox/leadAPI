@@ -16,6 +16,7 @@ export const store = new Vuex.Store({
             agent: false,
             call_register: false,
             search_call_register: false,
+            call_flow_chart: false,
         },
         departments: [],
         agents: [],
@@ -51,12 +52,25 @@ export const store = new Vuex.Store({
             summary: {},
             logs: []
         },
-        chartData: {
+        call_flow_chart_type: 'time',
+        call_flow_date: moment().startOf('day'),
+        call_flow_chart: {
             series: [],
             categories: []
         }
     },
     getters: {
+        callFlowChartFilter(state) {
+            let filter = {}
+            filter.type = state.call_flow_chart_type
+            filter.date = state.call_flow_date.format('YYYY-MM-DD')
+            if(state.selected_agent.agent_id) {
+                filter.agent_id = state.selected_agent.agent_id
+            } else if(state.selected_department_id){
+                filter.department_id = state.selected_department_id
+            }
+            return filter
+        },
         agentsByDepartment(state) {
             return state.agents.filter((agent) => {
                 return state.selected_department_id == 0 || agent.department_id == state.selected_department_id
@@ -107,8 +121,8 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
-        setChartData(state, chartData) {
-            state.chartData = chartData
+        setCallFlowChart(state, data) {
+            state.call_flow_chart = data
         },
         setShowSearchResult(state, show_search_result) {
             state.show_search_result = show_search_result
@@ -239,6 +253,7 @@ export const store = new Vuex.Store({
             context.commit('selectDepartment', department_id)
             if(context.state.selected_agent.department_id != department_id)
             context.commit('selectAgent', {
+                agent_id: 0,
                 department_id: 0,
                 department_name: '',
                 name: '',
@@ -257,12 +272,15 @@ export const store = new Vuex.Store({
             }
         },
         fetchAnalytics(context) {
-            // context.commit('loadingState', {name: 'agent', isLoading: true})
-            axios.get('https://www.tripclues.in/leadAPI/public/api/logger/analytics?type=time&date=2019-11-09').then(response => {
-                context.commit('setChartData', response.data)
+            context.commit('loadingState', {name: 'call_flow_data', isLoading: true})
+            axios.get('https://www.tripclues.in/leadAPI/public/api/logger/analytics', {
+                params: context.getters.callFlowChartFilter
+            }).then(response => {
+                context.commit('setCallFlowChart', response.data)
+                context.commit('loadingState', {name: 'call_flow_data', isLoading: false})
             }).catch(error => {
                 console.log(error)
-                // context.commit('loadingState', {name: 'agent', isLoading: false})
+                context.commit('loadingState', {name: 'call_flow_data', isLoading: false})
             })
         }
     }

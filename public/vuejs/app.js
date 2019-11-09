@@ -1707,6 +1707,83 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/CallFlowChart.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/CallFlowChart.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue_apexcharts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-apexcharts */ "./node_modules/vue-apexcharts/dist/vue-apexcharts.js");
+/* harmony import */ var vue_apexcharts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_apexcharts__WEBPACK_IMPORTED_MODULE_0__);
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'call-flow-chart',
+  components: {
+    apexchart: vue_apexcharts__WEBPACK_IMPORTED_MODULE_0___default.a
+  },
+  computed: {
+    chartOptions: function chartOptions() {
+      return {
+        chart: {
+          stacked: true,
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: false
+          }
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            legend: {
+              position: 'bottom',
+              offsetX: -10,
+              offsetY: 0
+            }
+          }
+        }],
+        plotOptions: {
+          bar: {
+            horizontal: false
+          }
+        },
+        xaxis: {
+          type: 'category',
+          categories: this.$store.state.call_flow_chart.categories
+        },
+        legend: {
+          position: 'left',
+          offsetY: 40
+        },
+        fill: {
+          opacity: 1
+        }
+      };
+    },
+    series: function series() {
+      return this.$store.state.call_flow_chart.series;
+    }
+  },
+  methods: {
+    refreshChart: function refreshChart() {
+      this.$store.dispatch('fetchAnalytics');
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/CallLogTable.vue?vue&type=script&lang=js&":
 /*!******************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/CallLogTable.vue?vue&type=script&lang=js& ***!
@@ -1940,74 +2017,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vue_apexcharts__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-apexcharts */ "./node_modules/vue-apexcharts/dist/vue-apexcharts.js");
-/* harmony import */ var vue_apexcharts__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_apexcharts__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _ShowAgents__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ShowAgents */ "./resources/assets/js/components/ShowAgents.vue");
+/* harmony import */ var _CallFlowChart__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CallFlowChart */ "./resources/assets/js/components/CallFlowChart.vue");
 //
 //
 //
 //
 //
 //
-//
-//
-//
-//
-//
-
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'dashboard',
   components: {
-    ShowAgents: _ShowAgents__WEBPACK_IMPORTED_MODULE_1__["default"],
-    apexchart: vue_apexcharts__WEBPACK_IMPORTED_MODULE_0___default.a
-  },
-  computed: {
-    chartOptions: function chartOptions() {
-      return {
-        chart: {
-          stacked: true,
-          toolbar: {
-            show: false
-          },
-          zoom: {
-            enabled: false
-          }
-        },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            legend: {
-              position: 'bottom',
-              offsetX: -10,
-              offsetY: 0
-            }
-          }
-        }],
-        plotOptions: {
-          bar: {
-            horizontal: false
-          }
-        },
-        xaxis: {
-          type: 'category',
-          categories: this.$store.state.chartData.categories
-        },
-        legend: {
-          position: 'left',
-          offsetY: 40
-        },
-        fill: {
-          opacity: 1
-        }
-      };
-    },
-    series: function series() {
-      return this.$store.state.chartData.series;
-    }
-  },
-  mounted: function mounted() {
-    this.$store.dispatch('fetchAnalytics');
+    CallFlowChart: _CallFlowChart__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
 });
 
@@ -2378,48 +2399,6 @@ __webpack_require__.r(__webpack_exports__);
       set: function set(id) {
         this.$store.dispatch('setDepartment', id);
       }
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ShowAgents.vue?vue&type=script&lang=js&":
-/*!****************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/ShowAgents.vue?vue&type=script&lang=js& ***!
-  \****************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'show-agents',
-  computed: {
-    agents: function agents() {
-      return this.$store.getters.agentsByDepartment;
-    },
-    selectedAgentUserName: function selectedAgentUserName() {
-      return this.$store.state.selected_agent.user_name;
-    }
-  },
-  methods: {
-    selectAgent: function selectAgent(agent) {
-      this.$store.dispatch('setAgent', agent);
     }
   }
 });
@@ -8435,6 +8414,45 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/CallFlowChart.vue?vue&type=template&id=003480eb&":
+/*!***********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/CallFlowChart.vue?vue&type=template&id=003480eb& ***!
+  \***********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c("button", { on: { click: _vm.refreshChart } }, [_vm._v("Refresh")]),
+      _vm._v(" "),
+      _c("apexchart", {
+        attrs: {
+          type: "bar",
+          height: "350",
+          options: _vm.chartOptions,
+          series: _vm.series
+        }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/CallLogTable.vue?vue&type=template&id=58b4d11f&":
 /*!**********************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/CallLogTable.vue?vue&type=template&id=58b4d11f& ***!
@@ -8733,32 +8751,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("div", { staticClass: "row no-gutters" }, [
-      _c(
-        "div",
-        { staticClass: "col-3" },
-        [_c("show-agents", { staticClass: "p-3" })],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "col-9" },
-        [
-          _c("apexchart", {
-            attrs: {
-              type: "bar",
-              height: "350",
-              options: _vm.chartOptions,
-              series: _vm.series
-            }
-          })
-        ],
-        1
-      )
-    ])
-  ])
+  return _c("div", [_c("call-flow-chart", { staticClass: "m-2" })], 1)
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -9294,69 +9287,6 @@ var render = function() {
           "option",
           { key: department.id, domProps: { value: department.id } },
           [_vm._v(_vm._s(department.name))]
-        )
-      }),
-      0
-    )
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ShowAgents.vue?vue&type=template&id=167ed93c&":
-/*!********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/assets/js/components/ShowAgents.vue?vue&type=template&id=167ed93c& ***!
-  \********************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "ul",
-      { staticClass: "list-group" },
-      _vm._l(_vm.agents, function(agent) {
-        return _c(
-          "li",
-          {
-            key: agent.user_name,
-            staticClass: "list-group-item pointer d-flex",
-            class: {
-              "bg-success text-white":
-                agent.user_name == _vm.selectedAgentUserName
-            },
-            on: {
-              click: function($event) {
-                return _vm.selectAgent(agent)
-              }
-            }
-          },
-          [
-            _c("div", {
-              staticClass: "pr-2",
-              domProps: { textContent: _vm._s(agent.user_name) }
-            }),
-            _vm._v(" "),
-            _c("div", { domProps: { textContent: _vm._s(agent.name) } }),
-            _vm._v(" "),
-            _c("div", { staticClass: "flex-grow-1 text-right" }, [
-              _c("label", {
-                staticClass: "badge badge-secondary",
-                domProps: { textContent: _vm._s(agent.department_name) }
-              })
-            ])
-          ]
         )
       }),
       0
@@ -25529,6 +25459,75 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
 
 /***/ }),
 
+/***/ "./resources/assets/js/components/CallFlowChart.vue":
+/*!**********************************************************!*\
+  !*** ./resources/assets/js/components/CallFlowChart.vue ***!
+  \**********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _CallFlowChart_vue_vue_type_template_id_003480eb___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CallFlowChart.vue?vue&type=template&id=003480eb& */ "./resources/assets/js/components/CallFlowChart.vue?vue&type=template&id=003480eb&");
+/* harmony import */ var _CallFlowChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CallFlowChart.vue?vue&type=script&lang=js& */ "./resources/assets/js/components/CallFlowChart.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _CallFlowChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CallFlowChart_vue_vue_type_template_id_003480eb___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CallFlowChart_vue_vue_type_template_id_003480eb___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/assets/js/components/CallFlowChart.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/assets/js/components/CallFlowChart.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************!*\
+  !*** ./resources/assets/js/components/CallFlowChart.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CallFlowChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./CallFlowChart.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/CallFlowChart.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CallFlowChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/assets/js/components/CallFlowChart.vue?vue&type=template&id=003480eb&":
+/*!*****************************************************************************************!*\
+  !*** ./resources/assets/js/components/CallFlowChart.vue?vue&type=template&id=003480eb& ***!
+  \*****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CallFlowChart_vue_vue_type_template_id_003480eb___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./CallFlowChart.vue?vue&type=template&id=003480eb& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/CallFlowChart.vue?vue&type=template&id=003480eb&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CallFlowChart_vue_vue_type_template_id_003480eb___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CallFlowChart_vue_vue_type_template_id_003480eb___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/assets/js/components/CallLogTable.vue":
 /*!*********************************************************!*\
   !*** ./resources/assets/js/components/CallLogTable.vue ***!
@@ -26237,75 +26236,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/assets/js/components/ShowAgents.vue":
-/*!*******************************************************!*\
-  !*** ./resources/assets/js/components/ShowAgents.vue ***!
-  \*******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ShowAgents_vue_vue_type_template_id_167ed93c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ShowAgents.vue?vue&type=template&id=167ed93c& */ "./resources/assets/js/components/ShowAgents.vue?vue&type=template&id=167ed93c&");
-/* harmony import */ var _ShowAgents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ShowAgents.vue?vue&type=script&lang=js& */ "./resources/assets/js/components/ShowAgents.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _ShowAgents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _ShowAgents_vue_vue_type_template_id_167ed93c___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _ShowAgents_vue_vue_type_template_id_167ed93c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/assets/js/components/ShowAgents.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/assets/js/components/ShowAgents.vue?vue&type=script&lang=js&":
-/*!********************************************************************************!*\
-  !*** ./resources/assets/js/components/ShowAgents.vue?vue&type=script&lang=js& ***!
-  \********************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowAgents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./ShowAgents.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ShowAgents.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowAgents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/assets/js/components/ShowAgents.vue?vue&type=template&id=167ed93c&":
-/*!**************************************************************************************!*\
-  !*** ./resources/assets/js/components/ShowAgents.vue?vue&type=template&id=167ed93c& ***!
-  \**************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowAgents_vue_vue_type_template_id_167ed93c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./ShowAgents.vue?vue&type=template&id=167ed93c& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/assets/js/components/ShowAgents.vue?vue&type=template&id=167ed93c&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowAgents_vue_vue_type_template_id_167ed93c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ShowAgents_vue_vue_type_template_id_167ed93c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
 /***/ "./resources/assets/js/store.js":
 /*!**************************************!*\
   !*** ./resources/assets/js/store.js ***!
@@ -26341,7 +26271,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       department: false,
       agent: false,
       call_register: false,
-      search_call_register: false
+      search_call_register: false,
+      call_flow_chart: false
     },
     departments: [],
     agents: [],
@@ -26377,12 +26308,27 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       summary: {},
       logs: []
     },
-    chartData: {
+    call_flow_chart_type: 'time',
+    call_flow_date: moment__WEBPACK_IMPORTED_MODULE_3___default()().startOf('day'),
+    call_flow_chart: {
       series: [],
       categories: []
     }
   },
   getters: {
+    callFlowChartFilter: function callFlowChartFilter(state) {
+      var filter = {};
+      filter.type = state.call_flow_chart_type;
+      filter.date = state.call_flow_date.format('YYYY-MM-DD');
+
+      if (state.selected_agent.agent_id) {
+        filter.agent_id = state.selected_agent.agent_id;
+      } else if (state.selected_department_id) {
+        filter.department_id = state.selected_department_id;
+      }
+
+      return filter;
+    },
     agentsByDepartment: function agentsByDepartment(state) {
       return state.agents.filter(function (agent) {
         return state.selected_department_id == 0 || agent.department_id == state.selected_department_id;
@@ -26442,8 +26388,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     }
   },
   mutations: {
-    setChartData: function setChartData(state, chartData) {
-      state.chartData = chartData;
+    setCallFlowChart: function setCallFlowChart(state, data) {
+      state.call_flow_chart = data;
     },
     setShowSearchResult: function setShowSearchResult(state, show_search_result) {
       state.show_search_result = show_search_result;
@@ -26613,6 +26559,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     setDepartment: function setDepartment(context, department_id) {
       context.commit('selectDepartment', department_id);
       if (context.state.selected_agent.department_id != department_id) context.commit('selectAgent', {
+        agent_id: 0,
         department_id: 0,
         department_name: '',
         name: '',
@@ -26631,11 +26578,24 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       }
     },
     fetchAnalytics: function fetchAnalytics(context) {
-      // context.commit('loadingState', {name: 'agent', isLoading: true})
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get('https://www.tripclues.in/leadAPI/public/api/logger/analytics?type=time&date=2019-11-09').then(function (response) {
-        context.commit('setChartData', response.data);
+      context.commit('loadingState', {
+        name: 'call_flow_data',
+        isLoading: true
+      });
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get('https://www.tripclues.in/leadAPI/public/api/logger/analytics', {
+        params: context.getters.callFlowChartFilter
+      }).then(function (response) {
+        context.commit('setCallFlowChart', response.data);
+        context.commit('loadingState', {
+          name: 'call_flow_data',
+          isLoading: false
+        });
       })["catch"](function (error) {
-        console.log(error); // context.commit('loadingState', {name: 'agent', isLoading: false})
+        console.log(error);
+        context.commit('loadingState', {
+          name: 'call_flow_data',
+          isLoading: false
+        });
       });
     }
   }

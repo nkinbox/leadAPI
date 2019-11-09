@@ -345,15 +345,47 @@ class CallRecorderController extends Controller {
             return $query->where('agent_id', $request->agent_id);
         })
         ->groupBy('call_type')->get();
+        $call_type = [
+            'incoming' => 0,
+            'outgoing' => 1,
+            'missed' => 2,
+            'rejected' => 3,
+            'busy' => 4
+        ];
         if($request->type == 'time') {
+            $emptyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $categories = [
+                '12AM_2AM' => 0,
+                '2AM_4AM' => 1,
+                '4AM_6AM' => 2,
+                '6AM_8AM' => 3,
+                '8AM_10AM' => 4,
+                '10AM_12PM' => 5,
+                '12PM_2PM' => 6,
+                '2PM_4PM' => 7,
+                '4PM_6PM' => 8,
+                '6PM_8PM' => 9,
+                '8PM_10PM' => 10,
+                '10PM_12PM' => 11
+            ];
+
             $this->response['series'] = [];
-            foreach($logs as $index => $log) {
+            foreach($call_type as $ct => $index) {
+                $this->response['series'][$index] = [
+                    'name' => $ct,
+                    'data' => $emptyData
+                ];
+            }
+            foreach($logs as $log) {
                 $log = $log->toArray();
-                $this->response['series'][$index]['name'] = $log['call_type'];
+                $index = $categories[$log['call_type']];
                 unset($log['call_type']);
                 $this->response['series'][$index]['data'] = array_values($log);
             }
-            $this->response['categories'] = array_keys($log);
+            $this->response['categories'] = [];
+            foreach($categories as $category => $index) {
+                $this->response['categories'][$index] = str_replace('_', '-', $category);
+            }
         } elseif($request->type == 'days') {
             $emptyData = [];
             $lastDay = date('t', strtotime($request->date));
@@ -362,13 +394,6 @@ class CallRecorderController extends Controller {
                 $emptyData[$i] = 0;
                 $this->response['categories'][] = 'Day '.($i+1);
             }
-            $call_type = [
-                'incoming' => 0,
-                'outgoing' => 1,
-                'missed' => 2,
-                'rejected' => 3,
-                'busy' => 4
-            ];
             foreach($call_type as $ct => $index) {
                 $this->response['series'][$index] = [
                     'name' => $ct,
@@ -394,13 +419,6 @@ class CallRecorderController extends Controller {
                 'Oct',
                 'Nov',
                 'Dec'
-            ];
-            $call_type = [
-                'incoming' => 0,
-                'outgoing' => 1,
-                'missed' => 2,
-                'rejected' => 3,
-                'busy' => 4
             ];
             foreach($call_type as $ct => $index) {
                 $this->response['series'][$index] = [
