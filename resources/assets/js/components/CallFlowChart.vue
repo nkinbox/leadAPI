@@ -1,6 +1,9 @@
 <template>
   <div>
-      <input type="date" v-model="date">
+    <input type="date" v-model="date">
+    <select v-model="type">
+        <option v-for="(text, val) in types" :value="val" :key="val">{{text}}</option>
+    </select>
     <button @click="refreshChart">Refresh</button>
     <apexchart type=bar height=350 :options="chartOptions" :series="series" />
   </div>
@@ -13,7 +16,24 @@ export default {
     components: {
       apexchart: VueApexCharts
     },
+    data() {
+        return {
+            types: {
+                time: 'Hours Slot',
+                days: 'Daily',
+                months: 'Monthly'
+            }
+        }
+    },
     computed: {
+        type: {
+            get: function() {
+                return this.$store.state.call_flow_chart_type
+            },
+            set: function(value) {
+                this.$store.commit('setCallFlowChartType', value)
+            }
+        },
         date: {
             get: function() {
                 return this.$store.getters.callFlowChartFilter.date

@@ -1726,13 +1726,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'call-flow-chart',
   components: {
     apexchart: vue_apexcharts__WEBPACK_IMPORTED_MODULE_0___default.a
   },
+  data: function data() {
+    return {
+      types: {
+        time: 'Hours Slot',
+        days: 'Daily',
+        months: 'Monthly'
+      }
+    };
+  },
   computed: {
+    type: {
+      get: function get() {
+        return this.$store.state.call_flow_chart_type;
+      },
+      set: function set(value) {
+        this.$store.commit('setCallFlowChartType', value);
+      }
+    },
     date: {
       get: function get() {
         return this.$store.getters.callFlowChartFilter.date;
@@ -8461,6 +8481,41 @@ var render = function() {
           }
         }
       }),
+      _vm._v(" "),
+      _c(
+        "select",
+        {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.type,
+              expression: "type"
+            }
+          ],
+          on: {
+            change: function($event) {
+              var $$selectedVal = Array.prototype.filter
+                .call($event.target.options, function(o) {
+                  return o.selected
+                })
+                .map(function(o) {
+                  var val = "_value" in o ? o._value : o.value
+                  return val
+                })
+              _vm.type = $event.target.multiple
+                ? $$selectedVal
+                : $$selectedVal[0]
+            }
+          }
+        },
+        _vm._l(_vm.types, function(text, val) {
+          return _c("option", { key: val, domProps: { value: val } }, [
+            _vm._v(_vm._s(text))
+          ])
+        }),
+        0
+      ),
       _vm._v(" "),
       _c("button", { on: { click: _vm.refreshChart } }, [_vm._v("Refresh")]),
       _vm._v(" "),
@@ -26418,6 +26473,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     }
   },
   mutations: {
+    setCallFlowChartType: function setCallFlowChartType(state, type) {
+      state.call_flow_chart_type = type;
+    },
     setCallFlowChart: function setCallFlowChart(state, data) {
       state.call_flow_chart = data;
     },

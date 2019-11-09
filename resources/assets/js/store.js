@@ -121,6 +121,9 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
+        setCallFlowChartType(state, type) {
+            state.call_flow_chart_type = type
+        },
         setCallFlowChart(state, data) {
             state.call_flow_chart = data
         },
