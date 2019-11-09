@@ -351,6 +351,7 @@ class CallRecorderController extends Controller {
             }
             $this->response['categories'] = array_keys($log);
         } elseif($request->type == 'days') {
+            dd($logs);
             $this->response = $logs;
         }
         return response()->json($this->response);
