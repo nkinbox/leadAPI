@@ -340,7 +340,7 @@ class CallRecorderController extends Controller {
         ->when($request->agent_id, function($query) use (&$request) {
             return $query->where('agent_id', $request->agent_id);
         })
-        ->groupBy('call_type')->get();
+        ->groupBy('call_type');
         if($request->type == 'time') {
             $this->response['series'] = [];
             foreach($logs as $index => $log) {
@@ -351,7 +351,8 @@ class CallRecorderController extends Controller {
             }
             $this->response['categories'] = array_keys($log);
         } elseif($request->type == 'days') {
-            dd($logs);
+            dump($logs->toSql());
+            dd($logs->get());
             $this->response = $logs;
         }
         return response()->json($this->response);
