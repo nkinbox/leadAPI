@@ -201,7 +201,7 @@ class CallRecorderController extends Controller {
         ->when(($request->duration_start || $request->duration_end), function($query) use (&$request){
             return $query->whereBetween('duration', [$request->duration_start, $request->duration_end]);
         })
-        ->when(($request->date || !($request->start_datetime && $request->end_datetime)), function($query) use (&$request){
+        ->when(($request->date && !($request->start_datetime && $request->end_datetime)), function($query) use (&$request){
             return $query->whereDate('device_time', $request->input('date', date('Y-m-d')));
         })
         ->when($request->phone_number, function($query) use (&$request) {
@@ -210,9 +210,7 @@ class CallRecorderController extends Controller {
         ->when($request->saved_name, function($query) use (&$request) {
             return $query->where('call_registers.saved_name', 'like', '%'.$request->saved_name.'%');
         })
-        ->orderBy('device_time', 'desc')->orderBy('duration', 'desc');
-        dump($logs->toSql());
-        dd($logs->get());
+        ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
         $this->response['summary'] = [
             'overview' => [

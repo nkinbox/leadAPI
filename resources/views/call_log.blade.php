@@ -31,9 +31,7 @@
                 <search></search>
             </div>
         </nav>
-        <keep-alive>
-            <router-view style="margin-top: 66px"></router-view>
-        </keep-alive>
+        <router-view style="margin-top: 66px"></router-view>
     </div>
 
     <script src="vuejs/app.js"></script>
