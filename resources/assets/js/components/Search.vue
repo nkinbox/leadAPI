@@ -4,7 +4,7 @@
     <div class="position-relative mt-1">
         <div id="searchResult" v-if="searchActive" class="position-absolute row no-gutters" @mousedown="$event.preventDefault()">
             <div class="col-3">
-                <call-summary :prefix="'search_'"></call-summary>
+                <call-summary :prefix="'search_'" class="overflow-y"></call-summary>
             </div>
             <div class="col-9">
                 <call-log-table :prefix="'search_'" class="overflow-y"></call-log-table>

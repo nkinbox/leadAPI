@@ -211,6 +211,8 @@ class CallRecorderController extends Controller {
             return $query->where('call_registers.saved_name', 'like', '%'.$request->saved_name.'%');
         })
         ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
+        dump($logs->toSql());
+        dd($logs->get());
         $this->response['logs'] = [];
         $this->response['summary'] = [
             'overview' => [

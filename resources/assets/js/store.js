@@ -183,6 +183,7 @@ export const store = new Vuex.Store({
             }
         },
         setCallFlowFilterDate(state, rawDate) {
+            if(rawDate)
             state.call_flow_date = moment(rawDate)
         }
     },
@@ -278,15 +279,19 @@ export const store = new Vuex.Store({
             }
         },
         fetchAnalytics(context) {
-            context.commit('loadingState', {name: 'call_flow_data', isLoading: true})
+            context.commit('loadingState', {name: 'call_flow_chart', isLoading: true})
+            context.commit('setCallFlowChart', {
+                categories: [],
+                series: []
+            })
             axios.get('https://www.tripclues.in/leadAPI/public/api/logger/analytics', {
                 params: context.getters.callFlowChartFilter
             }).then(response => {
                 context.commit('setCallFlowChart', response.data)
-                context.commit('loadingState', {name: 'call_flow_data', isLoading: false})
+                context.commit('loadingState', {name: 'call_flow_chart', isLoading: false})
             }).catch(error => {
                 console.log(error)
-                context.commit('loadingState', {name: 'call_flow_data', isLoading: false})
+                context.commit('loadingState', {name: 'call_flow_chart', isLoading: false})
             })
         }
     }
