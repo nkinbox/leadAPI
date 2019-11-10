@@ -8739,7 +8739,7 @@ var render = function() {
                     _vm._v(" "),
                     _c("td", { staticClass: "text-center" }, [
                       _c("img", {
-                        attrs: { src: "/vuejs/" + log.call_type + ".png" }
+                        attrs: { src: "vuejs/" + log.call_type + ".png" }
                       })
                     ]),
                     _vm._v(" "),
