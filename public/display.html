@@ -17,8 +17,8 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-            <a class="navbar-brand" href="https://www.tripclues.in/leadAPI/public/callLogs"><img src="https://www.tripclues.in/images/tripclues-logo.jpg" height="40" alt=""></a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top border-bottom">
+            <a class="navbar-brand" href="https://www.tripclues.in/leadAPI/public/callLogs"><img src="vuejs/logo.png" height="40" alt=""></a>
             <div class="navbar-collapse">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">

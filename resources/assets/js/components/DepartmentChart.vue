@@ -1,5 +1,5 @@
 <template>
-  <apexchart type=pie width=320 :options="chartOptions" :series="series" />
+  <apexchart type=pie width=360 :options="chartOptions" :series="series" />
 </template>
 
 <script>
