@@ -29,7 +29,7 @@
                     </li>
                 </ul>
                 <search></search>
-                <a class="dropdown-item" tabindex="-1" href="{{ route('logout') }}"
+                <a class="btn btn-sm btn-dark ml-2" tabindex="-1" href="{{ route('logout') }}"
                     onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">
                     {{ __('Logout') }}
