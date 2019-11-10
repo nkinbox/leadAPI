@@ -1,14 +1,10 @@
 <?php
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/callLogs', function () {
-    return view('call_log');
-});
 Auth::routes();
 
+Route::get('/', 'HomeController@welcome');
 Route::middleware('auth')->group(function() {
-    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('/home', 'HomeController@callLogs');
+    Route::get('/home1', 'HomeController@index')->name('home');
 
     Route::get('columns/{table_id}/{operation?}/{id?}', 'ColumnController@index')->name('column');
     Route::post('columns', 'ColumnController@create')->name('column.create');
