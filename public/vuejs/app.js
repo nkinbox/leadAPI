@@ -1884,6 +1884,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'call-log-table',
@@ -8735,19 +8737,9 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _c("td", [
-                      _c("div", {
-                        staticClass: "badge text-uppercase",
-                        class: {
-                          "badge-info":
-                            log.call_type == "outgoing" ||
-                            log.call_type == "busy",
-                          "badge-warning":
-                            log.call_type == "incoming" ||
-                            log.call_type == "missed" ||
-                            log.call_type == "rejected"
-                        },
-                        domProps: { textContent: _vm._s(log.call_type) }
+                    _c("td", { staticClass: "text-center" }, [
+                      _c("img", {
+                        attrs: { src: "/vuejs/" + log.call_type + ".png" }
                       })
                     ]),
                     _vm._v(" "),
@@ -8768,6 +8760,22 @@ var render = function() {
                         }
                       }
                     }),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("div", {
+                        staticClass: "badge text-uppercase",
+                        class: {
+                          "badge-info":
+                            log.call_type == "outgoing" ||
+                            log.call_type == "busy",
+                          "badge-warning":
+                            log.call_type == "incoming" ||
+                            log.call_type == "missed" ||
+                            log.call_type == "rejected"
+                        },
+                        domProps: { textContent: _vm._s(log.call_type) }
+                      })
+                    ]),
                     _vm._v(" "),
                     _c("td", [
                       _vm._v(_vm._s(_vm._f("readableSeconds")(log.duration)))
@@ -8815,9 +8823,11 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Employee")]),
         _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Call Type")]),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Icon")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Conversed")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Call Type")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Duration")]),
         _vm._v(" "),
