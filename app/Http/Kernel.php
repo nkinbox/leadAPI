@@ -58,5 +58,6 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'AfterWork' => \App\Http\Middleware\AfterWork::class,
+        'IdentifyCallLog' => \App\Http\Middleware\IdentifyCallLog::class,
     ];
 }

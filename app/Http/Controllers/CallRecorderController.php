@@ -7,6 +7,7 @@ use App\Agents;
 use App\SimAllocation;
 use App\CallRegister;
 use App\Department;
+use DB;
 
 class CallRecorderController extends Controller {
     private $response;
@@ -123,10 +124,14 @@ class CallRecorderController extends Controller {
             $callRegister->dial_code = $request->dial_code;
             $callRegister->phone_number = $request->phone_number;
             $callRegister->saved_name = $request->saved_name;
+            if($request->call_type == 'incoming' || $request->call_type == 'outgoing')
             $callRegister->duration = $request->duration;
+            else
+            $callRegister->duration = 0;
             $callRegister->device_time = $request->device_time;
             $callRegister->call_type = $request->call_type;
             $callRegister->save();
+            $this->lastUpdateAt([$sim->agent_id]);
             $this->response['success'] = 1;
             return response()->json($this->response);
         } else {
@@ -168,6 +173,7 @@ class CallRecorderController extends Controller {
                 ];
             }
         }
+        $this->lastUpdateAt($sims);
         if($inserted) {
             CallRegister::insert($inserted);
         }
@@ -210,7 +216,7 @@ class CallRecorderController extends Controller {
         ->when($request->saved_name, function($query) use (&$request) {
             return $query->where('call_registers.saved_name', 'like', '%'.$request->saved_name.'%');
         })
-        ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
+        ->where('identified', 'external')->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
         $this->response['summary'] = [
             'overview' => [
@@ -280,12 +286,16 @@ class CallRecorderController extends Controller {
         $agents = Agents::selectRaw('agents.*, departments.name as department_name, departments.id as department_id')->leftJoin('departments', 'departments.id', '=', 'agents.department_id')->get();
         $this->response['agents'] = [];
         foreach($agents as $agent) {
+            $active = strtotime($agent->last_update_at);
+            $active = ($active && (time() - $active) < 3600)?1:0;
             $this->response['agents'][] = [
                 'agent_id' => $agent->id,
                 'user_name' => $agent->user_name,
                 'name' => $agent->name,
                 'department_id' => $agent->department_id,
-                'department_name' => $agent->department_name
+                'department_name' => $agent->department_name,
+                'is_active' => $active,
+                'last_update_at' => $agent->last_update_at
             ];
         }
         return response()->json($this->response);
@@ -433,5 +443,23 @@ class CallRecorderController extends Controller {
             }
         }
         return response()->json($this->response);
+    }
+    public function alerts(Request $request) {
+        $this->validate($request, [
+            'sim_id' => 'required'
+        ]);
+        Agents::join('sim_allocations', 'sim_allocations.agent_id', '=', 'agents.id')->where('sim_allocations.id', $request->sim_id)->update(['last_update_at' => null]);
+    }
+
+    private function lastUpdateAt($agent_id) {
+        Agents::whereIn('id', $agent_id)->update(['last_update_at' => date('Y-m-d H:i:s')]);
+    }
+
+    public function engagement() {
+        $this->validate($request, [
+            'start_datetime' => 'required|date_format:Y-m-d H:i:s',
+            'end_datetime' => 'required|date_format:Y-m-d H:i:s',
+        ]);
+        $logs = DB::select('select agents1.user_name, agents1.name, agents2.user_name, agents2.name from call_registers inner join agents as agents1 on agents1.id = call_registers.agent_id inner join (select agents.id, agents.user_name, agents.name, sim_allocations.phone_number from agents inner join sim_allocations on sim_allocations.agent_id = agents.id) as agents2 on agents2.phone_number = call_registers.phone_number', [$request->start_datetime, $request->end_datetime]);
     }
 }

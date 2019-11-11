@@ -8737,7 +8737,7 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _c("td", { staticClass: "text-center" }, [
+                    _c("td", [
                       log.call_type != "incoming" && log.call_type != "outgoing"
                         ? _c("img", {
                             staticClass: "mr-1",
