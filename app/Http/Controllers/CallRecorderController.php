@@ -8,6 +8,7 @@ use App\SimAllocation;
 use App\CallRegister;
 use App\Department;
 use DB;
+use Illuminate\Support\Facades\Log;
 
 class CallRecorderController extends Controller {
     private $response;
@@ -15,6 +16,7 @@ class CallRecorderController extends Controller {
         $this->response = [];
     }
     public function login(Request $request) {
+        Log::info($request->all());
         $this->validate($request, [
             'name' => 'required|string|max:50',
             'user_name' => 'required|max:50',
