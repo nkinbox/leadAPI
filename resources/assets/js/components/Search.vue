@@ -1,8 +1,8 @@
 <template>
   <div>
     <search-input></search-input>
-    <div class="position-relative mt-1">
-        <div id="searchResult" v-if="searchActive" class="position-absolute row no-gutters" @mousedown="$event.preventDefault()">
+    <div class="position-relative">
+        <div id="searchResult" v-if="searchActive" class="pt-1 position-absolute row no-gutters" @mousedown="$event.preventDefault()">
             <div class="col-3">
                 <call-summary :prefix="'search_'" class="overflow-y"></call-summary>
             </div>

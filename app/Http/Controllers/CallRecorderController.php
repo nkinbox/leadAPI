@@ -189,7 +189,8 @@ class CallRecorderController extends Controller {
             'user_name' => 'sometimes|required|string',
             'department_id' => 'sometimes|required|numeric',
             'phone_number' => 'sometimes|required|numeric',
-            'saved_name' => 'sometimes|required|string'
+            'saved_name' => 'sometimes|required|string',
+            'call_log_type' => 'nullable'
         ]);
         $logs = CallRegister::selectRaw('call_registers.*, agents.name as agent_name, departments.name as department_name, sim_allocations.phone_number as agent_phone_number')
         ->join('agents', 'agents.id', '=', 'call_registers.agent_id')
@@ -216,7 +217,10 @@ class CallRecorderController extends Controller {
         ->when($request->saved_name, function($query) use (&$request) {
             return $query->where('call_registers.saved_name', 'like', '%'.$request->saved_name.'%');
         })
-        ->where('identified', 'external')->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
+        ->when($request->call_log_type, function($query) use (&$request) {
+            return $query->where('identified', $request->call_log_type);
+        })
+        ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
         $this->response['logs'] = [];
         $this->response['summary'] = [
             'overview' => [
@@ -323,7 +327,8 @@ class CallRecorderController extends Controller {
             'type' => 'required|in:time,days,months',
             'date' => 'required|date_format:Y-m-d',
             'agent_id' => 'sometimes|required|string',
-            'department_id' => 'sometimes|required|numeric'
+            'department_id' => 'sometimes|required|numeric',
+            'call_log_type' => 'nullable'
         ]);
         $logs = CallRegister::when(($request->type == 'time'), function($query) use (&$request) {
             return $query->whereDate('device_time', $request->date)
@@ -353,6 +358,9 @@ class CallRecorderController extends Controller {
         })
         ->when($request->agent_id, function($query) use (&$request) {
             return $query->where('agent_id', $request->agent_id);
+        })
+        ->when($request->call_log_type, function($query) use (&$request) {
+            return $query->where('identified', $request->call_log_type);
         })
         ->groupBy('call_type')->get();
         $call_type = [

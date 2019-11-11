@@ -1744,6 +1744,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1764,6 +1771,14 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
+    call_log_type: {
+      get: function get() {
+        return this.$store.state.call_log_type;
+      },
+      set: function set(value) {
+        this.$store.commit('setCallLogType', value);
+      }
+    },
     loading: function loading() {
       return this.$store.state.loading.call_flow_chart;
     },
@@ -1960,6 +1975,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1978,6 +2000,16 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.fetchCallRegister();
+  },
+  computed: {
+    call_log_type: {
+      get: function get() {
+        return this.$store.state.call_log_type;
+      },
+      set: function set(value) {
+        this.$store.commit('setCallLogType', value);
+      }
+    }
   },
   methods: {
     fetchCallRegister: function fetchCallRegister() {
@@ -8640,6 +8672,49 @@ var render = function() {
           _vm._v(" "),
           _c("div", { staticClass: "mr-1" }, [
             _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.call_log_type,
+                    expression: "call_log_type"
+                  }
+                ],
+                staticClass: "form-control",
+                on: {
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.call_log_type = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  }
+                }
+              },
+              [
+                _c("option", { attrs: { value: "" } }, [_vm._v("Any")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "agent" } }, [
+                  _vm._v("Internal")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "external" } }, [
+                  _vm._v("External")
+                ])
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "mr-1" }, [
+            _c(
               "button",
               {
                 staticClass: "btn btn-primary text-nowrap",
@@ -8885,6 +8960,47 @@ var render = function() {
         _c("select-agents", { staticClass: "p-2" }),
         _vm._v(" "),
         _c("duration", { staticClass: "p-2" }),
+        _vm._v(" "),
+        _c("div", { staticClass: "p-2" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.call_log_type,
+                  expression: "call_log_type"
+                }
+              ],
+              staticClass: "form-control",
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.call_log_type = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            [
+              _c("option", { attrs: { value: "" } }, [_vm._v("Any")]),
+              _vm._v(" "),
+              _c("option", { attrs: { value: "agent" } }, [_vm._v("Internal")]),
+              _vm._v(" "),
+              _c("option", { attrs: { value: "external" } }, [
+                _vm._v("External")
+              ])
+            ]
+          )
+        ]),
         _vm._v(" "),
         _c(
           "button",
@@ -26701,6 +26817,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     },
     search_query: '',
     show_search_result: false,
+    call_log_type: 'external',
     date: {
       start: moment__WEBPACK_IMPORTED_MODULE_3___default()().startOf('day'),
       end: moment__WEBPACK_IMPORTED_MODULE_3___default()().endOf('day')
@@ -26743,6 +26860,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
         filter.department_id = state.selected_department_id;
       }
 
+      filter.call_log_type = state.call_log_type;
       return filter;
     },
     agentsByDepartment: function agentsByDepartment(state) {
@@ -26773,8 +26891,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
           filter.department_id = state.selected_agent.department_id;
         } else if (state.selected_department_id) {
           filter.department_id = state.selected_department_id;
-        } // filter.page = state.call_register.current_page + 1
+        }
 
+        filter.call_log_type = state.call_log_type; // filter.page = state.call_register.current_page + 1
       }
 
       return filter;
@@ -26804,6 +26923,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     }
   },
   mutations: {
+    setCallLogType: function setCallLogType(state, call_log_type) {
+      state.call_log_type = call_log_type;
+    },
     setCallFlowChartType: function setCallFlowChartType(state, type) {
       state.call_flow_chart_type = type;
     },

@@ -6,6 +6,13 @@
         <select-department class="p-2"></select-department>
         <select-agents class="p-2"></select-agents>
         <duration class="p-2"></duration>
+        <div class="p-2">
+            <select class="form-control" v-model="call_log_type">
+                <option value="">Any</option>
+                <option value="agent">Internal</option>
+                <option value="external">External</option>
+            </select>
+        </div>
         <button class="btn btn-primary" @click="fetchCallRegister">Search</button>
     </div>
     <div class="row no-gutters">
@@ -39,6 +46,16 @@ export default {
     },
     created() {
         this.fetchCallRegister()
+    },
+    computed: {
+        call_log_type: {
+            get: function() {
+                return this.$store.state.call_log_type
+            },
+            set: function(value) {
+                this.$store.commit('setCallLogType', value)
+            }
+        }
     },
     methods: {
         fetchCallRegister() {

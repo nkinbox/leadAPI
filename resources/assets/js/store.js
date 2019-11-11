@@ -29,6 +29,7 @@ export const store = new Vuex.Store({
         },
         search_query: '',
         show_search_result: false,
+        call_log_type: 'external',
         date: {
             start: moment().startOf('day'),
             end: moment().endOf('day')
@@ -69,6 +70,7 @@ export const store = new Vuex.Store({
             } else if(state.selected_department_id){
                 filter.department_id = state.selected_department_id
             }
+            filter.call_log_type = state.call_log_type
             return filter
         },
         agentsByDepartment(state) {
@@ -98,6 +100,7 @@ export const store = new Vuex.Store({
                 } else if(state.selected_department_id){
                     filter.department_id = state.selected_department_id
                 }
+                filter.call_log_type = state.call_log_type
                 // filter.page = state.call_register.current_page + 1
             }
             return filter
@@ -121,6 +124,9 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
+        setCallLogType(state, call_log_type) {
+            state.call_log_type = call_log_type
+        },
         setCallFlowChartType(state, type) {
             state.call_flow_chart_type = type
         },

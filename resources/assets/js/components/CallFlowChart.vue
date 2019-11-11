@@ -12,6 +12,13 @@
             </select>
         </div>
         <div class="mr-1">
+            <select class="form-control" v-model="call_log_type">
+                <option value="">Any</option>
+                <option value="agent">Internal</option>
+                <option value="external">External</option>
+            </select>
+        </div>
+        <div class="mr-1">
             <button class="btn btn-primary text-nowrap" type="button" @click="refreshChart">
                 <span v-show="loading" class="spinner-border spinner-border-sm"></span>
                 <span>Refresh</span>
@@ -44,6 +51,14 @@ export default {
         }
     },
     computed: {
+        call_log_type: {
+            get: function() {
+                return this.$store.state.call_log_type
+            },
+            set: function(value) {
+                this.$store.commit('setCallLogType', value)
+            }
+        },
         loading() {
             return this.$store.state.loading.call_flow_chart
         },
