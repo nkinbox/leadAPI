@@ -171,7 +171,7 @@ class CallRecorderController extends Controller {
                     'dial_code' => $log['dial_code'],
                     'phone_number' => $log['phone_number'],
                     'saved_name' => $log['saved_name'],
-                    'duration' => $log['duration'],
+                    'duration' => ($log['call_type'] == 'incoming' || $log['call_type'] == 'outgoing')?$log['duration']:0,
                     'device_time' => $log['device_time'],
                     'call_type' => $log['call_type'],
                 ];
