@@ -16,14 +16,15 @@ class CallRecorderController extends Controller {
         $this->response = [];
     }
     public function login(Request $request) {
-        Log::info($request->all());
+        // Log::info($request->all());
         $this->validate($request, [
             'name' => 'required|string|max:50',
             'user_name' => 'required|max:50',
             'password' => 'required|min:6',
             'department_id' => 'required|integer|exists:departments,id',
             'sim_allocation' => 'required|array',
-            'sim_allocation.*.sim_id' => 'required|digits_between:10,50',
+            // 'sim_allocation.*.sim_id' => 'required|digits_between:10,50',
+            'sim_allocation.*.sim_id' => 'required',
             'sim_allocation.*.operator' => 'required|string|max:30',
             'sim_allocation.*.dial_code' => 'nullable|string|max:5',
             'sim_allocation.*.phone_number' => 'nullable|string|max:15',
@@ -47,6 +48,7 @@ class CallRecorderController extends Controller {
             $agent->save();
         }
         foreach($request->sim_allocation as $sim_allocation) {
+            $sim_allocation['sim_id'] =  preg_replace('/[^0-9]/', '', $sim_allocation['sim_id']);
             $sim = SimAllocation::find($sim_allocation['sim_id']);
             if($sim) {
                 $sim->operator = $sim_allocation['operator'];
