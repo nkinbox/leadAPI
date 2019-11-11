@@ -21,7 +21,7 @@ class IdentifyCallLog
     }
     public function terminate($request, $response)
     {
-        if($response->status == 200) {
+        if($response->status() == 200) {
             if(is_array($request->logs)) {
                 $phone_numbers = $request->input('logs.*.phone_number');
                 $agents = Agents::join('sim_allocations', 'sim_allocations.agent_id', '=', 'agents.id')->whereIn('sim_allocations.phone_number', $phone_numbers)->selectRaw('agents.id, sim_allocations.phone_number')->get();
