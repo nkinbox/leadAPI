@@ -262,7 +262,7 @@ class CallRecorderController extends Controller {
         DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set call_type_unique = 1');
         DB::statement('drop temporary table temp_unique_calls');
         DB::insert('create temporary table temp_unique_calls select min(id) as id, sum(duration) as total_duration from temp_call_logs group by concat(dial_code, phone_number)');
-        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1, set is_unattended = case when total_duration = 0 then 1 else 0 end');
+        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1, is_unattended = case when total_duration = 0 then 1 else 0 end');
         DB::statement('drop temporary table temp_unique_calls');
         dd(DB::table('temp_call_logs')->get());
 
