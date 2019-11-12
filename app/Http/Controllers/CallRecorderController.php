@@ -264,7 +264,8 @@ class CallRecorderController extends Controller {
         DB::insert('create temporary table temp_unique_calls select min(id) as id, sum(duration) as total_duration from temp_call_logs group by concat(dial_code, phone_number)');
         DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1, is_unattended = case when total_duration = 0 then 1 else 0 end');
         DB::statement('drop temporary table temp_unique_calls');
-        dd(DB::table('temp_call_logs')->selectRaw('
+        
+        $summary = DB::table('temp_call_logs')->selectRaw('
             count(1) as overview_total,
             sum(duration) overview_duration,
             sum(case when total_unique = 1 then 1 else null end) as overview_unique,
@@ -300,8 +301,9 @@ class CallRecorderController extends Controller {
             sum(case when call_type = "busy" and call_type_unique = 1 then 1 else null end) as busy_unique,
             sum(case when call_type = "busy" and is_unattended = 1 then 1 else null end) as busy_unattended,
             sum(case when call_type = "busy" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as busy_untouched
-        ')->get());
-
+        ')->get();
+        $summary = $summary->toArray();
+        dd($summary);
 
    
         return response()->json($this->response);
