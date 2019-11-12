@@ -26827,8 +26827,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       start: 0,
       end: 0
     },
-    filter_logs: 'overview',
-    search_filter_logs: 'overview',
+    filter_logs: 'overview_total',
+    search_filter_logs: 'overview_total',
     call_register: {
       current_page: 0,
       has_next: 0,
@@ -26912,6 +26912,108 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       return filter;
     },
     filteredLogs: function filteredLogs(state) {
+      switch (state.filter_logs) {
+        case 'overview_unique':
+          return state.call_register.logs.filter(function (log) {
+            return log.total_unique;
+          });
+
+        case 'overview_unattended':
+          return state.call_register.logs.filter(function (log) {
+            return log.is_unattended;
+          });
+
+        case 'overview_untouched':
+          return state.call_register.logs.filter(function (log) {
+            return log.total_unique && log.call_type_unique && log.duration == 0;
+          });
+
+        case 'incoming_total':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'incoming';
+          });
+
+        case 'incoming_unique':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'incoming' && log.call_type_unique;
+          });
+
+        case 'outgoing_total':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'outgoing';
+          });
+
+        case 'outgoing_unique':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'outgoing' && log.call_type_unique;
+          });
+
+        case 'missed_total':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'missed';
+          });
+
+        case 'missed_unique':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'missed' && log.call_type_unique;
+          });
+
+        case 'missed_unattended':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'missed' && log.is_unattended;
+          });
+
+        case 'missed_untouched':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'missed' && log.total_unique && log.call_type_unique;
+          });
+
+        case 'rejected_total':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'rejected';
+          });
+
+        case 'rejected_unique':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'rejected' && log.call_type_unique;
+          });
+
+        case 'rejected_unattended':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'rejected' && log.is_unattended;
+          });
+
+        case 'rejected_untouched':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'rejected' && log.total_unique && log.call_type_unique;
+          });
+
+        case 'busy_total':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'busy';
+          });
+
+        case 'busy_unique':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'busy' && log.call_type_unique;
+          });
+
+        case 'busy_unattended':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'rejected' && log.is_unattended;
+          });
+
+        case 'busy_untouched':
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == 'rejected' && log.total_unique && log.call_type_unique;
+          });
+
+        default:
+          return state.call_register.logs.filter(function (log) {
+            return log.call_type == state.filter_logs;
+          });
+      }
+
       return state.filter_logs == 'overview' ? state.call_register.logs : state.call_register.logs.filter(function (log) {
         return log.call_type == state.filter_logs;
       });

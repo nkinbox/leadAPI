@@ -276,6 +276,7 @@ class CallRecorderController extends Controller {
                 $this->response['summary'][$i[0]][$i[1]] = $val;
             } else {
                 $this->response['summary'][$i[0]][$i[1]] = [
+                    'name' => $i[1],
                     'filter' => $key,
                     'count' => $val
                 ];
