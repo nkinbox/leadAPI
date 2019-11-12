@@ -258,7 +258,7 @@ class CallRecorderController extends Controller {
             ]
         ];
         DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, is_unique INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
-        DB::update('update temp_call_logs set is_unique = 1 where id in (select id from temp_call_logs )');
+        // DB::update('update temp_call_logs set is_unique = 1 where id in (select id from temp_call_logs )');
         #Remove Duplicate
 
 
