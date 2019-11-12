@@ -257,77 +257,17 @@ class CallRecorderController extends Controller {
                 'unique' => []
             ]
         ];
-        DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, call_type_unique INT DEFAULT 0, total_unique INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
+        DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, call_type_unique INT DEFAULT 0, total_unique INT DEFAULT 0, is_unattended INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
         DB::statement('create temporary table temp_unique_calls select min(id) as id from temp_call_logs group by concat(dial_code, phone_number, call_type)');
         DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set call_type_unique = 1');
-        DB::statement('delete from temp_unique_calls');
-        DB::insert('insert into temp_unique_calls select min(id) as id from temp_call_logs group by concat(dial_code, phone_number)');
-        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1');
+        DB::statement('drop temporary table temp_unique_calls');
+        DB::insert('create temporary table temp_unique_calls select min(id) as id, sum(duration) as total_duration from temp_call_logs group by concat(dial_code, phone_number)');
+        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1, set is_unattended = case when total_duration = 0 then 1 else 0 end');
         DB::statement('drop temporary table temp_unique_calls');
         dd(DB::table('temp_call_logs')->get());
 
 
-        foreach($logs as $log) {
-            if(isset($listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
-                continue;
-            }
-            $this->response['summary']['overview']['total']++;
-            $this->response['summary']['overview']['duration']+=$log->duration;
-            $this->response['summary']['overview']['unique'][$log->dial_code.$log->phone_number] = 1;
-            if($log->call_type == 'incoming' || $log->call_type == 'outgoing') {
-                $this->response['summary'][$log->call_type]['total']++;
-                $this->response['summary'][$log->call_type]['duration']+=$log->duration;
-                $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number] = 1;
-            } else {
-                if(isset($this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number])) {
-                    $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number]++;
-                } else {
-                    $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number] = 1;
-                    $this->response['summary'][$log->call_type]['total'] = 0;
-                    $this->response['summary'][$log->call_type]['duration'] = 0;
-                }
-            }
-            $this->response['logs'][] = [
-                'agent_name' => $log->agent_name,
-                'department_name' => $log->department_name,
-                'agent_phone_number' => $log->agent_phone_number,
-                'dial_code' => $log->dial_code,
-                'phone_number' => $log->phone_number,
-                'saved_name' => $log->saved_name,
-                'duration' => $log->duration,
-                'timestamp' => date('Y-m-d H:i:s', strtotime($log->device_time)),
-                'call_type' => $log->call_type,
-                'is_unique' => false,
-            ];
-            $listedLogs[$log->agent_id.$log->phone_number.$log->duration] = 1;
-        }
-        unset($listedLogs);
-        $uniqueNumbers = $this->response['summary']['overview']['unique'];
-        $this->response['summary']['overview']['unique'] = count($this->response['summary']['overview']['unique']);
-        $call_types = ['missed', 'rejected', 'busy'];
-        foreach($call_types as $call_type) {
-            foreach($this->response['summary'][$call_type]['unique'] as $number => $count) {
-                if(isset($this->response['summary']['incoming']['unique'][$number]) || isset($this->response['summary']['outgoing']['unique'][$number])) {
-                    unset($this->response['summary'][$call_type]['unique'][$number]);
-                } else {
-                    $this->response['summary'][$call_type]['total'] += $count;
-                }
-            }
-        }
-        foreach($this->response['logs'] as &$log) {
-            if(isset($uniqueNumbers[$log['dial_code'].$log['phone_number']])) {
-                $log['is_unique'] = true;
-                unset($uniqueNumbers[$log['dial_code'].$log['phone_number']]);
-            }
-            if(isset($this->response['summary'][$log['call_type']]['unique'][$log['dial_code'].$log['phone_number']])) {
-
-            }
-        }
-        $this->response['summary']['missed']['unique'] = count($this->response['summary']['missed']['unique']);
-        $this->response['summary']['rejected']['unique'] = count($this->response['summary']['rejected']['unique']);
-        $this->response['summary']['busy']['unique'] = count($this->response['summary']['busy']['unique']);
-        $this->response['summary']['incoming']['unique'] = count($this->response['summary']['incoming']['unique']);
-        $this->response['summary']['outgoing']['unique'] = count($this->response['summary']['outgoing']['unique']);
+   
         return response()->json($this->response);
     }
     public function agents() {
