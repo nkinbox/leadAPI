@@ -257,12 +257,12 @@ class CallRecorderController extends Controller {
                 'unique' => []
             ]
         ];
-        DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, is_unique INT DEFAULT 0, is_latest INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
+        DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, call_type_unique INT DEFAULT 0, total_unique INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
         DB::statement('create temporary table temp_unique_calls select min(id) as id from temp_call_logs group by concat(dial_code, phone_number, call_type)');
-        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set is_unique = 1');
+        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set call_type_unique = 1');
         DB::statement('delete from temp_unique_calls');
         DB::insert('insert into temp_unique_calls select min(id) as id from temp_call_logs group by concat(dial_code, phone_number)');
-        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set is_latest = 1');
+        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1');
         DB::statement('drop temporary table temp_unique_calls');
         dd(DB::table('temp_call_logs')->get());
 
