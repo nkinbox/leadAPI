@@ -264,7 +264,43 @@ class CallRecorderController extends Controller {
         DB::insert('create temporary table temp_unique_calls select min(id) as id, sum(duration) as total_duration from temp_call_logs group by concat(dial_code, phone_number)');
         DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1, is_unattended = case when total_duration = 0 then 1 else 0 end');
         DB::statement('drop temporary table temp_unique_calls');
-        dd(DB::table('temp_call_logs')->get());
+        dd(DB::table('temp_call_logs')->selectRaw('
+            count(1) as overview_total,
+            sum(duration) overview_duration,
+            sum(case when total_unique = 1 then 1 else null end) as overview_unique,
+            sum(case when total_unique = 1 and is_unattended = 1 then 1 else null end) as overview_unattended,
+            sum(case when total_unique = 1 and call_type_unique = 1 and duration = 0 then 1 else null end) as overview_untouched,
+
+            sum(case when call_type = "incoming" then 1 else null end) as incoming_total,
+            sum(case when call_type = "incoming" then duration else null end) as incoming_duration,
+            sum(case when call_type = "incoming" and call_type_unique = 1 then 1 else null end) as incoming_unique,
+            0 as incoming_unattended,
+            0 as incoming_untouched,
+
+            sum(case when call_type = "outgoing" then 1 else null end) as outgoing_total,
+            sum(case when call_type = "outgoing" then duration else null end) as outgoing_duration,
+            sum(case when call_type = "outgoing" and call_type_unique = 1 then 1 else null end) as outgoing_unique,
+            0 as outgoing_unattended,
+            0 as outgoing_untouched,
+
+            sum(case when call_type = "missed" then 1 else null end) as missed_total,
+            0 as missed_duration,
+            sum(case when call_type = "missed" and call_type_unique = 1 then 1 else null end) as missed_unique,
+            sum(case when call_type = "missed" and is_unattended = 1 then 1 else null end) as missed_unattended,
+            sum(case when call_type = "missed" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as missed_untouched,
+
+            sum(case when call_type = "rejected" then 1 else null end) as rejected_total,
+            0 as rejected_duration,
+            sum(case when call_type = "rejected" and call_type_unique = 1 then 1 else null end) as rejected_unique,
+            sum(case when call_type = "rejected" and is_unattended = 1 then 1 else null end) as rejected_unattended,
+            sum(case when call_type = "rejected" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as rejected_untouched,
+
+            sum(case when call_type = "busy" then 1 else null end) as busy_total,
+            0 as busy_duration,
+            sum(case when call_type = "busy" and call_type_unique = 1 then 1 else null end) as busy_unique,
+            sum(case when call_type = "busy" and is_unattended = 1 then 1 else null end) as busy_unattended,
+            sum(case when call_type = "busy" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as busy_untouched
+        ')->get());
 
 
    
