@@ -157,9 +157,8 @@ export const store = new Vuex.Store({
                 case 'busy_untouched':
                 return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.total_unique && log.call_type_unique)
                 default:
-                    return state.call_register.logs.filter((log) => log.call_type == state.filter_logs)
+                return state.call_register.logs.filter((log) => log.call_type == state.filter_logs)
             }
-            return (state.filter_logs == 'overview')?state.call_register.logs:state.call_register.logs.filter((log) => log.call_type == state.filter_logs)
         },
         searchFilteredLogs(state) {
             return (state.search_filter_logs == 'overview')?state.search_call_register.logs:state.search_call_register.logs.filter((log) => log.call_type == state.search_filter_logs)

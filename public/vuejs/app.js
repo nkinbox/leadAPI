@@ -2055,6 +2055,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'call-summary',
   props: {
@@ -9050,16 +9058,7 @@ var render = function() {
       _vm._l(_vm.summary, function(stat, call_type) {
         return _c(
           "li",
-          {
-            key: call_type,
-            staticClass: "list-group-item pointer rounded-0",
-            class: { active: _vm.selected == call_type },
-            on: {
-              click: function($event) {
-                return _vm.filterLogs(call_type)
-              }
-            }
-          },
+          { key: call_type, staticClass: "list-group-item pointer rounded-0" },
           [
             _c("div", [
               _c("div", { staticClass: "h6 text-uppercase" }, [
@@ -9068,17 +9067,41 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "d-flex border-top pt-1" }, [
-              _c("div", { staticClass: "flex-fill" }, [
-                _c("div", { staticClass: "small" }, [_vm._v("Total")]),
-                _vm._v(" "),
-                _c("div", [_vm._v(_vm._s(stat.total))])
-              ]),
+              _c(
+                "div",
+                {
+                  staticClass: "flex-fill",
+                  class: { "bg-primary": _vm.selected == stat.total.filter },
+                  on: {
+                    click: function($event) {
+                      return _vm.filterLogs(stat.total.filter)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "small" }, [_vm._v("Total")]),
+                  _vm._v(" "),
+                  _c("div", [_vm._v(_vm._s(stat.total.count))])
+                ]
+              ),
               _vm._v(" "),
-              _c("div", { staticClass: "flex-fill border-left" }, [
-                _c("div", { staticClass: "small" }, [_vm._v("Unique")]),
-                _vm._v(" "),
-                _c("div", [_vm._v(_vm._s(stat.unique))])
-              ]),
+              _c(
+                "div",
+                {
+                  staticClass: "flex-fill border-left",
+                  class: { "bg-primary": _vm.selected == stat.unique.filter },
+                  on: {
+                    click: function($event) {
+                      return _vm.filterLogs(stat.unique.filter)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "small" }, [_vm._v("Unique")]),
+                  _vm._v(" "),
+                  _c("div", [_vm._v(_vm._s(stat.unique.count))])
+                ]
+              ),
               _vm._v(" "),
               stat.duration
                 ? _c("div", { staticClass: "flex-fill border-left" }, [
@@ -9088,6 +9111,54 @@ var render = function() {
                       _vm._v(_vm._s(_vm._f("readableSeconds")(stat.duration)))
                     ])
                   ])
+                : _vm._e(),
+              _vm._v(" "),
+              stat.unattended.count
+                ? _c(
+                    "div",
+                    {
+                      staticClass: "flex-fill border-left",
+                      class: {
+                        "bg-primary": _vm.selected == stat.unattended.filter
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.filterLogs(stat.unattended.filter)
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "small" }, [
+                        _vm._v("Unattended")
+                      ]),
+                      _vm._v(" "),
+                      _c("div", [_vm._v(_vm._s(stat.unattended.count))])
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              stat.untouched.count
+                ? _c(
+                    "div",
+                    {
+                      staticClass: "flex-fill border-left",
+                      class: {
+                        "bg-primary": _vm.selected == stat.untouched.filter
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.filterLogs(stat.untouched.filter)
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "small" }, [
+                        _vm._v("Untouched")
+                      ]),
+                      _vm._v(" "),
+                      _c("div", [_vm._v(_vm._s(stat.untouched.count))])
+                    ]
+                  )
                 : _vm._e()
             ])
           ]
@@ -27013,10 +27084,6 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
             return log.call_type == state.filter_logs;
           });
       }
-
-      return state.filter_logs == 'overview' ? state.call_register.logs : state.call_register.logs.filter(function (log) {
-        return log.call_type == state.filter_logs;
-      });
     },
     searchFilteredLogs: function searchFilteredLogs(state) {
       return state.search_filter_logs == 'overview' ? state.search_call_register.logs : state.search_call_register.logs.filter(function (log) {
