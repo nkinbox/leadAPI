@@ -302,8 +302,7 @@ class CallRecorderController extends Controller {
             }
         }
         $this->response['extra'] = [
-            'incoming' => $this->response['summary']['incoming']['unique'],
-            'outlook' => $this->response['summary']['outgoing']['unique']
+            'incoming' => $this->response['summary']['rejected']['unique']
         ];
         $this->response['summary']['missed']['unique'] = count($this->response['summary']['missed']['unique']);
         $this->response['summary']['rejected']['unique'] = count($this->response['summary']['rejected']['unique']);
