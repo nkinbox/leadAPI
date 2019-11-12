@@ -263,11 +263,11 @@ class CallRecorderController extends Controller {
             }
             $this->response['summary']['overview']['total']++;
             $this->response['summary']['overview']['duration']+=$log->duration;
-            $this->response['summary']['overview']['unique'][$log->dial_code.$log->phone_number] = null;
+            $this->response['summary']['overview']['unique'][$log->dial_code.$log->phone_number] = 1;
             if($log->call_type == 'incoming' || $log->call_type == 'outgoing') {
                 $this->response['summary'][$log->call_type]['total']++;
                 $this->response['summary'][$log->call_type]['duration']+=$log->duration;
-                $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number] = null;
+                $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number] = 1;
             } else {
                 if(isset($this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number])) {
                     $this->response['summary'][$log->call_type]['unique'][$log->dial_code.$log->phone_number]++;
@@ -301,9 +301,6 @@ class CallRecorderController extends Controller {
                 }
             }
         }
-        $this->response['extra'] = [
-            'incoming' => $this->response['summary']['rejected']['unique']
-        ];
         $this->response['summary']['missed']['unique'] = count($this->response['summary']['missed']['unique']);
         $this->response['summary']['rejected']['unique'] = count($this->response['summary']['rejected']['unique']);
         $this->response['summary']['busy']['unique'] = count($this->response['summary']['busy']['unique']);
