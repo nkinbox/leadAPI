@@ -272,10 +272,14 @@ class CallRecorderController extends Controller {
         $summary = (array) $summary->first();
         foreach($summary as $key => $val) {
             $i = explode('_', $key);
-            $this->response['summary'][$i[0]][$i[1]] = [
-                'filter' => $key,
-                'count' => $val
-            ];
+            if($i[1] == 'duration') {
+                $this->response['summary'][$i[0]][$i[1]] = $val;
+            } else {
+                $this->response['summary'][$i[0]][$i[1]] = [
+                    'filter' => $key,
+                    'count' => $val
+                ];
+            }
         }
         $this->response['logs'] = DB::table('temp_call_logs')->get();
    
