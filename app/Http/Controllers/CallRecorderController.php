@@ -194,34 +194,34 @@ class CallRecorderController extends Controller {
             'saved_name' => 'sometimes|required|string',
             'call_log_type' => 'nullable'
         ]);
-        $logs = CallRegister::selectRaw('call_registers.*, agents.name as agent_name, departments.name as department_name, sim_allocations.phone_number as agent_phone_number')
-        ->join('agents', 'agents.id', '=', 'call_registers.agent_id')
-        ->join('departments', 'departments.id', '=', 'agents.department_id')
-        ->join('sim_allocations', 'sim_allocations.id', '=', 'call_registers.sim_allocation_id')
-        ->when($request->user_name, function($query) use (&$request) {
-            return $query->where('agents.user_name', $request->user_name);
-        })
-        ->when($request->department_id, function($query) use (&$request) {
-            return $query->where('agents.department_id', $request->department_id);
-        })
-        ->when(($request->start_datetime && $request->end_datetime), function($query) use (&$request){
-            return $query->whereBetween('device_time', [$request->start_datetime, $request->end_datetime]);
-        })
-        ->when(($request->duration_start || $request->duration_end), function($query) use (&$request){
-            return $query->whereBetween('duration', [$request->duration_start, $request->duration_end]);
-        })
-        ->when(($request->date && !($request->start_datetime && $request->end_datetime)), function($query) use (&$request){
-            return $query->whereDate('device_time', $request->input('date', date('Y-m-d')));
-        })
-        ->when($request->phone_number, function($query) use (&$request) {
-            return $query->where('call_registers.phone_number', 'like', '%'.$request->phone_number.'%');
-        })
-        ->when($request->saved_name, function($query) use (&$request) {
-            return $query->where('call_registers.saved_name', 'like', '%'.$request->saved_name.'%');
-        })
-        ->when($request->call_log_type, function($query) use (&$request) {
-            return $query->where('identified', $request->call_log_type);
-        })
+        $logs = CallRegister::selectRaw('call_registers.agent_id, call_registers.dial_code, call_registers.phone_number, call_registers.saved_name, call_registers.duration, call_registers.device_time, call_registers.call_type, call_registers.identified, agents.name as agent_name, departments.name as department_name, sim_allocations.phone_number as agent_phone_number')
+            ->join('agents', 'agents.id', '=', 'call_registers.agent_id')
+            ->join('departments', 'departments.id', '=', 'agents.department_id')
+            ->join('sim_allocations', 'sim_allocations.id', '=', 'call_registers.sim_allocation_id')
+            ->when($request->user_name, function($query) use (&$request) {
+                return $query->where('agents.user_name', $request->user_name);
+            })
+            ->when($request->department_id, function($query) use (&$request) {
+                return $query->where('agents.department_id', $request->department_id);
+            })
+            ->when(($request->start_datetime && $request->end_datetime), function($query) use (&$request){
+                return $query->whereBetween('device_time', [$request->start_datetime, $request->end_datetime]);
+            })
+            ->when(($request->duration_start || $request->duration_end), function($query) use (&$request){
+                return $query->whereBetween('duration', [$request->duration_start, $request->duration_end]);
+            })
+            ->when(($request->date && !($request->start_datetime && $request->end_datetime)), function($query) use (&$request){
+                return $query->whereDate('device_time', $request->input('date', date('Y-m-d')));
+            })
+            ->when($request->phone_number, function($query) use (&$request) {
+                return $query->where('call_registers.phone_number', 'like', '%'.$request->phone_number.'%');
+            })
+            ->when($request->saved_name, function($query) use (&$request) {
+                return $query->where('call_registers.saved_name', 'like', '%'.$request->saved_name.'%');
+            })
+            ->when($request->call_log_type, function($query) use (&$request) {
+                return $query->where('identified', $request->call_log_type);
+            })
         ->orderBy('device_time', 'desc')->orderBy('duration', 'desc');
 
         $this->response['logs'] = [];
@@ -257,8 +257,10 @@ class CallRecorderController extends Controller {
                 'unique' => []
             ]
         ];
-        $listedLogs = [];
-        DB::statement('create temporary table temp_call_logs '.$logs->toSql(), $logs->getBindings());
+        DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, is_unique INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
+        DB::update('update temp_call_logs set is_unique = 1 where id in (select id from temp_call_logs )');
+        #Remove Duplicate
+
 
         dd(DB::table('temp_call_logs')->get());
 
