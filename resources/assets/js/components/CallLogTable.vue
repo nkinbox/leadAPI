@@ -28,7 +28,7 @@
                         <div v-text="log.call_type" class="badge text-uppercase" :class="{'badge-info':(log.call_type == 'outgoing' || log.call_type == 'busy'), 'badge-warning':(log.call_type == 'incoming' || log.call_type == 'missed' || log.call_type == 'rejected')}"></div>
                     </td>
                     <td>{{log.duration | readableSeconds}}</td>
-                    <td>{{log.timestamp | formatDate}}</td>
+                    <td>{{log.device_time | formatDate}}</td>
                 </tr>
             </tbody>
         </table>

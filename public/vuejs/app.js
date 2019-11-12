@@ -8868,7 +8868,7 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("td", [
-                      _vm._v(_vm._s(_vm._f("formatDate")(log.timestamp)))
+                      _vm._v(_vm._s(_vm._f("formatDate")(log.device_time)))
                     ])
                   ]
                 )
