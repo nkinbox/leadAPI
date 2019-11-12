@@ -302,7 +302,7 @@ class CallRecorderController extends Controller {
             sum(case when call_type = "busy" and is_unattended = 1 then 1 else null end) as busy_unattended,
             sum(case when call_type = "busy" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as busy_untouched
         ')->get();
-        $summary = $summary->toArray();
+        $summary = (array) $summary->first();
         dd($summary);
 
    
