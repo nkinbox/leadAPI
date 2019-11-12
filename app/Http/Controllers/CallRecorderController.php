@@ -224,39 +224,6 @@ class CallRecorderController extends Controller {
             })
         ->orderBy('device_time', 'desc')->orderBy('duration', 'desc');
 
-        $this->response['logs'] = [];
-        $this->response['summary'] = [
-            'overview' => [
-                'total' => 0,
-                'duration' => 0,
-                'unique' => []
-            ],
-            'incoming' => [
-                'total' => 0,
-                'duration' => 0,
-                'unique' => []
-            ],
-            'outgoing' => [
-                'total' => 0,
-                'duration' => 0,
-                'unique' => []
-            ],
-            'missed' => [
-                'total' => 0,
-                'duration' => 0,
-                'unique' => []
-            ],
-            'rejected' => [
-                'total' => 0,
-                'duration' => 0,
-                'unique' => []
-            ],
-            'busy' => [
-                'total' => 0,
-                'duration' => 0,
-                'unique' => []
-            ]
-        ];
         DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, call_type_unique INT DEFAULT 0, total_unique INT DEFAULT 0, is_unattended INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
         DB::statement('create temporary table temp_unique_calls select min(id) as id from temp_call_logs group by concat(dial_code, phone_number, call_type)');
         DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set call_type_unique = 1');
@@ -303,8 +270,11 @@ class CallRecorderController extends Controller {
             sum(case when call_type = "busy" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as busy_untouched
         ')->get();
         $summary = (array) $summary->first();
-        dd($summary);
-
+        foreach($summary as $key => $val) {
+            $key = explode('_', $key);
+            $this->response['summary'][$key[0]][$key[1]] = $val;
+        }
+        $this->response['logs'] = DB::table('temp_call_logs')->get();
    
         return response()->json($this->response);
     }
