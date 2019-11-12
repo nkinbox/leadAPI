@@ -222,7 +222,8 @@ class CallRecorderController extends Controller {
         ->when($request->call_log_type, function($query) use (&$request) {
             return $query->where('identified', $request->call_log_type);
         })
-        ->orderBy('device_time', 'desc')->orderBy('duration', 'desc')->get();
+        ->orderBy('device_time', 'desc')->orderBy('duration', 'desc');
+
         $this->response['logs'] = [];
         $this->response['summary'] = [
             'overview' => [
@@ -257,8 +258,13 @@ class CallRecorderController extends Controller {
             ]
         ];
         $listedLogs = [];
+        DB::statement('create temporary table temp_call_logs '.$logs->toSql(), $logs->getBindings());
+
+        dd(DB::table('temp_call_logs')->get());
+
+
         foreach($logs as $log) {
-            if(isset($this->listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
+            if(isset($listedLogs[$log->agent_id.$log->phone_number.$log->duration])) {
                 continue;
             }
             $this->response['summary']['overview']['total']++;
@@ -286,10 +292,13 @@ class CallRecorderController extends Controller {
                 'saved_name' => $log->saved_name,
                 'duration' => $log->duration,
                 'timestamp' => date('Y-m-d H:i:s', strtotime($log->device_time)),
-                'call_type' => $log->call_type
+                'call_type' => $log->call_type,
+                'is_unique' => false,
             ];
-            $this->listedLogs[$log->agent_id.$log->phone_number.$log->duration] = null;
+            $listedLogs[$log->agent_id.$log->phone_number.$log->duration] = 1;
         }
+        unset($listedLogs);
+        $uniqueNumbers = $this->response['summary']['overview']['unique'];
         $this->response['summary']['overview']['unique'] = count($this->response['summary']['overview']['unique']);
         $call_types = ['missed', 'rejected', 'busy'];
         foreach($call_types as $call_type) {
@@ -301,12 +310,18 @@ class CallRecorderController extends Controller {
                 }
             }
         }
+        foreach($this->response['logs'] as &$log) {
+            if(isset($uniqueNumbers[$log['dial_code'].$log['phone_number']])) {
+                $log['is_unique'] = true;
+                unset($uniqueNumbers[$log['dial_code'].$log['phone_number']]);
+            }
+            if(isset($this->response['summary'][$log['call_type']]['unique'][$log['dial_code'].$log['phone_number']])) {
+
+            }
+        }
         $this->response['summary']['missed']['unique'] = count($this->response['summary']['missed']['unique']);
         $this->response['summary']['rejected']['unique'] = count($this->response['summary']['rejected']['unique']);
         $this->response['summary']['busy']['unique'] = count($this->response['summary']['busy']['unique']);
-
-
-
         $this->response['summary']['incoming']['unique'] = count($this->response['summary']['incoming']['unique']);
         $this->response['summary']['outgoing']['unique'] = count($this->response['summary']['outgoing']['unique']);
         return response()->json($this->response);
