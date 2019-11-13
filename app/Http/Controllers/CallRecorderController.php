@@ -228,9 +228,9 @@ class CallRecorderController extends Controller {
         DB::statement('create temporary table temp_unique_calls select min(id) as id from temp_call_logs group by concat(dial_code, phone_number, call_type)');
         DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set call_type_latest = 1');
         DB::statement('drop temporary table temp_unique_calls');
-        DB::insert('create temporary table temp_unique_calls select min(id) as id, sum(duration) as total_duration from temp_call_logs group by concat(dial_code, phone_number)');
+        DB::insert('create temporary table temp_unique_calls select min(id) as id, sum(duration) as total_duration, concat(dial_code, phone_number) as dial_code_phone_number from temp_call_logs group by dial_code_phone_number');
         DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set latest = 1');
-        DB::update('update temp_call_logs inner join temp_unique_calls on concat(temp_unique_calls.dial_code, temp_unique_calls.phone_number) = concat(temp_call_logs.dial_code, temp_call_logs.phone_number) set has_duration = case when total_duration = 0 then 0 else 1 end');
+        DB::update('update temp_call_logs inner join temp_unique_calls on dial_code_phone_number = concat(temp_call_logs.dial_code, temp_call_logs.phone_number) set has_duration = case when total_duration = 0 then 0 else 1 end');
         DB::statement('drop temporary table temp_unique_calls');
         
         $summary = DB::table('temp_call_logs')->selectRaw('
