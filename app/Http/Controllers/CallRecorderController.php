@@ -224,65 +224,40 @@ class CallRecorderController extends Controller {
             })
         ->orderBy('device_time', 'desc')->orderBy('duration', 'desc');
 
-        DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, call_type_unique INT DEFAULT 0, total_unique INT DEFAULT 0, is_unattended INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
+        DB::statement('create temporary table temp_call_logs(id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, call_type_latest INT DEFAULT 0, latest INT DEFAULT 0, has_duration INT DEFAULT 0) '.$logs->toSql(), $logs->getBindings());
         DB::statement('create temporary table temp_unique_calls select min(id) as id from temp_call_logs group by concat(dial_code, phone_number, call_type)');
-        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set call_type_unique = 1');
+        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set call_type_latest = 1');
         DB::statement('drop temporary table temp_unique_calls');
         DB::insert('create temporary table temp_unique_calls select min(id) as id, sum(duration) as total_duration from temp_call_logs group by concat(dial_code, phone_number)');
-        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set total_unique = 1, is_unattended = case when total_duration = 0 then 1 else 0 end');
+        DB::update('update temp_call_logs inner join temp_unique_calls on temp_unique_calls.id = temp_call_logs.id set latest = 1');
+        DB::update('update temp_call_logs inner join temp_unique_calls on concat(temp_unique_calls.dial_code, temp_unique_calls.phone_number) = concat(temp_call_logs.dial_code, temp_call_logs.phone_number) set has_duration = case when total_duration = 0 then 0 else 1 end');
         DB::statement('drop temporary table temp_unique_calls');
         
         $summary = DB::table('temp_call_logs')->selectRaw('
             count(1) as overview_total,
             sum(duration) overview_duration,
-            sum(case when total_unique = 1 then 1 else null end) as overview_unique,
-            sum(case when total_unique = 1 and is_unattended = 1 then 1 else null end) as overview_unattended,
-            sum(case when total_unique = 1 and call_type_unique = 1 and duration = 0 then 1 else null end) as overview_untouched,
+            sum(case when latest = 1 then 1 else null end) as overview_unique,
+            sum(case when latest = 1 and has_duration = 0 then 1 else null end) as overview_untouched,
 
             sum(case when call_type = "incoming" then 1 else null end) as incoming_total,
             sum(case when call_type = "incoming" then duration else null end) as incoming_duration,
-            sum(case when call_type = "incoming" and call_type_unique = 1 then 1 else null end) as incoming_unique,
-            0 as incoming_unattended,
-            0 as incoming_untouched,
+            sum(case when call_type = "incoming" and call_type_latest = 1 then 1 else null end) as incoming_unique,
 
             sum(case when call_type = "outgoing" then 1 else null end) as outgoing_total,
             sum(case when call_type = "outgoing" then duration else null end) as outgoing_duration,
-            sum(case when call_type = "outgoing" and call_type_unique = 1 then 1 else null end) as outgoing_unique,
-            0 as outgoing_unattended,
-            0 as outgoing_untouched,
+            sum(case when call_type = "outgoing" and call_type_latest = 1 then 1 else null end) as outgoing_unique,
 
-            sum(case when call_type = "missed" then 1 else null end) as missed_total,
-            0 as missed_duration,
-            sum(case when call_type = "missed" and call_type_unique = 1 then 1 else null end) as missed_unique,
-            sum(case when call_type = "missed" and is_unattended = 1 then 1 else null end) as missed_unattended,
-            sum(case when call_type = "missed" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as missed_untouched,
+            sum(case when call_type = "missed" and has_duration = 1 then 1 else null end) as missed_total,
+            sum(case when call_type = "missed" and has_duration = 1 and call_type_latest = 1 then 1 else null end) as missed_unique,
 
-            sum(case when call_type = "rejected" then 1 else null end) as rejected_total,
-            0 as rejected_duration,
-            sum(case when call_type = "rejected" and call_type_unique = 1 then 1 else null end) as rejected_unique,
-            sum(case when call_type = "rejected" and is_unattended = 1 then 1 else null end) as rejected_unattended,
-            sum(case when call_type = "rejected" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as rejected_untouched,
+            sum(case when call_type = "rejected" and has_duration = 1 then 1 else null end) as rejected_total,
+            sum(case when call_type = "rejected" and has_duration = 1 and call_type_unique = 1 then 1 else null end) as rejected_unique,
 
-            sum(case when call_type = "busy" then 1 else null end) as busy_total,
-            0 as busy_duration,
-            sum(case when call_type = "busy" and call_type_unique = 1 then 1 else null end) as busy_unique,
-            sum(case when call_type = "busy" and is_unattended = 1 then 1 else null end) as busy_unattended,
-            sum(case when call_type = "busy" and total_unique = 1 and call_type_unique = 1 then 1 else null end) as busy_untouched
+            sum(case when call_type = "busy" and has_duration = 1 then 1 else null end) as busy_total,
+            sum(case when call_type = "busy" and has_duration = 1 and call_type_unique = 1 then 1 else null end) as busy_unique,
         ')->get();
-        $summary = (array) $summary->first();
-        foreach($summary as $key => $val) {
-            $i = explode('_', $key);
-            if($i[1] == 'duration') {
-                $this->response['summary'][$i[0]][$i[1]] = $val;
-            } else {
-                $this->response['summary'][$i[0]][$i[1]] = [
-                    'filter' => $key,
-                    'count' => $val
-                ];
-            }
-        }
+        $this->response['summary'] = (array) $summary->first();
         $this->response['logs'] = DB::table('temp_call_logs')->get();
-   
         return response()->json($this->response);
     }
     public function agents() {
