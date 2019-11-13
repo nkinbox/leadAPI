@@ -261,7 +261,7 @@ class CallRecorderController extends Controller {
             $i = explode('_', $key);
             $this->response['summary'][$i[0]][$i[1]] = [
                 'value' => $val,
-                'filter' => $key
+                'filter' => ($i[1] == 'duration'?'':$key)
             ];
         }
         $this->response['logs'] = DB::table('temp_call_logs')->get();
