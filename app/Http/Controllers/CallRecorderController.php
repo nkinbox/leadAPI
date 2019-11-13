@@ -254,7 +254,7 @@ class CallRecorderController extends Controller {
             sum(case when call_type = "rejected" and has_duration = 1 and call_type_unique = 1 then 1 else null end) as rejected_unique,
 
             sum(case when call_type = "busy" and has_duration = 1 then 1 else null end) as busy_total,
-            sum(case when call_type = "busy" and has_duration = 1 and call_type_unique = 1 then 1 else null end) as busy_unique,
+            sum(case when call_type = "busy" and has_duration = 1 and call_type_unique = 1 then 1 else null end) as busy_unique
         ')->get();
         $this->response['summary'] = (array) $summary->first();
         $this->response['logs'] = DB::table('temp_call_logs')->get();
