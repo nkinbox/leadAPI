@@ -26942,32 +26942,32 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
         case 'missed_total':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'missed';
+            return log.call_type == 'missed' && log.has_duration;
           });
 
         case 'missed_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'missed' && log.call_type_latest;
+            return log.call_type == 'missed' && log.call_type_latest && log.has_duration;
           });
 
         case 'rejected_total':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected';
+            return log.call_type == 'rejected' && log.has_duration;
           });
 
         case 'rejected_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.call_type_latest;
+            return log.call_type == 'rejected' && log.has_duration && log.call_type_latest;
           });
 
         case 'busy_total':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'busy';
+            return log.call_type == 'busy' && log.has_duration;
           });
 
         case 'busy_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'busy' && log.call_type_latest;
+            return log.call_type == 'busy' && log.has_duration && log.call_type_latest;
           });
 
         default:
