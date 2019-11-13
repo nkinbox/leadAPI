@@ -119,45 +119,31 @@ export const store = new Vuex.Store({
         filteredLogs(state) {
             switch (state.filter_logs) {
                 case 'overview_unique':
-                return state.call_register.logs.filter((log) => log.total_unique)
-                case 'overview_unattended':
-                return state.call_register.logs.filter((log) => log.is_unattended)
+                return state.call_register.logs.filter((log) => log.latest)
                 case 'overview_untouched':
-                return state.call_register.logs.filter((log) => log.total_unique && log.call_type_unique && log.duration == 0)
+                return state.call_register.logs.filter((log) => log.latest && !log.has_duration)
                 case 'incoming_total':
                 return state.call_register.logs.filter((log) => log.call_type == 'incoming')
                 case 'incoming_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'incoming' && log.call_type_unique)
+                return state.call_register.logs.filter((log) => log.call_type == 'incoming' && log.call_type_latest)
                 case 'outgoing_total':
                 return state.call_register.logs.filter((log) => log.call_type == 'outgoing')
                 case 'outgoing_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'outgoing' && log.call_type_unique)
+                return state.call_register.logs.filter((log) => log.call_type == 'outgoing' && log.call_type_latest)
                 case 'missed_total':
                 return state.call_register.logs.filter((log) => log.call_type == 'missed')
                 case 'missed_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'missed' && log.call_type_unique)
-                case 'missed_unattended':
-                return state.call_register.logs.filter((log) => log.call_type == 'missed' && log.is_unattended)
-                case 'missed_untouched':
-                return state.call_register.logs.filter((log) => log.call_type == 'missed' && log.total_unique && log.call_type_unique)
+                return state.call_register.logs.filter((log) => log.call_type == 'missed' && log.call_type_latest)
                 case 'rejected_total':
                 return state.call_register.logs.filter((log) => log.call_type == 'rejected')
                 case 'rejected_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.call_type_unique)
-                case 'rejected_unattended':
-                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.is_unattended)
-                case 'rejected_untouched':
-                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.total_unique && log.call_type_unique)
+                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.call_type_latest)
                 case 'busy_total':
                 return state.call_register.logs.filter((log) => log.call_type == 'busy')
                 case 'busy_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'busy' && log.call_type_unique)
-                case 'busy_unattended':
-                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.is_unattended)
-                case 'busy_untouched':
-                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.total_unique && log.call_type_unique)
+                return state.call_register.logs.filter((log) => log.call_type == 'busy' && log.call_type_latest)
                 default:
-                return state.call_register.logs.filter((log) => log.call_type == state.filter_logs)
+                return state.call_register.logs
             }
         },
         searchFilteredLogs(state) {

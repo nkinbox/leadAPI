@@ -2048,21 +2048,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'call-summary',
   props: {
@@ -2084,7 +2069,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     filterLogs: function filterLogs(call_type) {
-      this.$store.commit(this.prefix ? 'setSearchFilterLog' : 'setFilterLog', call_type);
+      if (call_type) this.$store.commit(this.prefix ? 'setSearchFilterLog' : 'setFilterLog', call_type);
     }
   },
   filters: {
@@ -9066,101 +9051,42 @@ var render = function() {
               ])
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "d-flex border-top pt-1" }, [
-              _c(
-                "div",
-                {
-                  staticClass: "flex-fill",
-                  class: { "bg-primary": _vm.selected == stat.total.filter },
-                  on: {
-                    click: function($event) {
-                      return _vm.filterLogs(stat.total.filter)
+            _c(
+              "div",
+              { staticClass: "d-flex border-top pt-1" },
+              _vm._l(stat, function(filter, filter_type) {
+                return _c(
+                  "div",
+                  {
+                    key: filter_type,
+                    staticClass: "flex-fill",
+                    class: {
+                      "bg-primary": _vm.selected == filter.name,
+                      "border-left": filter_type != "total"
+                    },
+                    on: {
+                      click: function($event) {
+                        return _vm.filterLogs(filter.name)
+                      }
                     }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "small" }, [_vm._v("Total")]),
-                  _vm._v(" "),
-                  _c("div", [_vm._v(_vm._s(stat.total.count))])
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass: "flex-fill border-left",
-                  class: { "bg-primary": _vm.selected == stat.unique.filter },
-                  on: {
-                    click: function($event) {
-                      return _vm.filterLogs(stat.unique.filter)
-                    }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "small" }, [_vm._v("Unique")]),
-                  _vm._v(" "),
-                  _c("div", [_vm._v(_vm._s(stat.unique.count))])
-                ]
-              ),
-              _vm._v(" "),
-              stat.duration
-                ? _c("div", { staticClass: "flex-fill border-left" }, [
-                    _c("div", { staticClass: "small" }, [_vm._v("Duration")]),
+                  },
+                  [
+                    _c("div", { staticClass: "small text-uppercase" }, [
+                      _vm._v(_vm._s(filter_type))
+                    ]),
                     _vm._v(" "),
-                    _c("div", [
-                      _vm._v(_vm._s(_vm._f("readableSeconds")(stat.duration)))
-                    ])
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              stat.unattended.count
-                ? _c(
-                    "div",
-                    {
-                      staticClass: "flex-fill border-left",
-                      class: {
-                        "bg-primary": _vm.selected == stat.unattended.filter
-                      },
-                      on: {
-                        click: function($event) {
-                          return _vm.filterLogs(stat.unattended.filter)
-                        }
-                      }
-                    },
-                    [
-                      _c("div", { staticClass: "small" }, [
-                        _vm._v("Unattended")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", [_vm._v(_vm._s(stat.unattended.count))])
-                    ]
-                  )
-                : _vm._e(),
-              _vm._v(" "),
-              stat.untouched.count
-                ? _c(
-                    "div",
-                    {
-                      staticClass: "flex-fill border-left",
-                      class: {
-                        "bg-primary": _vm.selected == stat.untouched.filter
-                      },
-                      on: {
-                        click: function($event) {
-                          return _vm.filterLogs(stat.untouched.filter)
-                        }
-                      }
-                    },
-                    [
-                      _c("div", { staticClass: "small" }, [
-                        _vm._v("Untouched")
-                      ]),
-                      _vm._v(" "),
-                      _c("div", [_vm._v(_vm._s(stat.untouched.count))])
-                    ]
-                  )
-                : _vm._e()
-            ])
+                    filter.name
+                      ? _c("div", [_vm._v(_vm._s(filter.value))])
+                      : _c("div", [
+                          _vm._v(
+                            _vm._s(_vm._f("readableSeconds")(filter.value))
+                          )
+                        ])
+                  ]
+                )
+              }),
+              0
+            )
           ]
         )
       }),
@@ -26986,17 +26912,12 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       switch (state.filter_logs) {
         case 'overview_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.total_unique;
-          });
-
-        case 'overview_unattended':
-          return state.call_register.logs.filter(function (log) {
-            return log.is_unattended;
+            return log.latest;
           });
 
         case 'overview_untouched':
           return state.call_register.logs.filter(function (log) {
-            return log.total_unique && log.call_type_unique && log.duration == 0;
+            return log.latest && !log.has_duration;
           });
 
         case 'incoming_total':
@@ -27006,7 +26927,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
         case 'incoming_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'incoming' && log.call_type_unique;
+            return log.call_type == 'incoming' && log.call_type_latest;
           });
 
         case 'outgoing_total':
@@ -27016,7 +26937,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
         case 'outgoing_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'outgoing' && log.call_type_unique;
+            return log.call_type == 'outgoing' && log.call_type_latest;
           });
 
         case 'missed_total':
@@ -27026,17 +26947,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
         case 'missed_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'missed' && log.call_type_unique;
-          });
-
-        case 'missed_unattended':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'missed' && log.is_unattended;
-          });
-
-        case 'missed_untouched':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'missed' && log.total_unique && log.call_type_unique;
+            return log.call_type == 'missed' && log.call_type_latest;
           });
 
         case 'rejected_total':
@@ -27046,17 +26957,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
         case 'rejected_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.call_type_unique;
-          });
-
-        case 'rejected_unattended':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.is_unattended;
-          });
-
-        case 'rejected_untouched':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.total_unique && log.call_type_unique;
+            return log.call_type == 'rejected' && log.call_type_latest;
           });
 
         case 'busy_total':
@@ -27066,23 +26967,11 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
         case 'busy_unique':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'busy' && log.call_type_unique;
-          });
-
-        case 'busy_unattended':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.is_unattended;
-          });
-
-        case 'busy_untouched':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.total_unique && log.call_type_unique;
+            return log.call_type == 'busy' && log.call_type_latest;
           });
 
         default:
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == state.filter_logs;
-          });
+          return state.call_register.logs;
       }
     },
     searchFilteredLogs: function searchFilteredLogs(state) {
