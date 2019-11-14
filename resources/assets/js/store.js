@@ -145,7 +145,32 @@ export const store = new Vuex.Store({
             }
         },
         searchFilteredLogs(state) {
-            return (state.search_filter_logs == 'overview')?state.search_call_register.logs:state.search_call_register.logs.filter((log) => log.call_type == state.search_filter_logs)
+            switch (state.search_filter_logs) {
+                case 'overview_unique':
+                return state.search_call_register.logs.filter((log) => log.latest)
+                case 'untouched_total':
+                return state.search_call_register.logs.filter((log) => log.latest && !log.has_duration)
+                case 'untouched_incoming':
+                return state.search_call_register.logs.filter((log) => log.latest && !log.has_duration && (log.call_type == 'missed' || log.call_type == 'rejected'))
+                case 'untouched_outgoing':
+                return state.search_call_register.logs.filter((log) => log.latest && !log.has_duration && (log.call_type == 'busy'))
+                case 'incoming_total':
+                return state.search_call_register.logs.filter((log) => log.call_type == 'incoming')
+                case 'incoming_unique':
+                return state.search_call_register.logs.filter((log) => log.call_type == 'incoming' && log.call_type_latest)
+                case 'outgoing_total':
+                return state.search_call_register.logs.filter((log) => log.call_type == 'outgoing')
+                case 'outgoing_unique':
+                return state.search_call_register.logs.filter((log) => log.call_type == 'outgoing' && log.call_type_latest)
+                case 'unattended_missed':
+                return state.search_call_register.logs.filter((log) => log.call_type == 'missed' && log.latest && log.call_type_latest && log.has_duration)
+                case 'unattended_rejected':
+                return state.search_call_register.logs.filter((log) => log.call_type == 'rejected' && log.latest && log.has_duration && log.call_type_latest)
+                case 'unattended_busy':
+                return state.search_call_register.logs.filter((log) => log.call_type == 'busy' && log.latest && log.has_duration && log.call_type_latest)
+                default:
+                return state.search_call_register.logs
+            }
         }
     },
     mutations: {

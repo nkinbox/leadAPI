@@ -6,7 +6,7 @@
                 <div class="h6 text-uppercase">{{call_type}}</div>
             </div>
             <div class="d-flex border-top pt-1">
-                <div v-for="(filter, filter_type) in stat" :key="filter_type" @click="filterLogs(filter.name)" class="flex-fill" :class="{'bg-primary':selected==filter.name, 'border-left':filter_type!='total'}">
+                <div v-for="(filter, filter_type) in stat" :key="filter_type" @click="filterLogs(filter.name)" class="flex-fill py-1" :class="{'bg-primary text-white':selected==filter.name, 'border-left':(filter_type!='total' && filter_type!='missed')}">
                     <div class="small text-uppercase">{{filter_type}}</div>
                     <div v-if="filter.name">{{filter.value}}</div>
                     <div v-else>{{filter.value | readableSeconds}}</div>

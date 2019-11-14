@@ -2,9 +2,9 @@
   <div>
     <search-input></search-input>
     <div class="position-relative">
-        <div id="searchResult" v-if="searchActive" class="pt-1 position-absolute row no-gutters" @mousedown="$event.preventDefault()">
+        <div id="searchResult" v-if="searchActive" class="mt-2 position-absolute row no-gutters" @mousedown="$event.preventDefault()">
             <div class="col-3">
-                <call-summary :prefix="'search_'" class="overflow-y"></call-summary>
+                <call-summary :prefix="'search_'"></call-summary>
             </div>
             <div class="col-9">
                 <call-log-table :prefix="'search_'" class="overflow-y"></call-log-table>
@@ -36,7 +36,7 @@ export default {
 
 <style scoped>
 #searchResult {
-    width: 70vw;
+    width: 80vw;
     height: 90vh;
     right: 0;
     top: 0;

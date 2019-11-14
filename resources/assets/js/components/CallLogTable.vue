@@ -11,6 +11,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Employee</th>
+                    <th scope="col">Department</th>
                     <th scope="col">Icon</th>
                     <th scope="col">Conversed</th>
                     <th scope="col">Call Type</th>
@@ -19,16 +20,17 @@
                 </tr>
             </thead>
             <tbody class="text-white">
-                <tr v-for="(log, index) in records" :key="index" :class="{'bg-danger':(log.duration?false:true), 'bg-success':(log.duration?true:false)}">
+                <tr v-for="(log, index) in records" :key="log.id" :class="{'bg-danger':(log.duration?false:true), 'bg-success':(log.duration?true:false)}">
                     <th scope="row" v-text="index+1"></th>
                     <td class="small" v-html="log.agent_name+'<br>'+log.agent_phone_number"></td>
+                    <td><label class="badge badge-dark text-light">{{log.department_name}}</label></td>
                     <td ><img class="mr-1" v-if="(log.call_type != 'incoming' && log.call_type != 'outgoing')" :src="(log.call_type == 'busy')?'vuejs/outgoing.png':'vuejs/incoming.png'"><img :src="'vuejs/'+log.call_type+'.png'"></td>
                     <td class="small pointer" @click="search(log.phone_number)" v-html="(log.saved_name?log.saved_name:'NA')+'<br>'+log.dial_code+' '+log.phone_number"></td>
                     <td>
                         <div v-text="log.call_type" class="badge text-uppercase" :class="{'badge-info':(log.call_type == 'outgoing' || log.call_type == 'busy'), 'badge-warning':(log.call_type == 'incoming' || log.call_type == 'missed' || log.call_type == 'rejected')}"></div>
                     </td>
                     <td>{{log.duration | readableSeconds}}</td>
-                    <td>{{log.device_time | formatDate}}</td>
+                    <td class="text-nowrap">{{log.device_time | formatDate}}</td>
                 </tr>
             </tbody>
         </table>

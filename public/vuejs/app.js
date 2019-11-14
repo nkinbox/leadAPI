@@ -1901,6 +1901,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'call-log-table',
@@ -2578,7 +2580,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n#searchResult[data-v-7cdae69f] {\r\n    width: 70vw;\r\n    height: 90vh;\r\n    right: 0;\r\n    top: 0;\r\n    z-index: 1;\r\n    background: #fff;\r\n    box-shadow: -3px 3px 5px 5px #aaa;\n}\n.overflow-y[data-v-7cdae69f] {\r\n    overflow-y: scroll;\r\n    height: 90vh;\n}\r\n", ""]);
+exports.push([module.i, "\n#searchResult[data-v-7cdae69f] {\r\n    width: 80vw;\r\n    height: 90vh;\r\n    right: 0;\r\n    top: 0;\r\n    z-index: 1;\r\n    background: #fff;\r\n    box-shadow: -3px 3px 5px 5px #aaa;\n}\n.overflow-y[data-v-7cdae69f] {\r\n    overflow-y: scroll;\r\n    height: 90vh;\n}\r\n", ""]);
 
 // exports
 
@@ -8784,7 +8786,7 @@ var render = function() {
                 return _c(
                   "tr",
                   {
-                    key: index,
+                    key: log.id,
                     class: {
                       "bg-danger": log.duration ? false : true,
                       "bg-success": log.duration ? true : false
@@ -8804,6 +8806,14 @@ var render = function() {
                         )
                       }
                     }),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c(
+                        "label",
+                        { staticClass: "badge badge-dark text-light" },
+                        [_vm._v(_vm._s(log.department_name))]
+                      )
+                    ]),
                     _vm._v(" "),
                     _c("td", [
                       log.call_type != "incoming" && log.call_type != "outgoing"
@@ -8860,7 +8870,7 @@ var render = function() {
                       _vm._v(_vm._s(_vm._f("readableSeconds")(log.duration)))
                     ]),
                     _vm._v(" "),
-                    _c("td", [
+                    _c("td", { staticClass: "text-nowrap" }, [
                       _vm._v(_vm._s(_vm._f("formatDate")(log.device_time)))
                     ])
                   ]
@@ -8901,6 +8911,8 @@ var staticRenderFns = [
         _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Employee")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Department")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Icon")]),
         _vm._v(" "),
@@ -9059,10 +9071,11 @@ var render = function() {
                   "div",
                   {
                     key: filter_type,
-                    staticClass: "flex-fill",
+                    staticClass: "flex-fill py-1",
                     class: {
-                      "bg-primary": _vm.selected == filter.name,
-                      "border-left": filter_type != "total"
+                      "bg-primary text-white": _vm.selected == filter.name,
+                      "border-left":
+                        filter_type != "total" && filter_type != "missed"
                     },
                     on: {
                       click: function($event) {
@@ -9513,7 +9526,7 @@ var render = function() {
           ? _c(
               "div",
               {
-                staticClass: "pt-1 position-absolute row no-gutters",
+                staticClass: "mt-2 position-absolute row no-gutters",
                 attrs: { id: "searchResult" },
                 on: {
                   mousedown: function($event) {
@@ -9525,12 +9538,7 @@ var render = function() {
                 _c(
                   "div",
                   { staticClass: "col-3" },
-                  [
-                    _c("call-summary", {
-                      staticClass: "overflow-y",
-                      attrs: { prefix: "search_" }
-                    })
-                  ],
+                  [_c("call-summary", { attrs: { prefix: "search_" } })],
                   1
                 ),
                 _vm._v(" "),
@@ -26970,9 +26978,65 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       }
     },
     searchFilteredLogs: function searchFilteredLogs(state) {
-      return state.search_filter_logs == 'overview' ? state.search_call_register.logs : state.search_call_register.logs.filter(function (log) {
-        return log.call_type == state.search_filter_logs;
-      });
+      switch (state.search_filter_logs) {
+        case 'overview_unique':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.latest;
+          });
+
+        case 'untouched_total':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.latest && !log.has_duration;
+          });
+
+        case 'untouched_incoming':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.latest && !log.has_duration && (log.call_type == 'missed' || log.call_type == 'rejected');
+          });
+
+        case 'untouched_outgoing':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.latest && !log.has_duration && log.call_type == 'busy';
+          });
+
+        case 'incoming_total':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.call_type == 'incoming';
+          });
+
+        case 'incoming_unique':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.call_type == 'incoming' && log.call_type_latest;
+          });
+
+        case 'outgoing_total':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.call_type == 'outgoing';
+          });
+
+        case 'outgoing_unique':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.call_type == 'outgoing' && log.call_type_latest;
+          });
+
+        case 'unattended_missed':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.call_type == 'missed' && log.latest && log.call_type_latest && log.has_duration;
+          });
+
+        case 'unattended_rejected':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.call_type == 'rejected' && log.latest && log.has_duration && log.call_type_latest;
+          });
+
+        case 'unattended_busy':
+          return state.search_call_register.logs.filter(function (log) {
+            return log.call_type == 'busy' && log.latest && log.has_duration && log.call_type_latest;
+          });
+
+        default:
+          return state.search_call_register.logs;
+      }
     }
   },
   mutations: {
