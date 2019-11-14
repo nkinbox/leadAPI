@@ -27,6 +27,8 @@ class CallRecorderController extends Controller {
             'sim_allocation.*.operator' => 'required|string|max:30',
             'sim_allocation.*.dial_code' => 'nullable|string|max:5',
             'sim_allocation.*.phone_number' => 'nullable|string|max:15',
+            'sim_allocation.*.sim_name' => 'nullable|string|max:50',
+            'sim_allocation.*.is_personal' => 'nullable|boolean',
         ]);
         $agent = Agents::where('user_name', $request->user_name)->first();
         if($agent) {
@@ -48,19 +50,17 @@ class CallRecorderController extends Controller {
         }
         foreach($request->sim_allocation as $sim_allocation) {
             $sim = SimAllocation::find($sim_allocation['sim_id']);
-            if($sim) {
-                $sim->operator = $sim_allocation['operator'];
-                $sim->agent_id = $agent->id;
-                $sim->save();
-            } else {
+            if(!$sim) {
                 $sim = new SimAllocation;
                 $sim->id = $sim_allocation['sim_id'];
-                $sim->operator = $sim_allocation['operator'];
-                $sim->dial_code = isset($sim_allocation['dial_code'])?$sim_allocation['dial_code']:null;
-                $sim->phone_number = isset($sim_allocation['phone_number'])?$sim_allocation['phone_number']:null;
-                $sim->agent_id = $agent->id;
-                $sim->save();
             }
+            $sim->operator = $sim_allocation['operator'];
+            $sim->dial_code = isset($sim_allocation['dial_code'])?$sim_allocation['dial_code']:null;
+            $sim->phone_number = isset($sim_allocation['phone_number'])?$sim_allocation['phone_number']:null;
+            $sim->agent_id = $agent->id;
+            $sim->sim_name = $sim_allocation['sim_name'];
+            $sim->is_personal = $sim_allocation['is_personal']?1:0;
+            $sim->save();
         }
         $this->response['success'] = 1;
         return response()->json($this->response);
@@ -247,14 +247,11 @@ class CallRecorderController extends Controller {
             sum(case when call_type = "outgoing" then duration else 0 end) as outgoing_duration,
             sum(case when call_type = "outgoing" and call_type_latest = 1 then 1 else 0 end) as outgoing_unique,
 
-            sum(case when call_type = "missed" and has_duration = 1 then 1 else 0 end) as missed_total,
-            sum(case when call_type = "missed" and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as missed_unique,
+            sum(case when call_type = "missed" and latest = 1 and call_type_latest = 1 and has_duration = 1 then 1 else 0 end) as missed_total,
 
-            sum(case when call_type = "rejected" and has_duration = 1 then 1 else 0 end) as rejected_total,
-            sum(case when call_type = "rejected" and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as rejected_unique,
+            sum(case when call_type = "rejected" and latest = 1 and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as rejected_total,
 
-            sum(case when call_type = "busy" and has_duration = 1 then 1 else 0 end) as busy_total,
-            sum(case when call_type = "busy" and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as busy_unique
+            sum(case when call_type = "busy" and latest = 1 and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as busy_total
         ')->get();
         $summary = (array) $summary->first();
         foreach($summary as $key => $val) {
