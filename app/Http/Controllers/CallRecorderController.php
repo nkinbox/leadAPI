@@ -276,7 +276,7 @@ class CallRecorderController extends Controller {
                 'department_name' => $agent->department_name,
                 'is_active' => $active,
                 'last_update_at' => $agent->last_update_at,
-                'sim_allocation' => $sim_allocation[$agent->id]
+                'sim_allocation' => $sim_allocations[$agent->id]
             ];
         }
         return response()->json($this->response);

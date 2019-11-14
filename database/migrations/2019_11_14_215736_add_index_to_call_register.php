@@ -13,7 +13,7 @@ class AddIndexToCallRegister extends Migration
      */
     public function up()
     {
-        Schema::create('call_registers', function (Blueprint $table) {
+        Schema::table('call_registers', function (Blueprint $table) {
             $table->index(['saved_name']);
             $table->index(['phone_number']);
         });
@@ -26,7 +26,7 @@ class AddIndexToCallRegister extends Migration
      */
     public function down()
     {
-        Schema::create('call_registers', function (Blueprint $table) {
+        Schema::table('call_registers', function (Blueprint $table) {
             $table->dropIndex(['saved_name']);
             $table->dropIndex(['phone_number']);
         });
