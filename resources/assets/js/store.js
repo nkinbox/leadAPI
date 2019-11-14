@@ -21,11 +21,13 @@ export const store = new Vuex.Store({
         departments: [],
         agents: [],
         selected_department_id: 0,
+        selected_sim_id: '',
         selected_agent: {
             department_id: 0,
             department_name: '',
             name: '',
-            user_name: ''
+            user_name: '',
+            sim_allocations: []
         },
         search_query: '',
         show_search_result: false,
@@ -101,6 +103,7 @@ export const store = new Vuex.Store({
                     filter.department_id = state.selected_department_id
                 }
                 filter.call_log_type = state.call_log_type
+                filter.sim_allocation_id = state.selected_sim_id
                 // filter.page = state.call_register.current_page + 1
             }
             return filter
@@ -200,6 +203,9 @@ export const store = new Vuex.Store({
         },
         selectDepartment(state, department_id) {
             state.selected_department_id = department_id
+        },
+        selectSimID(state, sim_id) {
+            state.selected_sim_id = sim_id
         },
         setAgents(state, agents) {
             state.agents = agents
@@ -320,12 +326,15 @@ export const store = new Vuex.Store({
                 department_id: 0,
                 department_name: '',
                 name: '',
-                user_name: ''
+                user_name: '',
+                sim_allocations: []
             })
+            context.commit('selectSimID', '')
         },
         setAgent(context, agent) {
             context.commit('selectAgent', agent)
             context.commit('selectDepartment', agent.department_id)
+            context.commit('selectSimID', '')
         },
         setSearchQuery(context, search_query) {
             if(context.state.search_query != search_query) {

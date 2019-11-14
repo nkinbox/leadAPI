@@ -2504,6 +2504,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'select-agents',
   computed: {
@@ -2521,8 +2525,19 @@ __webpack_require__.r(__webpack_exports__);
         if (agent) this.$store.dispatch('setAgent', agent);
       }
     },
+    selectedSim: {
+      get: function get() {
+        return this.$store.state.selected_sim_id;
+      },
+      set: function set(sim_id) {
+        this.$store.dispatch('selectSimID', sim_id);
+      }
+    },
     agents: function agents() {
       return this.$store.getters.agentsByDepartment;
+    },
+    sim_allocations: function sim_allocations() {
+      return this.$store.state.selected_agent.sim_allocations;
     }
   }
 });
@@ -9696,7 +9711,65 @@ var render = function() {
         })
       ],
       2
-    )
+    ),
+    _vm._v(" "),
+    _vm.selectedAgent
+      ? _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.selectedSim,
+                expression: "selectedSim"
+              }
+            ],
+            on: {
+              change: function($event) {
+                var $$selectedVal = Array.prototype.filter
+                  .call($event.target.options, function(o) {
+                    return o.selected
+                  })
+                  .map(function(o) {
+                    var val = "_value" in o ? o._value : o.value
+                    return val
+                  })
+                _vm.selectedSim = $event.target.multiple
+                  ? $$selectedVal
+                  : $$selectedVal[0]
+              }
+            }
+          },
+          [
+            _c("option", { attrs: { value: "" } }, [_vm._v("Any SIM")]),
+            _vm._v(" "),
+            _vm._l(_vm.sim_allocations, function(sim_allocation) {
+              return _c(
+                "option",
+                {
+                  key: sim_allocation.id,
+                  attrs: { value: "sim_allocation.id" }
+                },
+                [
+                  _vm._v(
+                    _vm._s(
+                      sim_allocation.phone_number +
+                        " - " +
+                        sim_allocation.sim_name
+                        ? sim_allocation.sim_name
+                        : sim_allocation.is_personal
+                        ? "Personal"
+                        : ""
+                    )
+                  )
+                ]
+              )
+            })
+          ],
+          2
+        )
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
@@ -26814,11 +26887,13 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     departments: [],
     agents: [],
     selected_department_id: 0,
+    selected_sim_id: '',
     selected_agent: {
       department_id: 0,
       department_name: '',
       name: '',
-      user_name: ''
+      user_name: '',
+      sim_allocations: []
     },
     search_query: '',
     show_search_result: false,
@@ -26898,7 +26973,8 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
           filter.department_id = state.selected_department_id;
         }
 
-        filter.call_log_type = state.call_log_type; // filter.page = state.call_register.current_page + 1
+        filter.call_log_type = state.call_log_type;
+        filter.sim_allocation_id = state.selected_sim_id; // filter.page = state.call_register.current_page + 1
       }
 
       return filter;
@@ -27067,6 +27143,9 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
     selectDepartment: function selectDepartment(state, department_id) {
       state.selected_department_id = department_id;
     },
+    selectSimID: function selectSimID(state, sim_id) {
+      state.selected_sim_id = sim_id;
+    },
     setAgents: function setAgents(state, agents) {
       state.agents = agents;
     },
@@ -27224,12 +27303,15 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
         department_id: 0,
         department_name: '',
         name: '',
-        user_name: ''
+        user_name: '',
+        sim_allocations: []
       });
+      context.commit('selectSimID', '');
     },
     setAgent: function setAgent(context, agent) {
       context.commit('selectAgent', agent);
       context.commit('selectDepartment', agent.department_id);
+      context.commit('selectSimID', '');
     },
     setSearchQuery: function setSearchQuery(context, search_query) {
       if (context.state.search_query != search_query) {

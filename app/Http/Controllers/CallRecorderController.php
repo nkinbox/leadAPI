@@ -192,12 +192,16 @@ class CallRecorderController extends Controller {
             'department_id' => 'sometimes|required|numeric',
             'phone_number' => 'sometimes|required|numeric',
             'saved_name' => 'sometimes|required|string',
-            'call_log_type' => 'nullable'
+            'call_log_type' => 'nullable',
+            'sim_allocation_id' => 'sometimes|required'
         ]);
         $logs = CallRegister::selectRaw('call_registers.agent_id, call_registers.dial_code, call_registers.phone_number, call_registers.saved_name, call_registers.duration, call_registers.device_time, call_registers.call_type, call_registers.identified, agents.name as agent_name, departments.name as department_name, sim_allocations.phone_number as agent_phone_number')
             ->join('agents', 'agents.id', '=', 'call_registers.agent_id')
             ->join('departments', 'departments.id', '=', 'agents.department_id')
             ->join('sim_allocations', 'sim_allocations.id', '=', 'call_registers.sim_allocation_id')
+            ->when($request->sim_allocation_id, function($query) use (&$request) {
+                return $query->where('sim_allocation_id', $request->sim_allocation_id);
+            })
             ->when($request->user_name, function($query) use (&$request) {
                 return $query->where('agents.user_name', $request->user_name);
             })
@@ -276,7 +280,7 @@ class CallRecorderController extends Controller {
                 'department_name' => $agent->department_name,
                 'is_active' => $active,
                 'last_update_at' => $agent->last_update_at,
-                'sim_allocation' => $sim_allocations[$agent->id]
+                'sim_allocations' => $sim_allocations[$agent->id]
             ];
         }
         return response()->json($this->response);
