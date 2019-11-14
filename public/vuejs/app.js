@@ -26950,17 +26950,17 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
             return log.call_type == 'outgoing' && log.call_type_latest;
           });
 
-        case 'missed_total':
+        case 'unattended_missed':
           return state.call_register.logs.filter(function (log) {
             return log.call_type == 'missed' && log.latest && log.call_type_latest && log.has_duration;
           });
 
-        case 'rejected_total':
+        case 'unattended_rejected':
           return state.call_register.logs.filter(function (log) {
             return log.call_type == 'rejected' && log.latest && log.has_duration && log.call_type_latest;
           });
 
-        case 'busy_total':
+        case 'unattended_busy':
           return state.call_register.logs.filter(function (log) {
             return log.call_type == 'busy' && log.latest && log.has_duration && log.call_type_latest;
           });

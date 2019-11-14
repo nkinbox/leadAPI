@@ -240,20 +240,15 @@ class CallRecorderController extends Controller {
             sum(case when latest = 1 and has_duration = 0 then 1 else 0 end) as untouched_total,
             sum(case when latest = 1 and has_duration = 0 and (call_type = "missed" or call_type = "rejected") then 1 else 0 end) as untouched_incoming,
             sum(case when latest = 1 and has_duration = 0 and call_type = "busy"  then 1 else 0 end) as untouched_outgoing,
-
             sum(case when call_type = "incoming" then 1 else 0 end) as incoming_total,
             sum(case when call_type = "incoming" then duration else 0 end) as incoming_duration,
             sum(case when call_type = "incoming" and call_type_latest = 1 then 1 else 0 end) as incoming_unique,
-
             sum(case when call_type = "outgoing" then 1 else 0 end) as outgoing_total,
             sum(case when call_type = "outgoing" then duration else 0 end) as outgoing_duration,
             sum(case when call_type = "outgoing" and call_type_latest = 1 then 1 else 0 end) as outgoing_unique,
-
-            sum(case when call_type = "missed" and latest = 1 and call_type_latest = 1 and has_duration = 1 then 1 else 0 end) as missed_total,
-
-            sum(case when call_type = "rejected" and latest = 1 and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as rejected_total,
-
-            sum(case when call_type = "busy" and latest = 1 and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as busy_total
+            sum(case when call_type = "missed" and latest = 1 and call_type_latest = 1 and has_duration = 1 then 1 else 0 end) as unattended_missed,
+            sum(case when call_type = "rejected" and latest = 1 and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as unattended_rejected,
+            sum(case when call_type = "busy" and latest = 1 and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as unattended_busy
         ')->get();
         $summary = (array) $summary->first();
         foreach($summary as $key => $val) {
