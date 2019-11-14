@@ -26915,7 +26915,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
             return log.latest;
           });
 
-        case 'overview_untouched':
+        case 'untouched_total':
           return state.call_register.logs.filter(function (log) {
             return log.latest && !log.has_duration;
           });
@@ -26942,32 +26942,17 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
 
         case 'missed_total':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'missed' && log.has_duration;
-          });
-
-        case 'missed_unique':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'missed' && log.call_type_latest && log.has_duration;
+            return log.call_type == 'missed' && log.latest && log.call_type_latest && log.has_duration;
           });
 
         case 'rejected_total':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.has_duration;
-          });
-
-        case 'rejected_unique':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'rejected' && log.has_duration && log.call_type_latest;
+            return log.call_type == 'rejected' && log.latest && log.has_duration && log.call_type_latest;
           });
 
         case 'busy_total':
           return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'busy' && log.has_duration;
-          });
-
-        case 'busy_unique':
-          return state.call_register.logs.filter(function (log) {
-            return log.call_type == 'busy' && log.has_duration && log.call_type_latest;
+            return log.call_type == 'busy' && log.latest && log.has_duration && log.call_type_latest;
           });
 
         default:

@@ -237,7 +237,7 @@ class CallRecorderController extends Controller {
             count(1) as overview_total,
             sum(duration) overview_duration,
             sum(case when latest = 1 then 1 else 0 end) as overview_unique,
-            sum(case when latest = 1 and has_duration = 0 then 1 else 0 end) as overview_untouched,
+            sum(case when latest = 1 and has_duration = 0 then 1 else 0 end) as untouched_total,
 
             sum(case when call_type = "incoming" then 1 else 0 end) as incoming_total,
             sum(case when call_type = "incoming" then duration else 0 end) as incoming_duration,

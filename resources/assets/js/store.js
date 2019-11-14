@@ -120,7 +120,7 @@ export const store = new Vuex.Store({
             switch (state.filter_logs) {
                 case 'overview_unique':
                 return state.call_register.logs.filter((log) => log.latest)
-                case 'overview_untouched':
+                case 'untouched_total':
                 return state.call_register.logs.filter((log) => log.latest && !log.has_duration)
                 case 'incoming_total':
                 return state.call_register.logs.filter((log) => log.call_type == 'incoming')
@@ -131,17 +131,11 @@ export const store = new Vuex.Store({
                 case 'outgoing_unique':
                 return state.call_register.logs.filter((log) => log.call_type == 'outgoing' && log.call_type_latest)
                 case 'missed_total':
-                return state.call_register.logs.filter((log) => log.call_type == 'missed' && log.has_duration)
-                case 'missed_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'missed' && log.call_type_latest && log.has_duration)
+                return state.call_register.logs.filter((log) => log.call_type == 'missed' && log.latest && log.call_type_latest && log.has_duration)
                 case 'rejected_total':
-                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.has_duration)
-                case 'rejected_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.has_duration && log.call_type_latest)
+                return state.call_register.logs.filter((log) => log.call_type == 'rejected' && log.latest && log.has_duration && log.call_type_latest)
                 case 'busy_total':
-                return state.call_register.logs.filter((log) => log.call_type == 'busy' && log.has_duration)
-                case 'busy_unique':
-                return state.call_register.logs.filter((log) => log.call_type == 'busy' && log.has_duration && log.call_type_latest)
+                return state.call_register.logs.filter((log) => log.call_type == 'busy' && log.latest && log.has_duration && log.call_type_latest)
                 default:
                 return state.call_register.logs
             }
