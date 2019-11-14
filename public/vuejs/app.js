@@ -26920,6 +26920,16 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
             return log.latest && !log.has_duration;
           });
 
+        case 'untouched_incoming':
+          return state.call_register.logs.filter(function (log) {
+            return log.latest && !log.has_duration && (log.call_type == 'missed' || log.call_type == 'rejected');
+          });
+
+        case 'untouched_outgoing':
+          return state.call_register.logs.filter(function (log) {
+            return log.latest && !log.has_duration && log.call_type == 'busy';
+          });
+
         case 'incoming_total':
           return state.call_register.logs.filter(function (log) {
             return log.call_type == 'incoming';

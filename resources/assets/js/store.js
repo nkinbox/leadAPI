@@ -122,6 +122,10 @@ export const store = new Vuex.Store({
                 return state.call_register.logs.filter((log) => log.latest)
                 case 'untouched_total':
                 return state.call_register.logs.filter((log) => log.latest && !log.has_duration)
+                case 'untouched_incoming':
+                return state.call_register.logs.filter((log) => log.latest && !log.has_duration && (log.call_type == 'missed' || log.call_type == 'rejected'))
+                case 'untouched_outgoing':
+                return state.call_register.logs.filter((log) => log.latest && !log.has_duration && (log.call_type == 'busy'))
                 case 'incoming_total':
                 return state.call_register.logs.filter((log) => log.call_type == 'incoming')
                 case 'incoming_unique':

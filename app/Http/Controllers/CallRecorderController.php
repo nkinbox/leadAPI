@@ -238,6 +238,8 @@ class CallRecorderController extends Controller {
             sum(duration) overview_duration,
             sum(case when latest = 1 then 1 else 0 end) as overview_unique,
             sum(case when latest = 1 and has_duration = 0 then 1 else 0 end) as untouched_total,
+            sum(case when latest = 1 and has_duration = 0 and (call_type = "missed" or call_type = "rejected") then 1 else 0 end) as untouched_incoming,
+            sum(case when latest = 1 and has_duration = 0 and call_type = "busy"  then 1 else 0 end) as untouched_outgoing,
 
             sum(case when call_type = "incoming" then 1 else 0 end) as incoming_total,
             sum(case when call_type = "incoming" then duration else 0 end) as incoming_duration,
@@ -257,7 +259,7 @@ class CallRecorderController extends Controller {
         foreach($summary as $key => $val) {
             $i = explode('_', $key);
             $this->response['summary'][$i[0]][$i[1]] = [
-                'value' => $val,
+                'value' => ($val?$val:0),
                 'name' => ($i[1] == 'duration'?'':$key)
             ];
         }
