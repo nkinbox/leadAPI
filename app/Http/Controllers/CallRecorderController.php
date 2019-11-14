@@ -236,25 +236,25 @@ class CallRecorderController extends Controller {
         $summary = DB::table('temp_call_logs')->selectRaw('
             count(1) as overview_total,
             sum(duration) overview_duration,
-            sum(case when latest = 1 then 1 else null end) as overview_unique,
-            sum(case when latest = 1 and has_duration = 0 then 1 else null end) as overview_untouched,
+            sum(case when latest = 1 then 1 else 0 end) as overview_unique,
+            sum(case when latest = 1 and has_duration = 0 then 1 else 0 end) as overview_untouched,
 
-            sum(case when call_type = "incoming" then 1 else null end) as incoming_total,
-            sum(case when call_type = "incoming" then duration else null end) as incoming_duration,
-            sum(case when call_type = "incoming" and call_type_latest = 1 then 1 else null end) as incoming_unique,
+            sum(case when call_type = "incoming" then 1 else 0 end) as incoming_total,
+            sum(case when call_type = "incoming" then duration else 0 end) as incoming_duration,
+            sum(case when call_type = "incoming" and call_type_latest = 1 then 1 else 0 end) as incoming_unique,
 
-            sum(case when call_type = "outgoing" then 1 else null end) as outgoing_total,
-            sum(case when call_type = "outgoing" then duration else null end) as outgoing_duration,
-            sum(case when call_type = "outgoing" and call_type_latest = 1 then 1 else null end) as outgoing_unique,
+            sum(case when call_type = "outgoing" then 1 else 0 end) as outgoing_total,
+            sum(case when call_type = "outgoing" then duration else 0 end) as outgoing_duration,
+            sum(case when call_type = "outgoing" and call_type_latest = 1 then 1 else 0 end) as outgoing_unique,
 
-            sum(case when call_type = "missed" and has_duration = 1 then 1 else null end) as missed_total,
-            sum(case when call_type = "missed" and has_duration = 1 and call_type_latest = 1 then 1 else null end) as missed_unique,
+            sum(case when call_type = "missed" and has_duration = 1 then 1 else 0 end) as missed_total,
+            sum(case when call_type = "missed" and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as missed_unique,
 
-            sum(case when call_type = "rejected" and has_duration = 1 then 1 else null end) as rejected_total,
-            sum(case when call_type = "rejected" and has_duration = 1 and call_type_latest = 1 then 1 else null end) as rejected_unique,
+            sum(case when call_type = "rejected" and has_duration = 1 then 1 else 0 end) as rejected_total,
+            sum(case when call_type = "rejected" and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as rejected_unique,
 
-            sum(case when call_type = "busy" and has_duration = 1 then 1 else null end) as busy_total,
-            sum(case when call_type = "busy" and has_duration = 1 and call_type_latest = 1 then 1 else null end) as busy_unique
+            sum(case when call_type = "busy" and has_duration = 1 then 1 else 0 end) as busy_total,
+            sum(case when call_type = "busy" and has_duration = 1 and call_type_latest = 1 then 1 else 0 end) as busy_unique
         ')->get();
         $summary = (array) $summary->first();
         foreach($summary as $key => $val) {
