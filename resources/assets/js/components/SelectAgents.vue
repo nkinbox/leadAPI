@@ -4,9 +4,9 @@
         <option value="" v-if="!selectedAgent">All Agents</option>
         <option v-for="agent in agents" :key="agent.user_name" :value="agent.user_name">{{agent.user_name+' '+agent.name}}</option>
     </select>
-    <select v-if="selectedAgent" v-model="selectedSim">
+    <select v-if="selectedAgent" v-model="selectedSim" class="form-control">
         <option value="">Any SIM</option>
-        <option v-for="sim_allocation in sim_allocations" :key="sim_allocation.id" value="sim_allocation.id">{{sim_allocation.phone_number + ' - ' + sim_allocation.sim_name?sim_allocation.sim_name:(sim_allocation.is_personal?'Personal':'')}}</option>
+        <option v-for="sim_allocation in sim_allocations" :key="sim_allocation.id" :value="sim_allocation.id">{{sim_allocation.phone_number + ' - ' + (sim_allocation.sim_name?sim_allocation.sim_name:(sim_allocation.is_personal?'Personal':''))}}</option>
     </select>
   </div>
 </template>
@@ -33,7 +33,7 @@ export default {
                 return this.$store.state.selected_sim_id
             },
             set: function(sim_id) {
-                this.$store.dispatch('selectSimID', sim_id)
+                this.$store.commit('selectSimID', sim_id)
             },
         },
         agents() {

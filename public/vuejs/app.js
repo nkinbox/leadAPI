@@ -2530,7 +2530,7 @@ __webpack_require__.r(__webpack_exports__);
         return this.$store.state.selected_sim_id;
       },
       set: function set(sim_id) {
-        this.$store.dispatch('selectSimID', sim_id);
+        this.$store.commit('selectSimID', sim_id);
       }
     },
     agents: function agents() {
@@ -9725,6 +9725,7 @@ var render = function() {
                 expression: "selectedSim"
               }
             ],
+            staticClass: "form-control",
             on: {
               change: function($event) {
                 var $$selectedVal = Array.prototype.filter
@@ -9749,18 +9750,18 @@ var render = function() {
                 "option",
                 {
                   key: sim_allocation.id,
-                  attrs: { value: "sim_allocation.id" }
+                  domProps: { value: sim_allocation.id }
                 },
                 [
                   _vm._v(
                     _vm._s(
                       sim_allocation.phone_number +
                         " - " +
-                        sim_allocation.sim_name
-                        ? sim_allocation.sim_name
-                        : sim_allocation.is_personal
-                        ? "Personal"
-                        : ""
+                        (sim_allocation.sim_name
+                          ? sim_allocation.sim_name
+                          : sim_allocation.is_personal
+                          ? "Personal"
+                          : "")
                     )
                   )
                 ]

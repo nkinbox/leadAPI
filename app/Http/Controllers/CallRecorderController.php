@@ -193,7 +193,7 @@ class CallRecorderController extends Controller {
             'phone_number' => 'sometimes|required|numeric',
             'saved_name' => 'sometimes|required|string',
             'call_log_type' => 'nullable',
-            'sim_allocation_id' => 'sometimes|required'
+            'sim_allocation_id' => 'nullable'
         ]);
         $logs = CallRegister::selectRaw('call_registers.agent_id, call_registers.dial_code, call_registers.phone_number, call_registers.saved_name, call_registers.duration, call_registers.device_time, call_registers.call_type, call_registers.identified, agents.name as agent_name, departments.name as department_name, sim_allocations.phone_number as agent_phone_number')
             ->join('agents', 'agents.id', '=', 'call_registers.agent_id')
@@ -309,7 +309,8 @@ class CallRecorderController extends Controller {
             'date' => 'required|date_format:Y-m-d',
             'agent_id' => 'sometimes|required|string',
             'department_id' => 'sometimes|required|numeric',
-            'call_log_type' => 'nullable'
+            'call_log_type' => 'nullable',
+            'sim_allocation_id' => 'nullable'
         ]);
         $logs = CallRegister::when(($request->type == 'time'), function($query) use (&$request) {
             return $query->whereDate('device_time', $request->date)
@@ -342,6 +343,9 @@ class CallRecorderController extends Controller {
         })
         ->when($request->call_log_type, function($query) use (&$request) {
             return $query->where('identified', $request->call_log_type);
+        })
+        ->when($request->sim_allocation_id, function($query) use (&$request) {
+            return $query->where('sim_allocation_id', $request->sim_allocation_id);
         })
         ->groupBy('call_type')->get();
         $call_type = [
