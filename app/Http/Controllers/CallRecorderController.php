@@ -263,7 +263,7 @@ class CallRecorderController extends Controller {
     }
     public function agents() {
         $agents = Agents::selectRaw('agents.*, departments.name as department_name, departments.id as department_id')->leftJoin('departments', 'departments.id', '=', 'agents.department_id')->get();
-        $sim_allocations = SimAllocation::all()->keyBy('agent_id');
+        $sim_allocations = SimAllocation::all()->groupBy('agent_id');
         $this->response['agents'] = [];
         foreach($agents as $agent) {
             $active = strtotime($agent->last_update_at);
