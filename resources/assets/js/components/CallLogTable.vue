@@ -17,6 +17,7 @@
                     <th scope="col">Call Type</th>
                     <th scope="col">Duration</th>
                     <th scope="col">Time</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody class="text-white">
@@ -31,6 +32,7 @@
                     </td>
                     <td>{{log.duration | readableSeconds}}</td>
                     <td class="text-nowrap">{{log.device_time | formatDate}}</td>
+                    <td><button class="btn btn-sm btn-primary" @click="pushLead(log.phone_number)">&#10142;</button></td>
                 </tr>
             </tbody>
         </table>
@@ -62,6 +64,9 @@ export default {
     methods: {
         search(number) {
             this.$store.dispatch('setSearchQuery', number)
+        },
+        pushLead(number) {
+            this.$router.push({name:'push_lead', props:{phone_number:number}})
         }
     },
     filters: {

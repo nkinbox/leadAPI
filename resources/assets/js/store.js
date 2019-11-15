@@ -60,7 +60,8 @@ export const store = new Vuex.Store({
         call_flow_chart: {
             series: [],
             categories: []
-        }
+        },
+        websites: []
     },
     getters: {
         callFlowChartFilter(state) {
@@ -177,6 +178,9 @@ export const store = new Vuex.Store({
         }
     },
     mutations: {
+        setWebsites(state, websites) {
+            state.websites = websites
+        },
         setCallLogType(state, call_log_type) {
             state.call_log_type = call_log_type
         },
@@ -357,6 +361,13 @@ export const store = new Vuex.Store({
             }).catch(error => {
                 console.log(error)
                 context.commit('loadingState', {name: 'call_flow_chart', isLoading: false})
+            })
+        },
+        fetchWebsites(context) {
+            axios.get('https://www.tripclues.in/leadAPI/public/api/logger/websites').then(response => {
+                context.commit('setWebsites', response.data)
+            }).catch(error => {
+                console.log(error)
             })
         }
     }

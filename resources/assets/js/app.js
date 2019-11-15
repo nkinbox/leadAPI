@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Dashboard from './components/Dashboard'
 import CallLogs from './components/CallLogs'
 import Search from './components/Search'
+import PushLead from './components/PushLead'
 import {store} from './store'
 
 const routes = [
@@ -13,6 +14,11 @@ const routes = [
     {
         path: '/logs',
         component: CallLogs
+    },
+    {
+        path: '/push_lead/:phone_number',
+        component: PushLead,
+        name: 'push_lead'
     }
 ]
 Vue.use(VueRouter)
@@ -29,5 +35,6 @@ const app = new Vue({
     mounted() {
         this.$store.dispatch('fetchDepartments')
         this.$store.dispatch('fetchAgents')
+        this.$store.dispatch('fetchWebsites')
     }
 });
