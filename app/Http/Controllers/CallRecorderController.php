@@ -444,7 +444,7 @@ class CallRecorderController extends Controller {
         Agents::join('sim_allocations', 'sim_allocations.agent_id', '=', 'agents.id')->where('sim_allocations.id', $request->sim_id)->update(['last_update_at' => null]);
     }
     public function getWebsites(Request $request) {
-        return DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'display_name')->when($request->user_name, function($query) use(&$request) {
+        return DB::table('add_project_client_seo')->select('add_project_client_seo.project_client_seo_id as id', 'website_url as website', 'display_name')->when($request->user_name, function($query) use(&$request) {
             return $query->join('user_project_assign', 'user_project_assign.project_website', '=', 'add_project_client_seo.website_url')->join('user_info', 'user_info.user_email', '=', 'user_project_assign.user_email')->where('user_info.attendance_user_id', $request->user_name);
         })->orderBy('display_name')->get();
     }
