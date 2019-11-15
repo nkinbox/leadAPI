@@ -27803,6 +27803,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
         return {
           id: state.selected_website_id,
           phone_number: state.selected_phone,
+          user_name: state.selected_agent.user_name,
           type: state.lead_type
         };
       } else return null;

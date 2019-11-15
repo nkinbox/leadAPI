@@ -184,6 +184,7 @@ export const store = new Vuex.Store({
                 return {
                     id: state.selected_website_id,
                     phone_number: state.selected_phone,
+                    user_name: state.selected_agent.user_name,
                     type: state.lead_type
                 }
             } else return null
