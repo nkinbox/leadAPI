@@ -443,7 +443,9 @@ class CallRecorderController extends Controller {
         ]);
         Agents::join('sim_allocations', 'sim_allocations.agent_id', '=', 'agents.id')->where('sim_allocations.id', $request->sim_id)->update(['last_update_at' => null]);
     }
-
+    public function getWebsites() {
+        return DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'display_name')->orderBy('display_name')->get();
+    }
     private function lastUpdateAt($agent_id) {
         Agents::whereIn('id', $agent_id)->update(['last_update_at' => date('Y-m-d H:i:s')]);
     }
