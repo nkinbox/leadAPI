@@ -443,31 +443,53 @@ class CallRecorderController extends Controller {
         ]);
         Agents::join('sim_allocations', 'sim_allocations.agent_id', '=', 'agents.id')->where('sim_allocations.id', $request->sim_id)->update(['last_update_at' => null]);
     }
-    public function getWebsites() {
-        return DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'display_name')->orderBy('display_name')->get();
+    public function getWebsites(Request $request) {
+        return DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'display_name')->when($request->user_name, function($query) {
+            return $query->join('user_project_assign', 'user_project_assign.project_website', '=', 'add_project_client_seo.website_url')->join('user_info', 'user_info.user_email', '=', 'user_project_assign.user_email')->where('user_info.attendance_user_id', $request->user_name);
+        })->orderBy('display_name')->get();
     }
     public function pushToCRM(Request $request) {
         $this->validate($request, [
-            'id' => 'required|integer|exists:add_project_client_seo,project_client_seo_id',
+            'id' => 'required_if:type,hotel|integer|exists:add_project_client_seo,project_client_seo_id',
             'phone_number' => 'required',
-            'type' => 'required|in:hotel,tour'
+            'type' => 'required|in:hotel,tour',
+            'user_name' => 'required|exists:agents',
+            'saved_name' => 'nullable'
         ]);
+        $agent = DB::table('user_info')->select('id')->where('attendance_user_id', $request->user_name)->first();
         if($request->type == 'hotel') {
-            $website = DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'display_name', 'city')->where('project_client_seo_id', $request->id)->first();
+            $website = DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'city')->where('project_client_seo_id', $request->id)->first();
             DB::table('lead_detail')->insert([
                 'project_client_seo_id' => $website->id,
                 'subject' => 'TCCS',
                 'to_address' => 'alok@tripclues.com',
                 'enq_website' => $website->website,
                 'enq_city' => $website->city,
-                'enq_name' => 'TCCS',
+                'enq_name' => $request->saved_name?$request->saved_name:'TCCS',
                 'enq_email' => $request->phone_number.'@tripclues.com',
                 'enq_mobile' => $request->phone_number,
                 'enq_date' => date('Y-m-d'),
                 'enq_time' => date('H:i:s'),
                 'lead_date' => date('Y-m-d'),
                 'lead_time' => date('H:i:s'), 
-                'enq_type' => 'Desktop'
+                'enq_type' => 'Desktop',
+                'assigned_to' => $agent->id
+            ]);
+        } else {
+            DB::table('tour_lead_details')->insert([
+                'tour_type' => 'Tour',
+                'tour_city' => 'Destination',
+                'tour_package' => 'TCCS Package',
+                'name' => $request->saved_name?$request->saved_name:'TCCS',
+                'email' => $request->phone_number.'@tripclues.com',
+                'phone' => $request->phone,
+                'tour_lead_status' => 'fresh',
+                'tour_lead_date' => date('Y-m-d'),
+                'tour_lead_time' => date('H:i:s'),
+                'tour_enq_date' => date('Y-m-d'),
+                'tour_enq_time' => date('H:i:s'), 
+                'enq_type' => 'Desktop',
+                'assigned_to' => $agent->id
             ]);
         }
         return response()->json(['success' => 1]);
