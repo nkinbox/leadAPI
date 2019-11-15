@@ -27799,7 +27799,7 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       }
     },
     pushToCRMData: function pushToCRMData(state) {
-      if (state.selected_website_id && state.selected_phone) {
+      if (state.selected_phone) {
         return {
           id: state.selected_website_id,
           phone_number: state.selected_phone,

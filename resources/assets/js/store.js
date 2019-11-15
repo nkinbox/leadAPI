@@ -180,7 +180,7 @@ export const store = new Vuex.Store({
             }
         },
         pushToCRMData(state) {
-            if(state.selected_website_id && state.selected_phone) {
+            if(state.selected_phone) {
                 return {
                     id: state.selected_website_id,
                     phone_number: state.selected_phone,
