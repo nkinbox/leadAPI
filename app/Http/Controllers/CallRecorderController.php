@@ -456,7 +456,7 @@ class CallRecorderController extends Controller {
             'user_name' => 'required|exists:agents',
             'saved_name' => 'nullable'
         ]);
-        $agent = DB::table('user_info')->select('id')->where('attendance_user_id', $request->user_name)->first();
+        $agent = DB::table('user_info')->select('user_id')->where('attendance_user_id', $request->user_name)->first();
         if($request->type == 'hotel') {
             $website = DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'city')->where('project_client_seo_id', $request->id)->first();
             DB::table('lead_detail')->insert([
@@ -489,7 +489,7 @@ class CallRecorderController extends Controller {
                 'tour_enq_date' => date('Y-m-d'),
                 'tour_enq_time' => date('H:i:s'), 
                 'enq_type' => 'Desktop',
-                'assigned_to' => $agent->id
+                'assigned_to' => $agent->user_id
             ]);
         }
         return response()->json(['success' => 1]);
