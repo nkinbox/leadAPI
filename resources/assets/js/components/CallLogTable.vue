@@ -17,7 +17,7 @@
                     <th scope="col">Call Type</th>
                     <th scope="col">Duration</th>
                     <th scope="col">Time</th>
-                    <th scope="col">Action</th>
+                    <th scope="col" v-show="agent">Action</th>
                 </tr>
             </thead>
             <tbody class="text-white">
@@ -32,7 +32,7 @@
                     </td>
                     <td>{{log.duration | readableSeconds}}</td>
                     <td class="text-nowrap">{{log.device_time | formatDate}}</td>
-                    <td><button class="btn btn-sm btn-primary" @click="pushLead(log.phone_number)">&#10142;</button></td>
+                    <td v-show="agent"><button class="btn btn-sm btn-primary" @click="pushLead(log.phone_number)">push</button></td>
                 </tr>
             </tbody>
         </table>
@@ -54,6 +54,9 @@ export default {
         }
     },
     computed: {
+        agent() {
+            return this.$store.state.selected_agent.user_name
+        },
         loading() {
             return this.$store.state.loading[this.prefix+'call_register']
         },
@@ -66,7 +69,7 @@ export default {
             this.$store.dispatch('setSearchQuery', number)
         },
         pushLead(number) {
-            this.$store.commit('selectPhone', number)
+            if(this.agent)
             this.$router.push({name:'push_lead', params:{phone_number:number}})
         }
     },

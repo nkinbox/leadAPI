@@ -385,7 +385,9 @@ export const store = new Vuex.Store({
             })
         },
         fetchWebsites(context) {
-            axios.get('https://www.tripclues.in/leadAPI/public/api/logger/websites').then(response => {
+            axios.get('https://www.tripclues.in/leadAPI/public/api/logger/websites', {
+                params: {user_name: context.state.selected_agent.user_name}
+            }).then(response => {
                 context.commit('setWebsites', response.data)
             }).catch(error => {
                 console.log(error)

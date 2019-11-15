@@ -1974,6 +1974,9 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
+    agent: function agent() {
+      return this.$store.state.selected_agent.user_name;
+    },
     loading: function loading() {
       return this.$store.state.loading[this.prefix + 'call_register'];
     },
@@ -1986,8 +1989,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$store.dispatch('setSearchQuery', number);
     },
     pushLead: function pushLead(number) {
-      this.$store.commit('selectPhone', number);
-      this.$router.push({
+      if (this.agent) this.$router.push({
         name: 'push_lead',
         params: {
           phone_number: number
@@ -2498,6 +2500,10 @@ __webpack_require__.r(__webpack_exports__);
     pushHotelLead: function pushHotelLead() {
       this.$store.dispatch('pushToCRM');
     }
+  },
+  created: function created() {
+    this.$store.commit('selectPhone', this.phone_number);
+    this.$store.dispatch('fetchWebsites');
   }
 });
 
@@ -9086,7 +9092,41 @@ var render = function() {
       : _vm.records.length
       ? _c("div", [
           _c("table", { staticClass: "table table-sm" }, [
-            _vm._m(1),
+            _c("thead", [
+              _c("tr", [
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
+                _vm._v(" "),
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("Employee")]),
+                _vm._v(" "),
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("Department")]),
+                _vm._v(" "),
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("Icon")]),
+                _vm._v(" "),
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("Conversed")]),
+                _vm._v(" "),
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("Call Type")]),
+                _vm._v(" "),
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("Duration")]),
+                _vm._v(" "),
+                _c("th", { attrs: { scope: "col" } }, [_vm._v("Time")]),
+                _vm._v(" "),
+                _c(
+                  "th",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.agent,
+                        expression: "agent"
+                      }
+                    ],
+                    attrs: { scope: "col" }
+                  },
+                  [_vm._v("Action")]
+                )
+              ])
+            ]),
             _vm._v(" "),
             _c(
               "tbody",
@@ -9183,20 +9223,33 @@ var render = function() {
                       _vm._v(_vm._s(_vm._f("formatDate")(log.device_time)))
                     ]),
                     _vm._v(" "),
-                    _c("td", [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-sm btn-primary",
-                          on: {
-                            click: function($event) {
-                              return _vm.pushLead(log.phone_number)
-                            }
+                    _c(
+                      "td",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.agent,
+                            expression: "agent"
                           }
-                        },
-                        [_vm._v("➞")]
-                      )
-                    ])
+                        ]
+                      },
+                      [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-sm btn-primary",
+                            on: {
+                              click: function($event) {
+                                return _vm.pushLead(log.phone_number)
+                              }
+                            }
+                          },
+                          [_vm._v("push")]
+                        )
+                      ]
+                    )
                   ]
                 )
               }),
@@ -9225,32 +9278,6 @@ var staticRenderFns = [
       },
       [_c("span", { staticClass: "sr-only" }, [_vm._v("Loading...")])]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Employee")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Department")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Icon")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Conversed")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Call Type")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Duration")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Time")]),
-        _vm._v(" "),
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("Action")])
-      ])
-    ])
   }
 ]
 render._withStripped = true
@@ -26423,7 +26450,6 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   mounted: function mounted() {
     this.$store.dispatch('fetchDepartments');
     this.$store.dispatch('fetchAgents');
-    this.$store.dispatch('fetchWebsites');
   }
 });
 
@@ -28025,7 +28051,11 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       });
     },
     fetchWebsites: function fetchWebsites(context) {
-      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get('https://www.tripclues.in/leadAPI/public/api/logger/websites').then(function (response) {
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.get('https://www.tripclues.in/leadAPI/public/api/logger/websites', {
+        params: {
+          user_name: context.state.selected_agent.user_name
+        }
+      }).then(function (response) {
         context.commit('setWebsites', response.data);
       })["catch"](function (error) {
         console.log(error);

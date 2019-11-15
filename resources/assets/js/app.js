@@ -36,6 +36,5 @@ const app = new Vue({
     mounted() {
         this.$store.dispatch('fetchDepartments')
         this.$store.dispatch('fetchAgents')
-        this.$store.dispatch('fetchWebsites')
     }
 });

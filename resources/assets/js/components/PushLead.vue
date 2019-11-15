@@ -36,6 +36,10 @@ export default {
         pushHotelLead() {
             this.$store.dispatch('pushToCRM')
         }
+    },
+    created() {
+        this.$store.commit('selectPhone', this.phone_number)
+        this.$store.dispatch('fetchWebsites')
     }
 }
 </script>
