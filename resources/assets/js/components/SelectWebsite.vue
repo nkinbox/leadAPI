@@ -1,7 +1,7 @@
 <template>
     <div>
-        <select>
-            <option v-for="(website, index) in websites" :key="index" :value="website.website">{{website.display_name}}</option>
+        <select v-model="selectWebsite">
+            <option v-for="website in websites" :key="website.id" :value="website.id">{{website.display_name}}</option>
         </select>
     </div>
 </template>
@@ -10,6 +10,14 @@
 export default {
     name: 'select-website',
     computed: {
+        selectWebsite: {
+            set: function(newVal) {
+                this.$store.commit('selectWebsite', newVal)
+            },
+            get: function() {
+                return this.$store.state.selected_website_id
+            }
+        },
         websites() {
             return this.$store.state.websites
         }

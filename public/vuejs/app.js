@@ -1986,9 +1986,10 @@ __webpack_require__.r(__webpack_exports__);
       this.$store.dispatch('setSearchQuery', number);
     },
     pushLead: function pushLead(number) {
+      this.$store.commit('selectPhone', number);
       this.$router.push({
         name: 'push_lead',
-        props: {
+        params: {
           phone_number: number
         }
       });
@@ -2459,7 +2460,15 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _SelectWebsite__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SelectWebsite */ "./resources/assets/js/components/SelectWebsite.vue");
+/* harmony import */ var _SelectAgents__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SelectAgents */ "./resources/assets/js/components/SelectAgents.vue");
+/* harmony import */ var _SelectWebsite__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SelectWebsite */ "./resources/assets/js/components/SelectWebsite.vue");
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2467,10 +2476,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'push-lead',
+  props: ['phone_number'],
   components: {
-    SelectWebsite: _SelectWebsite__WEBPACK_IMPORTED_MODULE_0__["default"]
+    SelectAgents: _SelectAgents__WEBPACK_IMPORTED_MODULE_0__["default"],
+    SelectWebsite: _SelectWebsite__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  computed: {
+    leadType: {
+      set: function set(newVal) {
+        this.$store.commit('selectLeadType', newVal);
+      },
+      get: function get() {
+        return this.$store.state.lead_type;
+      }
+    }
+  },
+  methods: {
+    pushHotelLead: function pushHotelLead() {
+      this.$store.dispatch('pushToCRM');
+    }
   }
 });
 
@@ -2601,6 +2628,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'select-agents',
+  props: {
+    show_sim: {
+      type: Number,
+      "default": 1
+    }
+  },
   computed: {
     loading: function loading() {
       return this.$store.state.loading.agent;
@@ -2694,6 +2727,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'select-website',
   computed: {
+    selectWebsite: {
+      set: function set(newVal) {
+        this.$store.commit('selectWebsite', newVal);
+      },
+      get: function get() {
+        return this.$store.state.selected_website_id;
+      }
+    },
     websites: function websites() {
       return this.$store.state.websites;
     }
@@ -9777,7 +9818,53 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_c("select-website")], 1)
+  return _c(
+    "div",
+    [
+      _c("select-agents", { attrs: { show_sim: 0 } }),
+      _vm._v(" "),
+      _c("div", [_vm._v(_vm._s(_vm.phone_number))]),
+      _vm._v(" "),
+      _c("select-website"),
+      _vm._v(" "),
+      _c(
+        "select",
+        {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.leadType,
+              expression: "leadType"
+            }
+          ],
+          on: {
+            change: function($event) {
+              var $$selectedVal = Array.prototype.filter
+                .call($event.target.options, function(o) {
+                  return o.selected
+                })
+                .map(function(o) {
+                  var val = "_value" in o ? o._value : o.value
+                  return val
+                })
+              _vm.leadType = $event.target.multiple
+                ? $$selectedVal
+                : $$selectedVal[0]
+            }
+          }
+        },
+        [
+          _c("option", { attrs: { value: "hotel" } }, [_vm._v("Hotel Lead")]),
+          _vm._v(" "),
+          _c("option", { attrs: { value: "tour" } }, [_vm._v("Tour Lead")])
+        ]
+      ),
+      _vm._v(" "),
+      _c("button", { on: { click: _vm.pushHotelLead } }, [_vm._v("Push")])
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -9984,7 +10071,7 @@ var render = function() {
       2
     ),
     _vm._v(" "),
-    _vm.selectedAgent
+    _vm.selectedAgent && _vm.show_sim
       ? _c(
           "select",
           {
@@ -10132,10 +10219,35 @@ var render = function() {
   return _c("div", [
     _c(
       "select",
-      _vm._l(_vm.websites, function(website, index) {
+      {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.selectWebsite,
+            expression: "selectWebsite"
+          }
+        ],
+        on: {
+          change: function($event) {
+            var $$selectedVal = Array.prototype.filter
+              .call($event.target.options, function(o) {
+                return o.selected
+              })
+              .map(function(o) {
+                var val = "_value" in o ? o._value : o.value
+                return val
+              })
+            _vm.selectWebsite = $event.target.multiple
+              ? $$selectedVal
+              : $$selectedVal[0]
+          }
+        }
+      },
+      _vm._l(_vm.websites, function(website) {
         return _c(
           "option",
-          { key: index, domProps: { value: website.website } },
+          { key: website.id, domProps: { value: website.id } },
           [_vm._v(_vm._s(website.display_name))]
         )
       }),
@@ -26294,7 +26406,8 @@ var routes = [{
 }, {
   path: '/push_lead/:phone_number',
   component: _components_PushLead__WEBPACK_IMPORTED_MODULE_5__["default"],
-  name: 'push_lead'
+  name: 'push_lead',
+  props: true
 }];
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
@@ -27468,7 +27581,10 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       series: [],
       categories: []
     },
-    websites: []
+    websites: [],
+    selected_website_id: 0,
+    selected_phone: '',
+    lead_type: 'hotel'
   },
   getters: {
     callFlowChartFilter: function callFlowChartFilter(state) {
@@ -27655,9 +27771,27 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
         default:
           return state.search_call_register.logs;
       }
+    },
+    pushToCRMData: function pushToCRMData(state) {
+      if (state.selected_website_id && state.selected_phone) {
+        return {
+          id: state.selected_website_id,
+          phone_number: state.selected_phone,
+          type: state.lead_type
+        };
+      } else return null;
     }
   },
   mutations: {
+    selectLeadType: function selectLeadType(state, lead_type) {
+      state.lead_type = lead_type;
+    },
+    selectPhone: function selectPhone(state, phone_number) {
+      state.selected_phone = phone_number;
+    },
+    selectWebsite: function selectWebsite(state, website_id) {
+      state.selected_website_id = website_id;
+    },
     setWebsites: function setWebsites(state, websites) {
       state.websites = websites;
     },
@@ -27896,6 +28030,15 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    pushToCRM: function pushToCRM(context) {
+      if (context.getters.pushToCRMData) {
+        axios__WEBPACK_IMPORTED_MODULE_2___default.a.post('https://www.tripclues.in/leadAPI/public/api/logger/pushToCRM', context.getters.pushToCRMData).then(function (response) {
+          console.log(response);
+        })["catch"](function (error) {
+          console.log(error);
+        });
+      }
     }
   }
 });

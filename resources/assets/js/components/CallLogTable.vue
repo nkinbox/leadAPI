@@ -66,7 +66,8 @@ export default {
             this.$store.dispatch('setSearchQuery', number)
         },
         pushLead(number) {
-            this.$router.push({name:'push_lead', props:{phone_number:number}})
+            this.$store.commit('selectPhone', number)
+            this.$router.push({name:'push_lead', params:{phone_number:number}})
         }
     },
     filters: {

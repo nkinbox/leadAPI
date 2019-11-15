@@ -242,8 +242,8 @@ class CallRecorderController extends Controller {
             sum(duration) overview_duration,
             sum(case when latest = 1 then 1 else 0 end) as overview_unique,
             sum(case when latest = 1 and has_duration = 0 then 1 else 0 end) as untouched_total,
-            sum(case when latest = 1 and has_duration = 0 and (call_type = "missed" or call_type = "rejected") then 1 else 0 end) as untouched_incoming,
-            sum(case when latest = 1 and has_duration = 0 and call_type = "busy"  then 1 else 0 end) as untouched_outgoing,
+            sum(case when latest = 1 and has_duration = 0 and (call_type = "missed" or call_type = "rejected" or call_type = "incoming") then 1 else 0 end) as untouched_incoming,
+            sum(case when latest = 1 and has_duration = 0 and (call_type = "busy" or call_type = "outgoing")  then 1 else 0 end) as untouched_outgoing,
             sum(case when call_type = "incoming" then 1 else 0 end) as incoming_total,
             sum(case when call_type = "incoming" then duration else 0 end) as incoming_duration,
             sum(case when call_type = "incoming" and call_type_latest = 1 then 1 else 0 end) as incoming_unique,
@@ -445,6 +445,32 @@ class CallRecorderController extends Controller {
     }
     public function getWebsites() {
         return DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'display_name')->orderBy('display_name')->get();
+    }
+    public function pushToCRM(Request $request) {
+        $this->validate($request, [
+            'id' => 'required|integer|exists:add_project_client_seo,project_client_seo_id',
+            'phone_number' => 'required',
+            'type' => 'required|in:hotel,tour'
+        ]);
+        if($request->type == 'hotel') {
+            $website = DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'display_name', 'city')->where('project_client_seo_id', $request->id)->first();
+            DB::table('lead_detail')->insert([
+                'project_client_seo_id' => $website->id,
+                'subject' => 'TCCS',
+                'to_address' => 'alok@tripclues.com',
+                'enq_website' => $website->website,
+                'enq_city' => $website->city,
+                'enq_name' => 'TCCS',
+                'enq_email' => $request->phone_number.'@tripclues.com',
+                'enq_mobile' => $request->phone_number,
+                'enq_date' => date('Y-m-d'),
+                'enq_time' => date('H:i:s'),
+                'lead_date' => date('Y-m-d'),
+                'lead_time' => date('H:i:s'), 
+                'enq_type' => 'Desktop'
+            ]);
+        }
+        return response()->json(['success' => 1]);
     }
     private function lastUpdateAt($agent_id) {
         Agents::whereIn('id', $agent_id)->update(['last_update_at' => date('Y-m-d H:i:s')]);

@@ -61,7 +61,10 @@ export const store = new Vuex.Store({
             series: [],
             categories: []
         },
-        websites: []
+        websites: [],
+        selected_website_id: 0,
+        selected_phone: '',
+        lead_type: 'hotel'
     },
     getters: {
         callFlowChartFilter(state) {
@@ -175,9 +178,27 @@ export const store = new Vuex.Store({
                 default:
                 return state.search_call_register.logs
             }
+        },
+        pushToCRMData(state) {
+            if(state.selected_website_id && state.selected_phone) {
+                return {
+                    id: state.selected_website_id,
+                    phone_number: state.selected_phone,
+                    type: state.lead_type
+                }
+            } else return null
         }
     },
     mutations: {
+        selectLeadType(state, lead_type) {
+            state.lead_type = lead_type
+        },
+        selectPhone(state, phone_number) {
+            state.selected_phone = phone_number
+        },
+        selectWebsite(state, website_id) {
+            state.selected_website_id = website_id
+        },
         setWebsites(state, websites) {
             state.websites = websites
         },
@@ -369,6 +390,16 @@ export const store = new Vuex.Store({
             }).catch(error => {
                 console.log(error)
             })
+        },
+        pushToCRM(context) {
+            if(context.getters.pushToCRMData) {
+                axios.post('https://www.tripclues.in/leadAPI/public/api/logger/pushToCRM', context.getters.pushToCRMData).then(response => {
+                    console.log(response)
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+            }
         }
     }
 })

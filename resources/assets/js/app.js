@@ -18,7 +18,8 @@ const routes = [
     {
         path: '/push_lead/:phone_number',
         component: PushLead,
-        name: 'push_lead'
+        name: 'push_lead',
+        props: true
     }
 ]
 Vue.use(VueRouter)
