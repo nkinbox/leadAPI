@@ -1,10 +1,10 @@
 <template>
   <div>
-    <select v-model="selectedAgent" class="form-control">
+    <select v-model="selectedAgent" class="form-control" :class="{'form-control-sm':selectedAgent}">
         <option value="" v-if="!selectedAgent">All Agents</option>
         <option v-for="agent in agents" :key="agent.user_name" :value="agent.user_name">{{agent.user_name+' '+agent.name}}</option>
     </select>
-    <select v-if="selectedAgent" v-model="selectedSim" class="form-control">
+    <select v-if="selectedAgent" v-model="selectedSim" class="form-control" :class="{'form-control-sm':selectedAgent}">
         <option value="">Any SIM</option>
         <option v-for="sim_allocation in sim_allocations" :key="sim_allocation.id" :value="sim_allocation.id">{{sim_allocation.phone_number + ' - ' + (sim_allocation.sim_name?sim_allocation.sim_name:(sim_allocation.is_personal?'Personal':''))}}</option>
     </select>

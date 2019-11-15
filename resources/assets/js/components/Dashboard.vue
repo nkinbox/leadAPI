@@ -9,14 +9,7 @@
         <h5 class="text-center my-2">Departments</h5>
         <department-chart></department-chart>
         <div class="border-top my-2">
-        <h5 class="text-center my-2">Employee Engagement</h5>
-          <ul class="list-group">
-              <li class="list-group-item pointer d-flex align-items-center">
-                  <div class="text-center flex-fill">Employee 2</div>
-                  <div class="border">&nbsp;</div>
-                  <div class="text-center flex-fill">Employee 1</div>
-              </li>
-          </ul>
+          <agent-inactivity></agent-inactivity>
         </div>
       </div>
     </div>
@@ -26,12 +19,14 @@
 <script>
 import CallFlowChart from './CallFlowChart'
 import DepartmentChart from './DepartmentChart'
+import AgentInactivity from './AgentInactivity'
 
 export default {
     name: 'dashboard',
     components: {
       CallFlowChart,
-      DepartmentChart
+      DepartmentChart,
+      AgentInactivity
     },
     mounted() {
       this.$store.dispatch('fetchAnalytics')
