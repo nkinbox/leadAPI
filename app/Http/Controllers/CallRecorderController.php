@@ -59,7 +59,7 @@ class CallRecorderController extends Controller {
             $sim->phone_number = isset($sim_allocation['phone_number'])?$sim_allocation['phone_number']:null;
             $sim->agent_id = $agent->id;
             $sim->sim_name = isset($sim_allocation['sim_name'])?$sim_allocation['sim_name']:null;
-            $sim->is_personal = $sim_allocation['is_personal']?1:0;
+            $sim->is_personal = (isset($sim_allocation['is_personal'])&&$sim_allocation['is_personal'])?1:0;
             $sim->save();
         }
         $this->response['success'] = 1;
