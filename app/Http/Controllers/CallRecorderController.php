@@ -482,7 +482,7 @@ class CallRecorderController extends Controller {
                 'tour_package' => 'TCCS Package',
                 'name' => $request->saved_name?$request->saved_name:'TCCS',
                 'email' => $request->phone_number.'@tripclues.com',
-                'phone' => $request->phone,
+                'phone' => $request->phone_number,
                 'tour_lead_status' => 'fresh',
                 'tour_lead_date' => date('Y-m-d'),
                 'tour_lead_time' => date('H:i:s'),
