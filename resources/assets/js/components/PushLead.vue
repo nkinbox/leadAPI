@@ -7,7 +7,7 @@
             </div>
         </div>
         <div v-else>
-            <div class="card-header alert-info"><b>Selected Number</b> <span>{{phone_number}}</span></div>
+            <div class="card-header"><b>Selected Number</b> <span>{{phone_number}}</span></div>
             <div class="card-body">
                 <select-agents class="mb-2" :show_sim="0"></select-agents>
                 <select-website v-show="leadType == 'hotel'"></select-website>
@@ -78,5 +78,9 @@ export default {
     margin-left: calc(50vw - 200px);
     opacity: 1;
     background: #fff;
+}
+.card-header {
+    background: #0a4089;
+    color: #fff;
 }
 </style>
