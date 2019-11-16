@@ -17,7 +17,7 @@
                 </select>
             </div>
             <div class="card-footer">
-                <button @click="pushHotelLead" class="btn btn-primary text-capitalize">Push as {{leadType}} lead</button>
+                <button @click="pushHotelLead" class="btn btn-custom text-capitalize">Push as {{leadType}} lead</button>
             </div>
         </div>
       </div>
