@@ -453,7 +453,7 @@ class CallRecorderController extends Controller {
             'id' => 'required_if:type,hotel|integer|exists:add_project_client_seo,project_client_seo_id',
             'phone_number' => 'required',
             'type' => 'required|in:hotel,tour',
-            'user_name' => 'required|exists:agents',
+            'user_name' => 'required|exists:user_info,attendance_user_id',
             'saved_name' => 'nullable'
         ]);
         $agent = DB::table('user_info')->select('user_id')->where('attendance_user_id', $request->user_name)->first();
