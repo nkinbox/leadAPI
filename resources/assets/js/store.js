@@ -17,7 +17,8 @@ export const store = new Vuex.Store({
             call_register: false,
             search_call_register: false,
             call_flow_chart: false,
-            website: false
+            website: false,
+            crm: false
         },
         departments: [],
         agents: [],
@@ -189,8 +190,11 @@ export const store = new Vuex.Store({
                 return null
             }
             if(state.lead_type == 'hotel') {
+                if(state.selected_website_id)
                 data.id = state.selected_website_id
+                else return null
             }
+            data.type = state.lead_type
             return data
         }
     },
@@ -361,7 +365,7 @@ export const store = new Vuex.Store({
             })
             context.commit('selectSimID', '')
             context.commit('selectWebsite', 0)
-            context.commit('selectPhone', '')
+            context.commit('setWebsites', [])
             context.dispatch('fetchCallRegister')
         },
         setAgent(context, agent) {
@@ -369,7 +373,7 @@ export const store = new Vuex.Store({
             context.commit('selectDepartment', agent.department_id)
             context.commit('selectSimID', '')
             context.commit('selectWebsite', 0)
-            context.commit('selectPhone', '')
+            context.commit('setWebsites', [])
             context.dispatch('fetchCallRegister')
         },
         setSearchQuery(context, search_query) {
@@ -408,14 +412,23 @@ export const store = new Vuex.Store({
             })
         },
         pushToCRM(context) {
-            if(context.getters.pushToCRMData) {
+            context.commit('loadingState', {name: 'crm', isLoading: true})
+            return new Promise((resolve, reject) => {
                 axios.post('https://www.tripclues.in/leadAPI/public/api/logger/pushToCRM', context.getters.pushToCRMData).then(response => {
                     console.log(response)
+                    context.commit('loadingState', {name: 'crm', isLoading: false})
+                    context.commit('selectWebsite', 0)
+                    context.commit('selectPhone', '')
+                    resolve()
                 })
                 .catch(error => {
                     console.log(error)
+                    context.commit('selectWebsite', 0)
+                    context.commit('selectPhone', '')
+                    context.commit('loadingState', {name: 'crm', isLoading: false})
+                    reject()
                 })
-            }
+            })
         }
     }
 })

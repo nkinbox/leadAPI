@@ -4,7 +4,7 @@
             <select v-model="selectWebsite" class="form-control flex-fill">
                 <option v-for="website in websites" :key="website.id" :value="website.id">{{website.display_name}}</option>
             </select>
-            <button class="btn btn-custom" @click="refresh">&#8634;</button>
+            <button class="btn btn-primary" @click="refresh">&#8634;</button>
         </div>
     </div>
 </template>
@@ -32,10 +32,3 @@ export default {
     }
 }
 </script>
-<style>
-.btn-custom {
-    color: #fff;
-    background-color: #ec921a;
-    border-color: #ec921a;
-}
-</style>

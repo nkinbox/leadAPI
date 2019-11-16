@@ -32,7 +32,7 @@
                     </td>
                     <td>{{log.duration | readableSeconds}}</td>
                     <td class="text-nowrap">{{log.device_time | formatDate}}</td>
-                    <td v-show="agent"><button v-if="log.latest" class="btn btn-sm btn-primary" @click="pushLead(log.phone_number)">Add as Lead</button></td>
+                    <td v-show="agent"><button v-if="log.latest && log.identified == 'external'" class="btn btn-sm btn-primary" @click="pushLead(log.phone_number)">Add as Lead</button></td>
                 </tr>
             </tbody>
         </table>

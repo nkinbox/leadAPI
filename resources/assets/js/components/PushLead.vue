@@ -1,13 +1,13 @@
 <template>
   <div class="dialog" @click="goBack">
       <div class="card" @click="$event.stopPropagation()">
-        <div v-if="loading" class="text-center p-4">
+        <div v-if="loading || pushing" class="text-center p-4">
             <div class="spinner-border text-secondary" role="status" style="width: 4rem; height: 4rem;">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
         <div v-else>
-            <div class="card-header"><b>Selected Number</b> <span>{{phone_number}}</span></div>
+            <div class="card-header alert-info"><b>Selected Number</b> <span>{{phone_number}}</span></div>
             <div class="card-body">
                 <select-agents class="mb-2" :show_sim="0"></select-agents>
                 <select-website v-show="leadType == 'hotel'"></select-website>
@@ -17,7 +17,7 @@
                 </select>
             </div>
             <div class="card-footer">
-                <button @click="pushHotelLead" class="btn btn-custom text-capitalize">Push as {{leadType}} lead</button>
+                <button @click="pushHotelLead" class="btn btn-primary text-capitalize" :disabled="!canPushToCRMData">Push as {{leadType}} lead</button>
             </div>
         </div>
       </div>
@@ -47,16 +47,30 @@ export default {
         loading() {
             return this.$store.state.loading['website']
         },
+        pushing() {
+            return this.$store.state.loading['crm']
+        },
+        canPushToCRMData() {
+            return (this.$store.getters.pushToCRMData)?true:false
+        }
     },
     methods: {
         pushHotelLead() {
-            this.$store.dispatch('pushToCRM')
+            if(this.canPushToCRMData) {
+                this.$store.dispatch('pushToCRM').then(() => {
+                    this.$router.replace({path:'/logs'})
+                    alert('Success')
+                }).catch(() => {
+                    this.$router.replace({path:'/logs'})
+                    alert('Failed')
+                })
+            }
         },
         goBack() {
             this.$router.replace({path:'/logs'})
         }
     },
-    created() {
+    mounted() {
         this.$store.commit('selectPhone', this.phone_number)
         this.$store.dispatch('fetchWebsites')
     }
@@ -78,9 +92,5 @@ export default {
     margin-left: calc(50vw - 200px);
     opacity: 1;
     background: #fff;
-}
-.card-header {
-    background: #0a4089;
-    color: #fff;
 }
 </style>

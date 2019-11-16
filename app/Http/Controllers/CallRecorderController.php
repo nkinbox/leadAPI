@@ -266,7 +266,7 @@ class CallRecorderController extends Controller {
         return response()->json($this->response);
     }
     public function agents() {
-        $agents = Agents::selectRaw('agents.*, departments.name as department_name, departments.id as department_id')->leftJoin('departments', 'departments.id', '=', 'agents.department_id')->get();
+        $agents = Agents::selectRaw('agents.*, departments.name as department_name, departments.id as department_id')->leftJoin('departments', 'departments.id', '=', 'agents.department_id')->orderBy('agents.user_name')->get();
         $sim_allocations = SimAllocation::all()->groupBy('agent_id');
         $this->response['agents'] = [];
         foreach($agents as $agent) {
