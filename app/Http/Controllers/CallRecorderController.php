@@ -473,7 +473,7 @@ class CallRecorderController extends Controller {
                 'lead_date' => date('Y-m-d'),
                 'lead_time' => date('H:i:s'), 
                 'enq_type' => 'Desktop',
-                'assigned_to' => $agent->id
+                'assigned_to' => $agent->user_id
             ]);
         } else {
             DB::table('tour_lead_details')->insert([
