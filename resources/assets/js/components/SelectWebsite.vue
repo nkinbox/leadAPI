@@ -1,8 +1,9 @@
 <template>
-    <div>
-        <select v-model="selectWebsite">
+    <div class="d-flex">
+        <select v-model="selectWebsite" class="form-control flex-fill">
             <option v-for="website in websites" :key="website.id" :value="website.id">{{website.display_name}}</option>
         </select>
+        <button class="btn btn-primary" @click="refresh">&#8634;</button>
     </div>
 </template>
 
@@ -20,6 +21,11 @@ export default {
         },
         websites() {
             return this.$store.state.websites
+        }
+    },
+    methods: {
+        refresh() {
+            this.$store.dispatch('fetchWebsites')
         }
     }
 }

@@ -40,6 +40,7 @@
                 </form>
             </div>
         </nav>
+        <router-view name="dialog"></router-view>
         <router-view style="margin-top: 66px"></router-view>
     </div>
 

@@ -17,9 +17,15 @@ const routes = [
     },
     {
         path: '/push_lead/:phone_number',
-        component: PushLead,
+        components: {
+            default: CallLogs,
+            dialog:PushLead,
+        },
         name: 'push_lead',
-        props: true
+        props: {
+            default: false,
+            dialog: true
+        }
     }
 ]
 Vue.use(VueRouter)

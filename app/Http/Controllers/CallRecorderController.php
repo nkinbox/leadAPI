@@ -450,7 +450,7 @@ class CallRecorderController extends Controller {
     }
     public function pushToCRM(Request $request) {
         $this->validate($request, [
-            // 'id' => 'required_if:type,hotel|integer|exists:add_project_client_seo,project_client_seo_id',
+            'id' => 'required_if:type,hotel|integer|exists:add_project_client_seo,project_client_seo_id',
             'phone_number' => 'required',
             'type' => 'required|in:hotel,tour',
             'user_name' => 'required|exists:agents',

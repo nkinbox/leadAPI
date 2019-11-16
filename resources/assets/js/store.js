@@ -17,6 +17,7 @@ export const store = new Vuex.Store({
             call_register: false,
             search_call_register: false,
             call_flow_chart: false,
+            website: false
         },
         departments: [],
         agents: [],
@@ -180,14 +181,17 @@ export const store = new Vuex.Store({
             }
         },
         pushToCRMData(state) {
-            if(state.selected_phone) {
-                return {
-                    id: state.selected_website_id,
-                    phone_number: state.selected_phone,
-                    user_name: state.selected_agent.user_name,
-                    type: state.lead_type
-                }
-            } else return null
+            let data = {}
+            if(state.selected_phone && state.selected_agent.user_name) {
+                data.phone_number = state.selected_phone
+                data.user_name = state.selected_agent.user_name
+            } else {
+                return null
+            }
+            if(state.lead_type == 'hotel') {
+                data.id = state.selected_website_id
+            }
+            return data
         }
     },
     mutations: {
@@ -356,11 +360,17 @@ export const store = new Vuex.Store({
                 sim_allocations: []
             })
             context.commit('selectSimID', '')
+            context.commit('selectWebsite', 0)
+            context.commit('selectPhone', '')
+            context.dispatch('fetchCallRegister')
         },
         setAgent(context, agent) {
             context.commit('selectAgent', agent)
             context.commit('selectDepartment', agent.department_id)
             context.commit('selectSimID', '')
+            context.commit('selectWebsite', 0)
+            context.commit('selectPhone', '')
+            context.dispatch('fetchCallRegister')
         },
         setSearchQuery(context, search_query) {
             if(context.state.search_query != search_query) {
@@ -386,12 +396,15 @@ export const store = new Vuex.Store({
             })
         },
         fetchWebsites(context) {
+            context.commit('loadingState', {name: 'website', isLoading: true})
             axios.get('https://www.tripclues.in/leadAPI/public/api/logger/websites', {
                 params: {user_name: context.state.selected_agent.user_name}
             }).then(response => {
                 context.commit('setWebsites', response.data)
+                context.commit('loadingState', {name: 'website', isLoading: false})
             }).catch(error => {
                 console.log(error)
+                context.commit('loadingState', {name: 'website', isLoading: false})
             })
         },
         pushToCRM(context) {
