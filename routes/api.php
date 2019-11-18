@@ -16,3 +16,4 @@ Route::get('logger/departments', 'CallRecorderController@departments');
 Route::get('logger/alerts', 'CallRecorderController@departments');
 Route::get('logger/websites', 'CallRecorderController@getWebsites');
 Route::post('logger/pushToCRM', 'CallRecorderController@pushToCRM');
+Route::get('iscustomer', 'CallRecorderController@iscustomer');

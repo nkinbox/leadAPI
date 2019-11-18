@@ -498,11 +498,16 @@ class CallRecorderController extends Controller {
         Agents::whereIn('id', $agent_id)->update(['last_update_at' => date('Y-m-d H:i:s')]);
     }
 
-    public function engagement() {
+    public function iscustomer(Request $request) {
         $this->validate($request, [
-            'start_datetime' => 'required|date_format:Y-m-d H:i:s',
-            'end_datetime' => 'required|date_format:Y-m-d H:i:s',
+            'phone_number' => 'required',
         ]);
-        $logs = DB::select('select agents1.user_name, agents1.name, agents2.user_name, agents2.name from call_registers inner join agents as agents1 on agents1.id = call_registers.agent_id inner join (select agents.id, agents.user_name, agents.name, sim_allocations.phone_number from agents inner join sim_allocations on sim_allocations.agent_id = agents.id) as agents2 on agents2.phone_number = call_registers.phone_number', [$request->start_datetime, $request->end_datetime]);
+        $true = DB::table('tour_lead_details')->select('tour_lead_id')->where('phone', 'like', '%'.$request->phone_number.'%')->first();
+        if(!$true) {
+            $true = DB::table('lead_detail')->select('lead_id')->where('enq_mobile', 'like', '%'.$request->phone_number.'%')->first();
+        }
+        return response()->json([
+            'exists' => $true?1:0
+        ]);
     }
 }
