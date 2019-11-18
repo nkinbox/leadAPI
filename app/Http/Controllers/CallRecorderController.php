@@ -500,14 +500,17 @@ class CallRecorderController extends Controller {
 
     public function iscustomer(Request $request) {
         $this->validate($request, [
-            'phone_number' => 'required',
+            'phone_numbers' => 'required|array'
         ]);
-        $true = DB::table('tour_lead_details')->select('tour_lead_id')->where('phone', 'like', '%'.$request->phone_number.'%')->first();
-        if(!$true) {
-            $true = DB::table('lead_detail')->select('lead_id')->where('enq_mobile', 'like', '%'.$request->phone_number.'%')->first();
+        $response = [];
+        foreach($request->phone_numbers as $phone_number) {
+            $true = DB::table('tour_lead_details')->select('tour_lead_id')->where('phone', 'like', '%'.$phone_number.'%')->first();
+            if(!$true) {
+                $true = DB::table('lead_detail')->select('lead_id')->where('enq_mobile', 'like', '%'.$phone_number.'%')->first();
+            }
+            if($true)
+            $response[] = $phone_number;
         }
-        return response()->json([
-            'exists' => $true?1:0
-        ]);
+        return response()->json($response);
     }
 }
