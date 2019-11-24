@@ -504,12 +504,12 @@ class CallRecorderController extends Controller {
         ]);
         $response = [];
         foreach($request->phone_numbers as $phone_number) {
-            $true = DB::table('tour_lead_details')->select('tour_lead_id')->where('phone', 'like', '%'.$phone_number.'%')->first();
+            $true = DB::table('tour_lead_details')->select('tour_lead_id', 'tour_lead_status as status')->where('phone', 'like', '%'.substr($phone_number, -5).'%')->orderBy('tour_enq_date', 'desc')->first();
             if(!$true) {
-                $true = DB::table('lead_detail')->select('lead_id')->where('enq_mobile', 'like', '%'.$phone_number.'%')->first();
+                $true = DB::table('lead_detail')->select('lead_id', 'lead_status as status')->where('enq_mobile', 'like', '%'.substr($phone_number, -5).'%')->orderBy('enq_date', 'desc')->first();
             }
             if($true)
-            $response[] = $phone_number;
+            $response[$phone_number] = $true->status;
         }
         return response()->json($response);
     }
