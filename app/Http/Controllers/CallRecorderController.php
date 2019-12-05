@@ -494,6 +494,63 @@ class CallRecorderController extends Controller {
         }
         return response()->json(['success' => 1]);
     }
+    public function pushMultipleToCRM(Request $request) {
+        $this->validate($request, [
+            'leads' => 'required|array', 
+            'leads.*.phone_number' => 'required',
+            'leads.*.saved_name' => 'nullable',
+            'type' => 'required|in:hotel,tour',
+            'user_name' => 'required|exists:user_info,attendance_user_id',
+        ]);
+        $agent = DB::table('user_info')->select('user_id')->where('attendance_user_id', $request->user_name)->first();
+        if($request->type == 'hotel') {
+            $inserts = [];
+            foreach($request->leads as $lead) {
+                $website = DB::table('add_project_client_seo')->select('project_client_seo_id as id', 'website_url as website', 'city')->where('project_client_seo_id', $lead['website_id'])->first();
+                if(!$website) continue;
+                $inserts[] = [
+                    'project_client_seo_id' => $website->id,
+                    'subject' => 'TCCS',
+                    'to_address' => 'alok@tripclues.com',
+                    'enq_website' => $website->website,
+                    'enq_city' => $website->city,
+                    'enq_name' => $lead['saved_name']?$lead['saved_name']:'TCCS',
+                    'enq_email' => $lead['phone_number'].'@tripclues.com',
+                    'enq_mobile' => $lead['phone_number'],
+                    'enq_date' => date('Y-m-d'),
+                    'enq_time' => date('H:i:s'),
+                    'lead_date' => date('Y-m-d'),
+                    'lead_time' => date('H:i:s'), 
+                    'enq_type' => 'Desktop',
+                    'assigned_to' => $agent->user_id
+                ];
+            }
+            if($inserts) {
+                DB::table('lead_detail')->insert($inserts);
+            }
+        } else {
+            $inserts = [];
+            foreach($request->leads as $lead) {
+                $inserts[] = [
+                    'tour_type' => 'Tour',
+                    'tour_city' => 'Destination',
+                    'tour_package' => 'TCCS Package',
+                    'name' => $lead['saved_name']?$lead['saved_name']:'TCCS',
+                    'email' => $lead['phone_number'].'@tripclues.com',
+                    'phone' => $lead['phone_number'],
+                    'tour_lead_status' => 'fresh',
+                    'tour_lead_date' => date('Y-m-d'),
+                    'tour_lead_time' => date('H:i:s'),
+                    'tour_enq_date' => date('Y-m-d'),
+                    'tour_enq_time' => date('H:i:s'), 
+                    'enq_type' => 'Desktop',
+                    'assigned_to' => $agent->user_id
+                ];
+            }
+            DB::table('tour_lead_details')->insert($inserts);
+        }
+        return response()->json(['success' => 1]);
+    }
     private function lastUpdateAt($agent_id) {
         Agents::whereIn('id', $agent_id)->update(['last_update_at' => date('Y-m-d H:i:s')]);
     }
