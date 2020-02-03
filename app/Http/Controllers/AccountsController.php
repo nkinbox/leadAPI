@@ -44,7 +44,7 @@ class AccountsController extends Controller
             if($leadDetail->enq_adv_pay_val) {
                 $this->response['data'][$index]['amount'] = $leadDetail->enq_adv_pay_val + $lsm->amount;
             } else {
-                $this->response['data'][$index]['amount'] = $lsm->amount;
+                $this->response['data'][$index]['amount'] = $lsm->amount*1;
             }
         }
         return response()->json($this->response);
