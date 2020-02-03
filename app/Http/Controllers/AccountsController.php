@@ -27,7 +27,7 @@ class AccountsController extends Controller
                 'current_page' => $leadDetails->currentPage(),
                 'from' => $leadDetails->firstItem(),
                 'last_page' => $leadDetails->lastPage(),
-                'path' => $leadDetails->url(),
+                'path' => null,
                 'per_page' => $leadDetails->count(),
                 'to' => $leadDetails->lastItem(),
                 'total' => $leadDetails->total()
