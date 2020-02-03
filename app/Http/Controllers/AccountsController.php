@@ -34,7 +34,7 @@ class AccountsController extends Controller
             ]
         ];
         foreach($leadDetails as $index => $leadDetail) {
-            $lsm = current(DB::select('select amount from lead_send_mail where lead_id = ? order by lsm_id desc limit 1', $leadDetail->lead_id));
+            $lsm = current(DB::select('select amount from lead_send_mail where lead_id = ? order by lsm_id desc limit 1', [$leadDetail->lead_id]));
             if(!$lsm) continue;
             $this->response['data'][$index]['lead_id'] = $leadDetail->lead_id;
             $this->response['data'][$index]['date'] = $leadDetail->mail_date;
