@@ -15,7 +15,7 @@ class AccountsController extends Controller
         $leadDetails = DB::table('lead_detail')
         ->where('lead_detail.mail_date', '>=', $request->date_start)
         ->where('lead_detail.mail_date', '<=', $request->date_end)->paginate(50);
-        return response()->json($result);
+        return response()->json($leadDetails);
     }
     public function ledgerPurchases(Request $request) {
         $this->validate($request, [
