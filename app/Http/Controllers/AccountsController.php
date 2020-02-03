@@ -7,14 +7,14 @@ use DB;
 
 class AccountsController extends Controller
 {
-    public function ledgerSales() {
+    public function ledgerSales(Request $request) {
         $this->validate($request, [
             'date_start' => 'required|date_format:Y-m-d', 
             'date_end' => 'required|date_format:Y-m-d|after_or_equal:date_start', 
         ]);
         return response()->json(['success' => 1]);
     }
-    public function ledgerPurchases() {
+    public function ledgerPurchases(Request $request) {
         $this->validate($request, [
             'date_start' => 'required|date_format:Y-m-d', 
             'date_end' => 'required|date_format:Y-m-d|after_or_equal:date_start', 
