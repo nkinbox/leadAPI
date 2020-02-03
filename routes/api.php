@@ -1,6 +1,8 @@
 <?php
+Route::get('ledger/sales', 'AccountsController@ledgerSales');
+Route::get('ledger/purchases', 'AccountsController@ledgerPurchases');
 
-use Illuminate\Http\Request;
+
 
 Route::middleware('AfterWork')->post('/insert', 'APIController@insert');
 
