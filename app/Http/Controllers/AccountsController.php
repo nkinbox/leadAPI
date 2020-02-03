@@ -16,21 +16,21 @@ class AccountsController extends Controller
         $leadDetails = DB::table('lead_detail')->select('lead_id', 'enq_name', 'enq_adv_pay_val', 'reference_number', 'mail_date')
         ->where('lead_status', 'booked')
         ->where('lead_detail.mail_date', '>=', $request->date_start)
-        ->where('lead_detail.mail_date', '<=', $request->date_end)->paginate(50);
+        ->where('lead_detail.mail_date', '<=', $request->date_end)->orderBy('mail_date', 'desc')->paginate(50);
         $this->response = [
             'data' => [],
             'links' => [
-                'prev' => $leadDetails->prev_page_url,
-                'next' => $leadDetails->next_page_url
+                'prev' => $leadDetails->previousPageUrl(),
+                'next' => $leadDetails->nextPageUrl()
             ],
             'meta' => [
-                'current_page' => $leadDetails->current_page,
-                'from' => $leadDetails->from,
-                'last_page' => $leadDetails->last_page,
-                'path' => $leadDetails->path,
-                'per_page' => $leadDetails->per_page,
-                'to' => $leadDetails->to,
-                'total' => $leadDetails->total
+                'current_page' => $leadDetails->currentPage(),
+                'from' => $leadDetails->firstItem(),
+                'last_page' => $leadDetails->lastPage(),
+                'path' => $leadDetails->url(),
+                'per_page' => $leadDetails->count(),
+                'to' => $leadDetails->lastItem(),
+                'total' => $leadDetails->total()
             ]
         ];
         foreach($leadDetails as $index => $leadDetail) {
