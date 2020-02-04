@@ -16,10 +16,11 @@ class AccountsController extends Controller
         $leadIds = DB::table('lead_send_mail')->selectRaw('lead_send_mail.lead_id, min(lead_send_mail.mail_date) as booking_date')
         ->where('lead_send_mail.mail_date', '>=', $request->date_start)
         ->where('lead_send_mail.mail_date', '<=', $request->date_end)
-        ->where('lead_send_mail.status', 'booked')->groupBy('lead_send_mail.lead_id')->paginate(100);
+        ->where('lead_send_mail.status', 'booked')->groupBy('lead_send_mail.lead_id')->orderBy('booking_date')->paginate(100);
 
         $leadDetails = DB::table('lead_detail')->select('lead_id', 'enq_name', 'enq_hotel', 'enq_adv_pay_val', 'reference_number', 'mail_date', 'lead_status')
-        ->whereIn('lead_id', $leadIds->pluck('lead_id'))->orderBy('lead_id')->get();
+        ->whereIn('lead_id', $leadIds->pluck('lead_id'))->get();
+        $leadDetails = $leadDetails->groupBy('lead_id');
         $this->response = [
             'data' => [],
             'links' => [
@@ -38,11 +39,12 @@ class AccountsController extends Controller
                 'total' => $leadIds->total()
             ]
         ];
-        foreach($leadDetails as $index => $leadDetail) {
+        foreach($leadIds as $index => $leadId) {
+            $leadDetail = $leadDetails[$leadId->lead_id];
             $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = "booked" order by lsm_id desc limit 1', [$leadDetail->lead_id]));
             if(!$lsm) continue;
             $this->response['data'][$index]['lead_id'] = $leadDetail->lead_id;
-            $this->response['data'][$index]['date'] = $leadDetail->mail_date;
+            $this->response['data'][$index]['date'] = $leadId->booking_date;
             $this->response['data'][$index]['customer_name'] = $leadDetail->enq_name;
             $this->response['data'][$index]['hotel_name'] = $leadDetail->enq_hotel;
             $this->response['data'][$index]['booking_type'] = 'Hotel';
