@@ -1,6 +1,5 @@
 <?php
-Route::get('ledger/sales', 'AccountsController@ledgerSales');
-Route::get('ledger/purchases', 'AccountsController@ledgerPurchases');
+Route::get('ledger/sales_purchases', 'AccountsController@ledgerSalesAndPurchase');
 
 
 
