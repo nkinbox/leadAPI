@@ -40,7 +40,7 @@ class AccountsController extends Controller
             ]
         ];
         foreach($leadIds as $index => $leadId) {
-            $leadDetail = current($leadDetails[$leadId->lead_id]);
+            $leadDetail = dd($leadDetails[$leadId->lead_id]);
             $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = "booked" order by lsm_id desc limit 1', [$leadDetail->lead_id]));
             if(!$lsm) continue;
             $this->response['data'][$index]['lead_id'] = $leadDetail->lead_id;
