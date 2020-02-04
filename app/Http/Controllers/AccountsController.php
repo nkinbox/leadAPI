@@ -61,8 +61,20 @@ class AccountsController extends Controller
         return response()->json($this->response);
     }
     public function customerLedger($table, $id) {
+        $this->response = [
+            'customer_name' => '',
+            'email' => '',
+            'phone' => '',
+            'date' => ['from' => '', 'to' => ''],
+            'list' => [],
+        ];
+        $collection = collect([]);
         if($table == 'hotel') {
             $lead = DB::table('lead_detail')->select('lead_id', 'enq_name as customer_name', 'enq_hotel as vendor_name', 'enq_email as email', 'reference_number as booking_number', 'enq_mobile as phone', 'enq_adv_pay_val', 'enq_check_out')->where('lead_id', $id)->first();
+
+            $this->response['customer_name'] = $lead->customer_name;
+            $this->response['email'] = $lead->email;
+            $this->response['phone'] = $lead->phone;
 
             $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = ? order by lsm_id desc limit 1', [$lead->lead_id, 'booked']));
 
@@ -74,8 +86,6 @@ class AccountsController extends Controller
             } else {
                 $bookingAmount = round($lsm->amount);
             }
-
-            $collection = collect([]);
 
             $collection->push([
                 'date' => $bookingDate->date,
@@ -102,7 +112,7 @@ class AccountsController extends Controller
             }
             unset($transfer);
             $remainingAmount = $bookingAmount - $advanceAmount;
-            if($remainingAmount > 0) {
+            if($remainingAmount > 0 && strtotime($lead->enq_check_out) < time()) {
                 $collection->push([
                     'date' => $lead->enq_check_out,
                     'particular' => $lead->vendor_name,
@@ -114,5 +124,11 @@ class AccountsController extends Controller
             }
 
         }
+        $collection = $collection->sortBy('date');
+        if($collection->isNotEmpty()) {
+            $this->response['date']['from'] = $collection->first()->date;
+            $this->response['date']['to'] = $collection->last()->date;
+        }
+        return response()->json($this->response);
     }
 }
