@@ -20,8 +20,10 @@ class AccountsController extends Controller
         $this->response = [
             'data' => [],
             'links' => [
+                'first' => $leadDetails->url(1),
                 'prev' => $leadDetails->previousPageUrl(),
-                'next' => $leadDetails->nextPageUrl()
+                'next' => $leadDetails->nextPageUrl(),
+                'last' => $leadDetails->url($leadDetails->lastPage())
             ],
             'meta' => [
                 'current_page' => $leadDetails->currentPage(),
