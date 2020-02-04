@@ -62,7 +62,7 @@ class AccountsController extends Controller
     }
     public function customerLedger($table, $id) {
         if($table == 'hotel') {
-            $lead = DB::table('lead_detail')->select('lead_id as id', 'enq_name as customer_name', 'enq_hotel as vendor_name', 'enq_email as email', 'reference_number as booking_number', 'enq_mobile as phone', 'enq_adv_pay_val', 'enq_check_out')->where('lead_id', $id)->first();
+            $lead = DB::table('lead_detail')->select('lead_id', 'enq_name as customer_name', 'enq_hotel as vendor_name', 'enq_email as email', 'reference_number as booking_number', 'enq_mobile as phone', 'enq_adv_pay_val', 'enq_check_out')->where('lead_id', $id)->first();
 
             $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = ? order by lsm_id desc limit 1', [$lead->lead_id, 'booked']));
 
