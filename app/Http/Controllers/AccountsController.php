@@ -62,26 +62,30 @@ class AccountsController extends Controller
     }
     public function customerLedger($table, $id) {
         if($table == 'hotel') {
-            $lead = DB::table('lead_detail')->select('lead_id as id', 'enq_name as customer_name', 'enq_hotel as vendor_name', 'enq_email as email', 'reference_number as booking_number', 'enq_mobile as phone', 'enq_adv_pay_val')->where('lead_id', $id)->first();
-            $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? order by lsm_id desc limit 1', [$lead->lead_id]));
+            $lead = DB::table('lead_detail')->select('lead_id as id', 'enq_name as customer_name', 'enq_hotel as vendor_name', 'enq_email as email', 'reference_number as booking_number', 'enq_mobile as phone', 'enq_adv_pay_val', 'enq_check_out')->where('lead_id', $id)->first();
+
+            $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = ? order by lsm_id desc limit 1', [$lead->lead_id, 'booked']));
+
+            $bookingDate = current(DB::select('select mail_date as date from lead_send_mail where lead_id = ? and status = ? order by lsm_id limit 1', [$lead->lead_id, 'booked']));
+
+            $advanceAmount = 0;
+            if($lead->enq_adv_pay_val) {
+                $bookingAmount = round($lead->enq_adv_pay_val) + round($lsm->amount);
+            } else {
+                $bookingAmount = round($lsm->amount);
+            }
+
             $collection = collect([]);
 
-            $bookingAmount = 0;
-            if($lead->enq_adv_pay_val) {
-                $booking_amount = round($lead->enq_adv_pay_val) + round($lsm->amount);
-            } else {
-                $booking_amount = round($lsm->amount);
-            }
             $collection->push([
-                'date' => $row->date,
-                'particular' => $row->particular,
+                'date' => $bookingDate->date,
+                'particular' => $lead->vendor_name,
                 'amount' => $bookingAmount,
-                'type' => 'credit',
-                'voucher' => 'Receipt',
+                'type' => 'debit',
+                'voucher' => 'Sales Invoice',
                 'bill_id' => ''
             ]);
-
-
+            
             $transfer = DB::table('lead_advance_details')
             ->select('adv_amount as amount', 'adv_mode as particular', 'adv_date as date')
             ->where('lead_id', $id)->get();
@@ -94,8 +98,20 @@ class AccountsController extends Controller
                     'voucher' => 'Receipt',
                     'bill_id' => ''
                 ]);
+                $advanceAmount += round($row->amount);
             }
             unset($transfer);
+            $remainingAmount = $bookingAmount - $advanceAmount;
+            if($remainingAmount > 0) {
+                $collection->push([
+                    'date' => $lead->enq_check_out,
+                    'particular' => $lead->vendor_name,
+                    'amount' => $remainingAmount,
+                    'type' => 'credit',
+                    'voucher' => 'Receipt',
+                    'bill_id' => ''
+                ]);
+            }
 
         }
     }
