@@ -129,6 +129,7 @@ class AccountsController extends Controller
             $this->response['date']['from'] = $collection->first()['date'];
             $this->response['date']['to'] = $collection->last()['date'];
         }
+        $this->response['list'] = $collection;
         return response()->json($this->response);
     }
 }
