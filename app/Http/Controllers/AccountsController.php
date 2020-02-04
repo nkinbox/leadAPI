@@ -126,8 +126,8 @@ class AccountsController extends Controller
         }
         $collection = $collection->sortBy('date');
         if($collection->isNotEmpty()) {
-            $this->response['date']['from'] = $collection->first()->date;
-            $this->response['date']['to'] = $collection->last()->date;
+            $this->response['date']['from'] = $collection->first()['date'];
+            $this->response['date']['to'] = $collection->last()['date'];
         }
         return response()->json($this->response);
     }
