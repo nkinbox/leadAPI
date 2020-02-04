@@ -13,7 +13,7 @@ class AccountsController extends Controller
             'date_start' => 'required|date_format:Y-m-d', 
             'date_end' => 'required|date_format:Y-m-d|after_or_equal:date_start', 
         ]);
-        $leadIds = DB::table('lead_send_mail')->select('lead_send_mail.lead_id', 'min(lead_send_mail.mail_date) as booking_date')
+        $leadIds = DB::table('lead_send_mail')->selectRaw('lead_send_mail.lead_id, min(lead_send_mail.mail_date) as booking_date')
         ->where('lead_send_mail.mail_date', '>=', $request->date_start)
         ->where('lead_send_mail.mail_date', '<=', $request->date_end)
         ->where('lead_send_mail.status', 'booked')->groupBy('lead_send_mail.lead_id')->paginate(100);
