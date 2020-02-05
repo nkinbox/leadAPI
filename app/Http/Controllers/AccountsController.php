@@ -48,6 +48,7 @@ class AccountsController extends Controller
             $this->response['data'][$index]['customer_name'] = $leadDetail->enq_name;
             $this->response['data'][$index]['hotel_name'] = $leadDetail->enq_hotel;
             $this->response['data'][$index]['booking_type'] = 'Hotel';
+            $this->response['data'][$index]['invoice_id'] = 'HT'.$leadDetail->lead_id;
             $this->response['data'][$index]['status'] = $leadDetail->lead_status;
             
             if($leadDetail->enq_adv_pay_val) {
@@ -129,7 +130,7 @@ class AccountsController extends Controller
             $this->response['date']['from'] = $collection->first()['date'];
             $this->response['date']['to'] = $collection->last()['date'];
         }
-        $this->response['list'] = $collection;
+        $this->response['list'] = $collection->values()->all();
         return response()->json($this->response);
     }
 }
