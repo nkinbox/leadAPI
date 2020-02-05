@@ -20,7 +20,7 @@ class AccountsController extends Controller
 
         $leadDetails = DB::table('lead_detail')->select('lead_detail.lead_id', 'lead_detail.enq_name', 'lead_detail.enq_hotel', 'lead_detail.enq_adv_pay_val', 'lead_detail.reference_number', 'lead_detail.mail_date', 'lead_detail.lead_status', 'project_detail.project_id as hotel_id')->leftJoin('project_detail', function($join) {
             $join->on('lead_detail.enq_hotel', '=', 'project_detail.project_name')
-            ->where('project_detail.city', 'lead_detail.enq_city')->where('lead_detail.enq_website', 'project_detail.website_url');
+            ->on('project_detail.city', '=', 'lead_detail.enq_city')->on('lead_detail.enq_website', '=', 'project_detail.website_url');
         })
         ->whereIn('lead_id', $leadIds->pluck('lead_id'))->get();
         $leadDetails = $leadDetails->groupBy('lead_id');
