@@ -1,6 +1,7 @@
 <?php
 Route::get('ledger/sales_purchases', 'AccountsController@ledgerSalesAndPurchase');
 Route::get('ledger/customer/{table}/{id}', 'AccountsController@customerLedger');
+Route::get('ledger/purchase/{table}/{id}', 'AccountsController@customerPurchase');
 
 
 
