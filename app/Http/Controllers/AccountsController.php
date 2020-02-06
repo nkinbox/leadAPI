@@ -52,7 +52,7 @@ class AccountsController extends Controller
             $this->response['data'][$index]['hotel_id'] = ($projectDetail)?$projectDetail->project_id:0;
             $this->response['data'][$index]['date'] = $leadId->booking_date;
             $this->response['data'][$index]['customer_name'] = $leadDetail->enq_name;
-            $this->response['data'][$index]['hotel_name'] = $leadDetail->enq_hotel;
+            $this->response['data'][$index]['hotel_name'] = $leadDetail->enq_hotel.' '.$leadDetail->enq_city;
             $this->response['data'][$index]['booking_type'] = 'Hotel';
             $this->response['data'][$index]['invoice_id'] = 'HT'.$leadDetail->lead_id;
             $this->response['data'][$index]['status'] = $leadDetail->lead_status;
@@ -77,7 +77,7 @@ class AccountsController extends Controller
         ];
         $collection = collect([]);
         if($table == 'hotel') {
-            $lead = DB::table('lead_detail')->select('lead_id', 'enq_name as customer_name', 'enq_hotel as seller_name', 'enq_email as email', 'reference_number as booking_number', 'enq_mobile as phone', 'enq_adv_pay_val', 'enq_check_out')->where('lead_id', $id)->first();
+            $lead = DB::table('lead_detail')->select('lead_id', 'enq_name as customer_name', 'enq_hotel as seller_name', 'enq_city as seller_city', 'enq_email as email', 'reference_number as booking_number', 'enq_mobile as phone', 'enq_adv_pay_val', 'enq_check_out')->where('lead_id', $id)->first();
 
             $this->response['customer_name'] = $lead->customer_name;
             $this->response['email'] = $lead->email;
@@ -96,7 +96,7 @@ class AccountsController extends Controller
 
             $collection->push([
                 'date' => $bookingDate->date,
-                'particular' => $lead->seller_name,
+                'particular' => $lead->seller_name.' '.$lead->seller_city,
                 'amount' => $bookingAmount,
                 'type' => 'debit',
                 'voucher' => 'Sales Invoice',
@@ -152,7 +152,7 @@ class AccountsController extends Controller
         if($table == 'hotel') {
             $hotel = DB::table('project_detail')->select('project_name as seller_name', 'city', 'website_url', 'address', 'email', 'phone', 'mobile', 'project_client_seo_id')->where('project_id', $id)->first();
             if($hotel) {
-                $this->response['seller_name'] = $hotel->seller_name;
+                $this->response['seller_name'] = $hotel->seller_name.' '.$hotel->city;
                 $this->response['address'] = $hotel->address;
                 $this->response['email'] = $hotel->email;
                 $this->response['phone'] = $hotel->phone.', '.$hotel->mobile;
