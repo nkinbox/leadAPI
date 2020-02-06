@@ -18,10 +18,7 @@ class AccountsController extends Controller
         ->where('lead_send_mail.mail_date', '<=', $request->date_end)
         ->where('lead_send_mail.status', 'booked')->groupBy('lead_send_mail.lead_id')->orderBy('booking_date')->paginate(100);
             
-        $leadDetails = DB::table('lead_detail')->select('lead_detail.lead_id', 'lead_detail.enq_name', 'lead_detail.enq_hotel', 'lead_detail.enq_adv_pay_val', 'lead_detail.reference_number', 'lead_detail.mail_date', 'lead_detail.lead_status', 'project_detail.project_id as hotel_id')->leftJoin('project_detail', function($join) {
-            $join->on('lead_detail.enq_hotel', '=', 'project_detail.project_name')
-            ->on('project_detail.city', '=', 'lead_detail.enq_city')->on('lead_detail.enq_website', '=', 'project_detail.website_url');
-        })
+        $leadDetails = DB::table('lead_detail')->select('lead_detail.lead_id', 'lead_detail.enq_name', 'lead_detail.enq_hotel', 'lead_detail.enq_adv_pay_val', 'lead_detail.reference_number', 'lead_detail.mail_date', 'lead_detail.lead_status', 'lead_detail.enq_city', 'lead_detail.enq_website')
         ->whereIn('lead_id', $leadIds->pluck('lead_id'))->get();
         $leadDetails = $leadDetails->groupBy('lead_id');
         $this->response = [
@@ -46,8 +43,12 @@ class AccountsController extends Controller
             $leadDetail = $leadDetails[$leadId->lead_id]->first();
             $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = "booked" order by lsm_id desc limit 1', [$leadDetail->lead_id]));
             if(!$lsm) continue;
+            $projectDetail = DB::table('project_detail')->select('project_id')
+            ->where('project_name', $leadDetail->enq_hotel)
+            ->where('city', $leadDetail->enq_city)
+            ->where('website_url', $leadDetail->enq_website)->first();
             $this->response['data'][$index]['lead_id'] = $leadDetail->lead_id;
-            $this->response['data'][$index]['hotel_id'] = $leadDetail->hotel_id;
+            $this->response['data'][$index]['hotel_id'] = ($projectDetail)?$projectDetail->project_id:0;
             $this->response['data'][$index]['date'] = $leadId->booking_date;
             $this->response['data'][$index]['customer_name'] = $leadDetail->enq_name;
             $this->response['data'][$index]['hotel_name'] = $leadDetail->enq_hotel;
