@@ -54,7 +54,11 @@ class AccountsController extends Controller
             $this->response['data'][$index]['customer_name'] = $leadDetail->enq_name;
             $this->response['data'][$index]['hotel_name'] = $leadDetail->enq_hotel.' '.$leadDetail->enq_city;
             $this->response['data'][$index]['booking_type'] = 'Hotel';
-            $this->response['data'][$index]['invoice_id'] = 'HT'.$leadDetail->lead_id;
+            $this->response['data'][$index]['booking_id'] = $leadDetail->reference_number;
+            $this->response['data'][$index]['booking_url'] = 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$leadDetail->lead_id;
+            $this->response['data'][$index]['customer_invoice'] = 'HTSL'.$leadDetail->lead_id;
+            $this->response['data'][$index]['purchase_invoice'] = 'HTPR'.$leadDetail->lead_id;
+            
             $this->response['data'][$index]['status'] = $leadDetail->lead_status;
             
             if($leadDetail->enq_adv_pay_val) {
