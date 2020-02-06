@@ -228,4 +228,39 @@ class AccountsController extends Controller
 
         return response()->json($this->response);
     }
+
+    public function saleInvoice($table, $id) {
+        if($table == 'hotel') {
+            $lead = DB::table('lead_detail')->select('lead_id', 'reference_number', 'enq_adv_pay_val', 'enq_hotel', 'enq_city', 'enq_name', 'enq_email', 'enq_mobile', 'enq_check_in', 'enq_check_out')->where('lead_id', $id)->first();
+            if($lead) {
+                $lsm = current(DB::select('select amount, commission, adults, rooms from lead_send_mail where lead_id = ? and status = ? order by lsm_id desc limit 1', [$lead->lead_id, 'booked']));
+                $bookingDate = current(DB::select('select mail_date as date from lead_send_mail where lead_id = ? and status = ? order by lsm_id limit 1', [$lead->lead_id, 'booked']));
+                if($lead->enq_adv_pay_val) {
+                    $bookingAmount = round($lead->enq_adv_pay_val) + round($lsm->amount);
+                } else {
+                    $bookingAmount = round($lsm->amount);
+                }
+                $this->response['customer_name'] = $lead->enq_name;
+                $this->response['email'] = $lead->enq_email;
+                $this->response['phone'] = $lead->enq_mobile;
+                $this->response['date'] = $bookingDate->date;
+                $this->response['hotel_name'] = $lead->enq_hotel.' '.$lead->enq_city;
+                $this->response['particular'] = 'Hotel Room Booking';
+                $this->response['checkin'] = $lead->enq_check_in;
+                $this->response['checkout'] = $lead->enq_check_out;
+                $this->response['no_of_rooms'] = $lsm->rooms;
+                $this->response['adults'] = $lsm->adults;
+                $this->response['children'] = '---';
+                $this->response['extra_bed'] = '---';
+                $this->response['booking_amount'] = $lead->bookingAmount;
+                $this->response['commission'] = round($lsm->commission);
+                $this->response['booking_id'] = $lead->reference_number;
+                $this->response['booking_url'] = 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id;
+            }
+        }
+        return response()->json($this->response);
+    }
+    public function purchaseInvoice($table, $id) {
+
+    }
 }
