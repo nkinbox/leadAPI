@@ -252,7 +252,7 @@ class AccountsController extends Controller
                 $this->response['adults'] = $lsm->adults;
                 $this->response['children'] = '---';
                 $this->response['extra_bed'] = '---';
-                $this->response['booking_amount'] = $lead->bookingAmount;
+                $this->response['booking_amount'] = $bookingAmount;
                 $this->response['commission'] = round($lsm->commission);
                 $this->response['booking_id'] = $lead->reference_number;
                 $this->response['booking_url'] = 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id;
