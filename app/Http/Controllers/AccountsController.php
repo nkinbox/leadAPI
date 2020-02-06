@@ -47,6 +47,7 @@ class AccountsController extends Controller
             ->where('project_name', $leadDetail->enq_hotel)
             ->where('city', $leadDetail->enq_city)
             ->where('website_url', $leadDetail->enq_website)->first();
+            dump($leadDetail);
             dd(DB::table('project_detail')->select('project_id')
             ->where('project_name', $leadDetail->enq_hotel)
             ->where('city', $leadDetail->enq_city)
