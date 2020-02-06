@@ -150,7 +150,7 @@ class AccountsController extends Controller
         ];
         $collection = collect([]);
         if($table == 'hotel') {
-            $hotel = DB::table('project_detail')->select('project_name as seller_name', 'city', 'website_url', 'address', 'email', 'phone', 'mobile')->where('project_id', $id)->first();
+            $hotel = DB::table('project_detail')->select('project_name as seller_name', 'city', 'website_url', 'address', 'email', 'phone', 'mobile', 'project_client_seo_id')->where('project_id', $id)->first();
             if($hotel) {
                 $this->response['seller_name'] = $hotel->seller_name;
                 $this->response['address'] = $hotel->address;
@@ -159,8 +159,7 @@ class AccountsController extends Controller
                 
                 $leads = DB::table('lead_detail')->select('lead_id', 'reference_number as booking_number', 'enq_adv_pay_val', 'enq_check_out', 'enq_name as customer_name')->where([
                     'enq_hotel' => $hotel->seller_name,
-                    'enq_city' => $hotel->city,
-                    'enq_website' => $hotel->website_url
+                    'project_client_seo_id' => $hotel->project_client_seo_id
                 ])->get();
                 
                 foreach($leads as $lead) {
