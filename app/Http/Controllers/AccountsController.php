@@ -194,7 +194,7 @@ class AccountsController extends Controller
                             'amount' => round($row->amount),
                             'type' => 'debit',
                             'voucher' => 'Payment',
-                            'bill_id' => $lead->id
+                            'bill_id' => $lead->lead_id
                         ]);
                         $paidAmount += round($row->amount);
                     }
