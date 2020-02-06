@@ -43,15 +43,11 @@ class AccountsController extends Controller
             $leadDetail = $leadDetails[$leadId->lead_id]->first();
             $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = "booked" order by lsm_id desc limit 1', [$leadDetail->lead_id]));
             if(!$lsm) continue;
-            $projectDetail = DB::table('project_detail')->select('project_id')
-            ->where('project_name', $leadDetail->enq_hotel)
-            ->where('city', $leadDetail->enq_city)
-            ->where('website_url', $leadDetail->enq_website)->first();
-            dump($leadDetail);
-            dd(DB::table('project_detail')->select('project_id')
-            ->where('project_name', $leadDetail->enq_hotel)
-            ->where('city', $leadDetail->enq_city)
-            ->where('website_url', $leadDetail->enq_website)->toSql());
+            $projectDetail = DB::table('project_detail')->join('add_project_client_seo', 'add_project_client_seo.project_client_seo_id', '=', 'project_detail.project_client_seo_id')
+            ->select('project_detail.project_id')
+            ->where('project_detail.project_name', $leadDetail->enq_hotel)
+            ->where('project_detail.city', $leadDetail->enq_city)
+            ->where('add_project_client_seo.website_url', $leadDetail->enq_website)->first();
             $this->response['data'][$index]['lead_id'] = $leadDetail->lead_id;
             $this->response['data'][$index]['hotel_id'] = ($projectDetail)?$projectDetail->project_id:0;
             $this->response['data'][$index]['date'] = $leadId->booking_date;
