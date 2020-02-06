@@ -161,7 +161,6 @@ class AccountsController extends Controller
                     'enq_hotel' => $hotel->seller_name,
                     'project_client_seo_id' => $hotel->project_client_seo_id
                 ])->get();
-                dd($leads);
                 foreach($leads as $lead) {
                     $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = ? order by lsm_id desc limit 1', [$lead->lead_id, 'booked']));
         
@@ -179,7 +178,7 @@ class AccountsController extends Controller
                         'amount' => $purchaseAmount,
                         'type' => 'credit',
                         'voucher' => 'Purchase',
-                        'bill_id' => $lead->id
+                        'bill_id' => $lead->lead_id
                     ]);
 
                     // $advanceAmount = DB::table('lead_advance_details')->where('lead_id', $lead->lead_id)->sum('adv_amount');
@@ -187,7 +186,7 @@ class AccountsController extends Controller
                     $transfer = DB::table('lead_payment_transfer')
                     ->select('transfer_amount as amount', 'transfer_payment_mode as particular', 'transfer_update as date')
                     ->where('transfer_status', 'transfer_completed')
-                    ->where('lead_id', $lead->id)->get();
+                    ->where('lead_id', $lead->lead_id)->get();
                     foreach($transfer as $row) {
                         $collection->push([
                             'date' => $row->date,
