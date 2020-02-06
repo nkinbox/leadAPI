@@ -161,7 +161,7 @@ class AccountsController extends Controller
                     'enq_hotel' => $hotel->seller_name,
                     'project_client_seo_id' => $hotel->project_client_seo_id
                 ])->get();
-                
+                dd($leads);
                 foreach($leads as $lead) {
                     $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = ? order by lsm_id desc limit 1', [$lead->lead_id, 'booked']));
         
