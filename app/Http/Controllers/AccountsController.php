@@ -163,7 +163,7 @@ class AccountsController extends Controller
                 ])->get();
                 foreach($leads as $lead) {
                     $lsm = current(DB::select('select amount, commission from lead_send_mail where lead_id = ? and status = ? order by lsm_id desc limit 1', [$lead->lead_id, 'booked']));
-        
+                    if(!$lsm) continue;
                     $bookingDate = current(DB::select('select mail_date as date from lead_send_mail where lead_id = ? and status = ? order by lsm_id limit 1', [$lead->lead_id, 'booked']));
                     $paidAmount = 0;
                     if($lead->enq_adv_pay_val) {
