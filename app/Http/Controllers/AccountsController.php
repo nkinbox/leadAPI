@@ -108,7 +108,7 @@ class AccountsController extends Controller
             ]);
             
             $transfer = DB::table('lead_advance_details')
-            ->select('adv_amount as amount', 'adv_mode as particular', 'adv_date as date')
+            ->selectRaw('adv_amount as amount, concat(adv_mode," (",adv_bank_name, adv_bank_ac, adv_bhim_ac, adv_phonepe_ac, adv_paytm_ac, ")") as particular, adv_date as date')
             ->where('lead_id', $id)->get();
             foreach($transfer as $row) {
                 $collection->push([
@@ -188,7 +188,7 @@ class AccountsController extends Controller
                     // $advanceAmount = DB::table('lead_advance_details')->where('lead_id', $lead->lead_id)->sum('adv_amount');
                     
                     $transfer = DB::table('lead_payment_transfer')
-                    ->selectRaw('transfer_amount as amount, concat(transfer_payment_mode," (",adv_bank_name, adv_bank_ac, adv_bhim_ac, adv_phonepe_ac, adv_paytm_ac, ")") as particular, transfer_update as date')
+                    ->select('transfer_amount as amount, concat(transfer_payment_mode, " (", transfer_payment_via, ")") as particular, transfer_update as date')
                     ->where('transfer_status', 'transfer_completed')
                     ->where('lead_id', $lead->lead_id)->get();
                     foreach($transfer as $row) {
