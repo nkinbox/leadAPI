@@ -16,7 +16,7 @@ class AccountsController extends Controller
         $leadIds = DB::table('lead_send_mail')->selectRaw('lead_send_mail.lead_id, min(lead_send_mail.mail_date) as booking_date')
         ->where('lead_send_mail.mail_date', '>=', $request->date_start)
         ->where('lead_send_mail.mail_date', '<=', $request->date_end)
-        ->where('lead_send_mail.status', 'booked')->groupBy('lead_send_mail.lead_id')->orderBy('booking_date')->paginate(100);
+        ->where('lead_send_mail.status', 'booked')->groupBy('lead_send_mail.lead_id')->orderBy('booking_date', 'desc')->paginate(100);
             
         $leadDetails = DB::table('lead_detail')->select('lead_detail.lead_id', 'lead_detail.enq_name', 'lead_detail.enq_hotel', 'lead_detail.enq_adv_pay_val', 'lead_detail.reference_number', 'lead_detail.mail_date', 'lead_detail.lead_status', 'lead_detail.enq_city', 'lead_detail.enq_website')
         ->whereIn('lead_id', $leadIds->pluck('lead_id'))->get();
@@ -104,7 +104,9 @@ class AccountsController extends Controller
                 'amount' => $bookingAmount,
                 'type' => 'debit',
                 'voucher' => 'Sales Invoice',
-                'bill_id' => ''
+                'bill_id' => $lead->lead_id,
+                'booking_number' => $lead->booking_number,
+                'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
             ]);
             
             $transfer = DB::table('lead_advance_details')
@@ -139,10 +141,10 @@ class AccountsController extends Controller
             }
 
         }
-        $collection = $collection->sortBy('date');
+        $collection = $collection->sortByDesc('date');
         if($collection->isNotEmpty()) {
-            $this->response['date']['from'] = $collection->first()['date'];
-            $this->response['date']['to'] = $collection->last()['date'];
+            $this->response['date']['from'] = $collection->last()['date'];
+            $this->response['date']['to'] = $collection->first()['date'];
         }
         $this->response['list'] = $collection->values()->all();
         return response()->json($this->response);
@@ -227,10 +229,10 @@ class AccountsController extends Controller
                 }
     
             }
-            $collection = $collection->sortBy('date');
+            $collection = $collection->sortByDesc('date');
             if($collection->isNotEmpty()) {
-                $this->response['date']['from'] = $collection->first()['date'];
-                $this->response['date']['to'] = $collection->last()['date'];
+                $this->response['date']['from'] = $collection->last()['date'];
+                $this->response['date']['to'] = $collection->first()['date'];
             }
             $this->response['list'] = $collection->values()->all();
         }
