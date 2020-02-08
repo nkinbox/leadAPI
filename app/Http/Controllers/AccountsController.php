@@ -104,6 +104,7 @@ class AccountsController extends Controller
                 'amount' => $bookingAmount,
                 'type' => 'debit',
                 'voucher' => 'Sales Invoice',
+                'booking_type' => 'Hotel',
                 'bill_id' => $lead->lead_id,
                 'booking_number' => $lead->booking_number,
                 'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
@@ -119,6 +120,7 @@ class AccountsController extends Controller
                     'amount' => round($row->amount),
                     'type' => 'credit',
                     'voucher' => 'Receipt',
+                    'booking_type' => 'Hotel',
                     'bill_id' => $lead->lead_id,
                     'booking_number' => $lead->booking_number,
                     'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
@@ -134,6 +136,7 @@ class AccountsController extends Controller
                     'amount' => $remainingAmount,
                     'type' => 'credit',
                     'voucher' => 'Receipt',
+                    'booking_type' => 'Hotel',
                     'bill_id' => $lead->lead_id,
                     'booking_number' => $lead->booking_number,
                     'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
@@ -188,7 +191,8 @@ class AccountsController extends Controller
                         'amount' => $purchaseAmount,
                         'type' => 'credit',
                         'voucher' => 'Purchase',
-                        'bill_id' => 'HTPR'.$lead->lead_id,
+                        'booking_type' => 'Hotel',
+                        'bill_id' => $lead->lead_id,
                         'booking_number' => $lead->booking_number,
                         'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
                     ]);
@@ -206,7 +210,8 @@ class AccountsController extends Controller
                             'amount' => round($row->amount),
                             'type' => 'debit',
                             'voucher' => 'Payment',
-                            'bill_id' => 'HTPR'.$lead->lead_id,
+                            'booking_type' => 'Hotel',
+                            'bill_id' => $lead->lead_id,
                             'booking_number' => $lead->booking_number,
                             'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
                         ]);
@@ -221,7 +226,7 @@ class AccountsController extends Controller
                             'amount' => $remainingAmount,
                             'type' => 'debit',
                             'voucher' => 'Payment',
-                            'bill_id' => 'HTPR'.$lead->lead_id,
+                            'bill_id' => $lead->lead_id,
                             'booking_number' => $lead->booking_number,
                             'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
                         ]);
