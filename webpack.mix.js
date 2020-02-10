@@ -5,6 +5,6 @@ mix.webpackConfig({
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     ]
 });
-mix.js('resources/assets/js/app.js', 'public/vuejs');
+// mix.js('resources/assets/js/app.js', 'public/vuejs');
 
 mix.js('resources/tripclues/accounts.js', 'public/js');
