@@ -226,6 +226,7 @@ class AccountsController extends Controller
                             'amount' => $remainingAmount,
                             'type' => 'debit',
                             'voucher' => 'Payment',
+                            'booking_type' => 'Hotel',
                             'bill_id' => $lead->lead_id,
                             'booking_number' => $lead->booking_number,
                             'booking_url' => 'https://www.tripclues.in/index.php?page=leadCompleteDetail&lead_id='.$lead->lead_id
