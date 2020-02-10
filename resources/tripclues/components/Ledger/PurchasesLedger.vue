@@ -8,7 +8,7 @@
                 <div>to</div>
                 <div><input class="form-control-plaintext" type="date" v-model="date_end"></div>
                 <div>
-                    <button class="btn btn-success btn-sm">Refresh</button>
+                    <button class="btn btn-success btn-sm" @click="refresh">Refresh</button>
                 </div>
             </div>
         </div>
