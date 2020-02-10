@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import Paginate from '../Paginate'
 export default {
     name: 'purchases-ledger',
