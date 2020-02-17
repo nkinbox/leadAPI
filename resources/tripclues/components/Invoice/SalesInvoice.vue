@@ -103,10 +103,10 @@ export default {
         booking_url() { return this.$store.state.salesInvoice.booking_url },
         commission() { return this.$store.state.salesInvoice.commission },
         taxableValue() {
-            return this.commission-this.tax
+            return Math.round(Number((this.commission*100)/118))
         },
         tax() {
-            return Number(this.commission*0.18)
+            return Math.round(Number(this.taxableValue*0.18))
         },
         purchaseAmount() {
             return this.booking_amount - this.commission
